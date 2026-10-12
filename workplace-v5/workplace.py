@@ -154,41 +154,131 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise Problem('API 返回重定向；请填写服务商最终地址后重试', 502)
 
 
-def ask(messages, review=False, config=None):
-    c = config or selected_config()
-    model = (c.get('reviewModel') if review else None) or c.get('model')
+def parse_model_json(content):
+    """Extract one real JSON object. Never invent scores or evaluate model text."""
+    content=text(content, '模型返回', 150000).lstrip('\ufeff').strip()
+    content=re.sub(r'^<think>[\s\S]*?</think>\s*', '', content, count=1, flags=re.I)
+    def unique_keys(pairs):
+        obj={}
+        for key,value in pairs:
+            if key in obj: raise ValueError('重复 JSON 字段')
+            obj[key]=value
+        return obj
+    decoder=json.JSONDecoder(strict=False,object_pairs_hook=unique_keys)
+    try:
+        obj=decoder.decode(content)
+        if isinstance(obj,str): obj=decoder.decode(obj.strip())
+        if isinstance(obj,dict): return obj
+    except (ValueError,TypeError): pass
+    # Handles fences, an explanatory prefix/suffix, and thought wrappers.
+    # Nested objects belong to their outer object; multiple top-level objects fail.
+    found=[];cursor=0;attempts=0
+    while cursor<len(content) and attempts<256:
+        pos=content.find('{',cursor)
+        if pos<0: break
+        attempts+=1
+        try:
+            obj,end=decoder.raw_decode(content,pos)
+            if isinstance(obj,dict): found.append(obj)
+            cursor=end
+        except ValueError: cursor=pos+1
+    if len(found)==1: return found[0]
+    raise Problem('模型返回格式无效或包含多个 JSON 对象',502)
+
+
+def model_content(result):
+    try:
+        choice=result['choices'][0];message=choice['message']
+    except (KeyError,TypeError,IndexError):
+        raise Problem('服务商缺少 choices/message 正文',502) from None
+    if not isinstance(message,dict): raise Problem('服务商消息格式错误',502)
+    content=message.get('content')
+    if isinstance(content,list):
+        parts=[]
+        for item in content:
+            if not isinstance(item,dict): continue
+            part=item.get('text','')
+            if isinstance(part,dict): part=part.get('value','')
+            if isinstance(part,str): parts.append(part)
+        content=''.join(parts)
+    return content,choice.get('finish_reason'),bool(message.get('reasoning_content'))
+
+
+def record_model_error(c,content,finish_reason,reason):
+    """Private local diagnostic; never part of the exported review or stdout."""
+    if DATA is None: return
+    raw=content if isinstance(content,str) else ''
+    if c.get('apiKey'): raw=raw.replace(c['apiKey'],'[REDACTED]')
+    raw=re.sub(r'sk-[A-Za-z0-9_-]+','[REDACTED]',raw)
+    obj={'at':now(),'model':c.get('model'),'finishReason':finish_reason,
+         'reason':reason,'rawContent':raw[:16000]}
+    try:
+        path=DATA/'model-response-last-error.json'
+        tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2),encoding='utf-8')
+        os.chmod(tmp,0o600);tmp.replace(path)
+    except OSError: pass
+
+
+def ask(messages, review=False, config=None, validator=None):
+    c=config or selected_config()
+    model=(c.get('reviewModel') if review else None) or c.get('model')
     text(model, '模型名称', 200)
-    url = endpoint_url(c.get('baseURL'))
-    headers = {'Content-Type':'application/json', 'Accept':'application/json'}
-    if c.get('apiKey'):
-        headers['Authorization'] = 'Bearer ' + c['apiKey']
-    req = urllib.request.Request(url, data=json.dumps({'model':model,'temperature':0.3 if review else 0.7,
-                       'messages':messages}, ensure_ascii=False).encode(), headers=headers)
-    timeout = min(180, max(0.1, float(os.environ.get('COACH_MODEL_TIMEOUT', '90'))))
-    try:
-        with urllib.request.build_opener(NoRedirect()).open(req, timeout=timeout) as r:
-            raw = r.read(2_000_001)
-            if len(raw) > 2_000_000:
-                raise Problem('模型响应过大，请减少训练长度', 502)
-            result = json.loads(raw)
-    except urllib.error.HTTPError as e:
-        hint = {401:'认证失败，请检查本机 API Key',402:'服务商返回 HTTP 402：账户余额不足或计费未开通，请到所选服务商控制台检查余额并充值',403:'服务商拒绝访问',429:'额度不足或调用频繁，请稍后重试'}.get(e.code,'服务商返回 HTTP '+str(e.code))
-        raise Problem(hint + '；原话已保留', 502) from None
-    except (socket.timeout, TimeoutError):
-        raise Problem('模型响应超时；已保留原话，可重试', 504) from None
-    except urllib.error.URLError:
-        raise Problem('无法连接模型服务，请检查地址、网络及 TLS 信任配置；原话已保留', 502) from None
-    except (ValueError, KeyError, TypeError):
-        raise Problem('服务商响应不是有效的 Chat Completions 数据', 502) from None
-    try:
-        content = result['choices'][0]['message']['content']
-        if isinstance(content, list):
-            content = ''.join(p.get('text','') for p in content if isinstance(p,dict))
-        content = text(content, '模型返回', 150000)
-        fenced = re.fullmatch(r'```(?:json)?\s*([\s\S]*?)\s*```', content)
-        return json.loads(fenced.group(1) if fenced else content)
-    except (ValueError, KeyError, IndexError, TypeError, Problem):
-        raise Problem('模型未返回有效 JSON；未生成评分或虚构回复，可重试', 502) from None
+    url=endpoint_url(c.get('baseURL'))
+    deepseek=urllib.parse.urlsplit(url).hostname=='api.deepseek.com'
+    json_mode=c.get('jsonMode',deepseek)
+    headers={'Content-Type':'application/json','Accept':'application/json'}
+    if c.get('apiKey'): headers['Authorization']='Bearer '+c['apiKey']
+    timeout=min(180,max(0.1,float(os.environ.get('COACH_MODEL_TIMEOUT','90'))))
+    original=copy.deepcopy(messages);current=copy.deepcopy(messages)
+    # Exactly one format/schema correction; transport/auth/billing errors do not retry.
+    for attempt in range(2):
+        payload={'model':model,'temperature':0.2 if review or attempt else 0.7,'messages':current}
+        if json_mode: payload['response_format']={'type':'json_object'}
+        req=urllib.request.Request(url,data=json.dumps(payload,ensure_ascii=False).encode(),headers=headers)
+        try:
+            with urllib.request.build_opener(NoRedirect()).open(req,timeout=timeout) as r:
+                raw=r.read(2_000_001)
+                if len(raw)>2_000_000: raise Problem('模型响应过大，请减少训练长度',502)
+                result=json.loads(raw)
+        except urllib.error.HTTPError as e:
+            # Compatible endpoints may explicitly reject response_format.
+            # Retry only that unsupported-option diagnosis, never a generic HTTP 400.
+            detail=e.read(8000).decode('utf-8','replace')
+            unsupported=(e.code==400 and json_mode and re.search(r'response_format|json_object',detail,re.I)
+                         and re.search(r'not support|unsupported|not permitted|unknown|不支持',detail,re.I))
+            if unsupported and attempt==0:
+                json_mode=False;continue
+            hint={401:'认证失败，请检查本机 API Key',402:'服务商返回 HTTP 402：账户余额不足或计费未开通，请到所选服务商控制台检查余额并充值',
+                  403:'服务商拒绝访问',429:'额度不足或调用频繁，请稍后重试'}.get(e.code,'服务商返回 HTTP '+str(e.code))
+            raise Problem(hint+'；原话已保留',502) from None
+        except (socket.timeout,TimeoutError):
+            raise Problem('模型响应超时；已保留原话，可重试',504) from None
+        except urllib.error.URLError:
+            raise Problem('无法连接模型服务，请检查地址、网络及 TLS 信任配置；原话已保留',502) from None
+        except (ValueError,KeyError,TypeError):
+            raise Problem('服务商响应不是有效的 Chat Completions 数据',502) from None
+        content=None;finish=None
+        try:
+            content,finish,reasoning=model_content(result)
+            if finish=='length': raise Problem('模型输出被截断，请减少单次训练轮数或提高服务商输出额度',502)
+            if finish in ('content_filter','insufficient_system_resource'):
+                raise Problem('模型未完成回复（'+str(finish)+'），请调整脱敏背景后重试',502)
+            if not isinstance(content,str) or not content.strip():
+                raise Problem('模型只返回思考过程，未提供最终正文' if reasoning else '模型返回空正文',502)
+            obj=parse_model_json(content)
+            return validator(obj) if validator else obj
+        except (Problem,ValueError,TypeError,KeyError,AttributeError) as e:
+            reason=str(e) if isinstance(e,Problem) else '结构化字段不完整'
+            record_model_error(dict(c,model=model),content,finish,reason)
+            if attempt==0:
+                current=copy.deepcopy(original)
+                if isinstance(content,str) and content.strip():
+                    current.append({'role':'assistant','content':content[:12000]})
+                current.append({'role':'user','content':'上次输出未通过格式或字段校验：'+reason+
+                    '。请按最初指定的 JSON 结构重新输出一个完整 JSON 对象。JSON 不得有额外解释、Markdown 或思考文本。'
+                    '修正格式与字段，不新增用户原话、证据、轮次或事实；逐轮/六维结构完整，依据和点评简洁。'})
+                continue
+            raise Problem(reason+'；自动格式修复未成功，原话已保留，可重试（本机诊断：user_data/model-response-last-error.json）',502) from None
 
 
 def score(v):
@@ -277,13 +367,18 @@ def base_prompt(s):
             '只返回 JSON 对象，无 Markdown。当前冻结资料：'+json.dumps({k:s[k] for k in ('scene','object','goal','background','intensity')},ensure_ascii=False))
 
 
+def validate_reply(o):
+    if not isinstance(o,dict): raise Problem('模型回复必须是 JSON 对象',502)
+    return {'line':text(o.get('line'),'对方原话'),**interpretation(o)}
+
+
 def model_reply(s):
     prompt=base_prompt(s)+'\n模拟对象回应 1–3 句，输出 {"line":"对方原话","surface":"表面问题（中文）","real":"模拟核心关切（中文）","hidden":"模拟判断依据（中文）"}。'
     # Keep original provider model semantics; structured replies are projected to plain conversation.
     messages=[{'role':'system','content':prompt}]+[{'role':m['role'],'content':m['text']} for m in s['messages']]
     if not s['messages']:
         messages.append({'role':'user','content':'请按上述工作场景和目标开始会议，直接向我提问。'})
-    o=ask(messages,config=selected_config(s['apiId']))
+    o=ask(messages,config=selected_config(s['apiId']),validator=validate_reply)
     if not isinstance(o,dict): raise Problem('模型回复格式错误',502)
     return {'id':uuid.uuid4().hex,'role':'assistant','text':text(o.get('line'),'对方原话'),
             'interpretation':interpretation(o),'at':now()}
@@ -299,8 +394,7 @@ def model_review(s):
     prompt+='评分标准：0–20 几乎未体现；21–40 表达零散；41–60 基本体现但不具体；61–80 清晰且基本可执行；81–100 证据、边界、行动充分且适合语境。'
     prompt+='没有体现的维度引用真实但不足的原话并说明缺口。不能靠关键词给高分，不编造数据，不因语气流利替代证据。所有 score 是 0–100 整数，总分由程序取六维平均四舍五入。'
     prompt+='timeline 恰好覆盖每条用户消息，各轮六维只引用该轮消息；维度名完全一致。translations 引用对方消息 ID；改进示范中缺失事实使用[待确认]占位，不能编造。结构：'+json.dumps(shape,ensure_ascii=False)
-    o=ask([{'role':'system','content':prompt},{'role':'user','content':json.dumps(s['messages'],ensure_ascii=False)}],True,selected_config(s['apiId']))
-    return validate_review(o,s)
+    return ask([{'role':'system','content':prompt},{'role':'user','content':json.dumps(s['messages'],ensure_ascii=False)}],True,selected_config(s['apiId']),validator=lambda o:validate_review(o,s))
 
 
 def validate_portrait(o, sources):
@@ -339,8 +433,7 @@ def update_portrait(api_id=None):
             '只输出 JSON：{"summary":"谨慎的摘要","traits":[{"title":"特征","description":"解释","evidence":[{"sessionId":"实际训练ID","messageId":"实际用户消息ID","quote":"用户原话片段"}]}],'
             '"strengths":[同样结构],"directions":[{"title":"提升方向","description":"依据","action":"具体练习措施","evidence":[同样结构]}]}。每类1–6项，每项必须引用实际原话。')
     payload={'previous':previous,'sessions':[{'id':s['id'],'scene':s['scene']['title'],'messages':s['messages'],'review':s['review']} for s in sources]}
-    o=ask([{'role':'system','content':prompt},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],True,selected_config(api_id))
-    p=validate_portrait(o,sources)
+    p=ask([{'role':'system','content':prompt},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],True,selected_config(api_id),validator=lambda o:validate_portrait(o,sources))
     p['history']=(previous.get('history',[]) if previous else [])+([{'updated':previous['updated'],'summary':previous['summary'],'sessionCount':previous['sessionCount']}] if previous else [])
     p['history']=p['history'][-12:]
     save('portrait','self',p)
@@ -352,7 +445,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.4','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.5','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,

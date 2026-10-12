@@ -17,9 +17,15 @@ class Provider(http.server.BaseHTTPRequestHandler):
             self.send_response(402 if mode=='payment' else 503);self.end_headers();return
         if mode=='delay':
             threading.Event().wait(.4)
+        if mode=='unsupported-json' and body.get('response_format'):
+            self.send_response(400);self.end_headers();self.wfile.write(b'{"error":"response_format json_object is not supported"}');return
         prompt=body['messages'][0]['content']
         user=body['messages'][-1]['content']
-        if mode=='json': content='not-json'
+        if '分析完整记录' in prompt:
+            user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('['))
+        elif '长期沟通画像' in prompt:
+            user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{'))
+        if mode=='json' or (mode=='flaky-json' and len(type(self).calls)==1): content='not-json'
         elif '连接测试' in prompt: content=json.dumps({'ok':True})
         elif '长期沟通画像' in prompt:
             if mode=='portrait-fail': content='bad portrait'
@@ -35,6 +41,8 @@ class Provider(http.server.BaseHTTPRequestHandler):
                'timeline':[{'messageId':m['id'],'dims':dims(m),'feedback':'测试替身逐轮反馈','improved':'I will confirm [pending information] by [date].'} for m in users],
                'translations':[{'messageId':m['id'],'surface':'测试表面问题','real':'模拟关切','hidden':'模拟判断依据'} for m in bots],
                'loss':[{'title':'测试问题','desc':'测试依据','action':'测试调整措施'}], 'next':['练习下一步行动'],'language':'中文复盘，英文示范'}
+            review_calls=sum('分析完整记录' in r['body']['messages'][0]['content'] for r in type(self).calls)
+            if mode=='flaky-schema' and review_calls==1:o['dims'].pop()
             if mode=='bad-score': o['dims'][0]['score']=101
             if mode=='missing-dim': o['dims'].pop()
             if mode=='bad-evidence': o['dims'][0]['evidence'][0]['messageId']='nonexistent'
@@ -46,7 +54,16 @@ class Provider(http.server.BaseHTTPRequestHandler):
             context=json.loads(prompt.split('当前冻结资料：')[1].split('\n模拟对象')[0]);en=context['scene']['lang']=='en'
             answer_count=len([m for m in body['messages'] if m['role']=='user'])
             content=json.dumps({'line':f'What evidence supports your plan? Follow-up {answer_count}.' if en else f'请说明方案的证据和下一步安排。追问 {answer_count}。', 'surface':'请说明依据','real':'模拟核查可执行性','hidden':'事实、边界与行动'},ensure_ascii=False)
-        raw=json.dumps({'choices':[{'message':{'content':content}}]}).encode()
+        if mode=='fenced':content='```json\n'+content+'\n```'
+        if mode=='prose':content='以下是结果：\n'+content+'\n已完成。'
+        if mode=='thinking':content='<think>这是测试替身思考</think>\n'+content
+        if mode=='double-json':content=json.dumps(content)
+        if mode=='blocks':content=[{'type':'text','text':{'value':content}}]
+        if mode=='multiple-json':content=content+'\n{}'
+        message={'content':content}
+        if mode=='reasoning-only':message={'content':None,'reasoning_content':'仅测试思考内容'}
+        if mode=='empty':message={'content':''}
+        raw=json.dumps({'choices':[{'message':message,'finish_reason':'length' if mode=='truncated' else 'stop'}]}).encode()
         self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(raw)));self.end_headers()
         try:self.wfile.write(raw)
         except BrokenPipeError:pass

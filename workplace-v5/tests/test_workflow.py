@@ -202,7 +202,7 @@ class Workflow(unittest.TestCase):
         class OldRelease(server.http.server.BaseHTTPRequestHandler):
             def log_message(self,*args):pass
             def do_GET(self):
-                data=b'{"version":5,"release":"5.0.3"}'
+                data=b'{"version":5,"release":"5.0.4"}'
                 self.send_response(200);self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
         old=server.http.server.ThreadingHTTPServer(('127.0.0.1',0),OldRelease)
         threading.Thread(target=old.serve_forever,daemon=True).start()
@@ -210,6 +210,47 @@ class Workflow(unittest.TestCase):
             self.assertFalse(server._probe_existing(old.server_port))
             self.assertTrue(server._probe_existing(self.http.server_port))
         finally:old.shutdown();old.server_close()
+    def test_model_json_wrappers_and_content_blocks(self):
+        for mode in ('fenced','prose','thinking','double-json','blocks'):
+            with self.subTest(mode=mode):
+                Provider.mode=mode;s=self.begin();self.assertEqual(len(s['messages']),1)
+                s=self.send(s);s=self.review(s);self.assertEqual(s['review']['score'],59)
+    def test_automatic_format_repair_does_not_duplicate_messages(self):
+        Provider.mode='flaky-json';s=self.begin();self.assertEqual(len(Provider.calls),2);self.assertEqual(len(s['messages']),1)
+        self.assertIn('上次输出未通过',Provider.calls[-1]['body']['messages'][-1]['content'])
+        Provider.mode='ok';s=self.send(s);Provider.mode='flaky-schema';s=self.review(s)
+        self.assertEqual(len(s['review']['dims']),6);self.assertEqual(len([m for m in s['messages'] if m['role']=='user']),1)
+    def test_invalid_multiple_empty_and_truncated_outputs_stay_failures(self):
+        for mode in ('multiple-json','empty','reasoning-only','truncated'):
+            with self.subTest(mode=mode):
+                Provider.mode=mode;Provider.calls=[]
+                with self.assertRaises(urllib.error.HTTPError):self.begin()
+                self.assertEqual(len(Provider.calls),2)
+                self.assertTrue((pathlib.Path(self.tmp.name)/'user_data/model-response-last-error.json').exists())
+    def test_json_mode_unsupported_fallback_is_bounded(self):
+        cfg=w.config_store();cfg['apis'][0]['jsonMode']=True;w.atomic_config(cfg);Provider.mode='unsupported-json'
+        s=self.begin();self.assertEqual(len(s['messages']),1);self.assertEqual(len(Provider.calls),2)
+        self.assertEqual(Provider.calls[0]['body']['response_format'],{'type':'json_object'});self.assertNotIn('response_format',Provider.calls[1]['body'])
+    def test_diagnostics_redact_credentials(self):
+        c=w.selected_config();w.record_model_error(c,'returned '+c['apiKey'],None,'invalid')
+        data=(pathlib.Path(self.tmp.name)/'user_data/model-response-last-error.json').read_text();self.assertNotIn(c['apiKey'],data)
+    def test_official_deepseek_request_enables_json_mode(self):
+        from unittest.mock import patch
+        captured=[]
+        class Response:
+            def __enter__(self):return self
+            def __exit__(self,*args):pass
+            def read(self,*args):return b'{"choices":[{"message":{"content":"{\\\"ok\\\":true}"},"finish_reason":"stop"}]}'
+        class Opener:
+            def open(self,request,**kwargs):
+                captured.append(json.loads(request.data));return Response()
+        c=w.selected_config();c['baseURL']='https://api.deepseek.com'
+        with patch.object(w.urllib.request,'build_opener',return_value=Opener()):
+            self.assertEqual(w.ask([{'role':'user','content':'Return JSON'}],config=c),{'ok':True})
+        self.assertEqual(captured[0]['response_format'],{'type':'json_object'})
+    def test_control_characters_and_ambiguous_json(self):
+        self.assertEqual(w.parse_model_json('{"line":"first\nsecond"}')['line'],'first\nsecond')
+        with self.assertRaises(w.Problem):w.parse_model_json('{"a":1} {"b":2}')
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')
