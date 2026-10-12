@@ -13,8 +13,8 @@ class Provider(http.server.BaseHTTPRequestHandler):
         body=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
         type(self).calls.append({'path':self.path,'body':body})
         mode=type(self).mode
-        if mode=='http':
-            self.send_response(503);self.end_headers();return
+        if mode in ('http','payment'):
+            self.send_response(402 if mode=='payment' else 503);self.end_headers();return
         if mode=='delay':
             threading.Event().wait(.4)
         prompt=body['messages'][0]['content']

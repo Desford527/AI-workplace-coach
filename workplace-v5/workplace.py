@@ -170,7 +170,7 @@ def ask(messages, review=False, config=None):
                 raise Problem('模型响应过大，请减少训练长度', 502)
             result = json.loads(raw)
     except urllib.error.HTTPError as e:
-        hint = {401:'认证失败，请检查本机 API Key',403:'服务商拒绝访问',429:'额度不足或调用频繁，请稍后重试'}.get(e.code,'服务商返回 HTTP '+str(e.code))
+        hint = {401:'认证失败，请检查本机 API Key',402:'服务商返回 HTTP 402：账户余额不足或计费未开通，请到所选服务商控制台检查余额并充值',403:'服务商拒绝访问',429:'额度不足或调用频繁，请稍后重试'}.get(e.code,'服务商返回 HTTP '+str(e.code))
         raise Problem(hint + '；原话已保留', 502) from None
     except (socket.timeout, TimeoutError):
         raise Problem('模型响应超时；已保留原话，可重试', 504) from None

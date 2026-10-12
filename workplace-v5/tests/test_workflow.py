@@ -171,6 +171,11 @@ class Workflow(unittest.TestCase):
         self.assertEqual(len([m for m in s['messages'] if m['role']=='user']),1)
         self.assertEqual(Provider.calls[-1]['body']['model'],'new-model')
         self.assertEqual(s['apiChanges'][0]['from'],'p1')
+    def test_payment_error_explains_balance_and_preserves_reply(self):
+        s=self.begin();Provider.mode='payment'
+        with self.assertRaises(urllib.error.HTTPError) as cm:self.send(s,'余额不足时保留原话')
+        error=json.load(cm.exception)['error'];self.assertIn('HTTP 402',error);self.assertIn('余额不足',error)
+        self.assertEqual(w.get('session',s['id'])['messages'][-1]['text'],'余额不足时保留原话')
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')
