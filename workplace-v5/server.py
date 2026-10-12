@@ -102,7 +102,7 @@ def _probe_existing(port, timeout=1.5):
             if r.status != 200:
                 return False
             data = json.loads(r.read())
-            return data.get("version") == 5
+            return data.get("release") == "5.0.4"
     except Exception:
         return False
 
@@ -784,10 +784,13 @@ if __name__ == "__main__":
     # 解决“打不开 / 端口残留”：
     # 1) 若默认端口已在服务本应用（重复启动），直接打开浏览器并退出，避免双实例；
     # 2) 否则绑定端口，被占用/残留则自动顺延，保证一定能启动。
-    if _probe_existing(PORT):
-        reuse_url = f"http://localhost:{PORT}"
+    saved_instance = _read_pid_file() or {}
+    saved_port = saved_instance.get("port")
+    reuse_port = saved_port if isinstance(saved_port, int) and _probe_existing(saved_port) else PORT
+    if _probe_existing(reuse_port):
+        reuse_url = f"http://localhost:{reuse_port}"
         print(f"检测到本应用已在 {reuse_url} 运行，直接打开浏览器。")
-        if getattr(sys, "frozen", False) and os.environ.get("AHC_NO_OPEN") != "1":
+        if (getattr(sys, "frozen", False) or os.environ.get("AHC_AUTO_OPEN") == "1") and os.environ.get("AHC_NO_OPEN") != "1":
             threading.Timer(0.5, lambda: webbrowser.open(reuse_url)).start()
         time.sleep(2)
         sys.exit(0)
@@ -798,9 +801,9 @@ if __name__ == "__main__":
     http.server.ThreadingHTTPServer.allow_reuse_address = True
     workplace.init(ROOT, DATA_ROOT, CONFIG_PATH, sys.modules[__name__])
     with http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
-        print(f"AI职场沟通训练师 v5 已启动： {url}")
+        print(f"AI职场沟通训练师 v5.0.4 已启动： {url}")
         print("在浏览器打开上面的地址即可。按 Ctrl+C 停止。")
-        if getattr(sys, "frozen", False) and os.environ.get("AHC_NO_OPEN") != "1":
+        if (getattr(sys, "frozen", False) or os.environ.get("AHC_AUTO_OPEN") == "1") and os.environ.get("AHC_NO_OPEN") != "1":
             # exe 启动时自动打开浏览器，稍等服务器就绪；设 AHC_NO_OPEN=1 可禁止
             threading.Timer(1.0, lambda: webbrowser.open(url)).start()
         try:

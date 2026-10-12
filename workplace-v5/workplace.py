@@ -52,6 +52,8 @@ def init(resource_root, data_root, config_path, legacy):
         c.execute('CREATE TABLE IF NOT EXISTS docs (kind TEXT, id TEXT, data TEXT NOT NULL, PRIMARY KEY(kind,id))')
         c.execute('CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, digest TEXT NOT NULL, result TEXT)')
         c.execute('CREATE TABLE IF NOT EXISTS meta (id TEXT PRIMARY KEY, data TEXT NOT NULL)')
+    if os.environ.get('COACH_DISABLE_BUNDLED_DEFAULTS') != '1':
+        apply_bundled_defaults()
     # Import original skills as objects, preserving all raw assets and config separately.
     for coach in legacy.load_manifest().get('coaches', []):
         cid = 'legacy-' + coach['id']
@@ -350,7 +352,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.4','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,
@@ -374,6 +376,29 @@ def atomic_config(s):
     try: os.chmod(tmp,0o600)
     except OSError: pass
     tmp.replace(CONFIG)
+
+
+
+def apply_bundled_defaults():
+    seed_path=ROOT/'default-api.json'
+    if not seed_path.exists(): return
+    seed=json.loads(seed_path.read_text(encoding='utf-8'))
+    version=text(seed.get('version'),'默认配置版本',100)
+    incoming=copy.deepcopy(seed['api'])
+    text(incoming.get('apiKey'),'随版本提供的 API Key',200)
+    endpoint_url(incoming.get('baseURL'))
+    marker='bundled-defaults:'+version
+    s=config_store()
+    with db() as c:
+        applied=c.execute('SELECT 1 FROM meta WHERE id=?',(marker,)).fetchone()
+    legacy=any(a.get('name')=='deepseek-cbx' or a.get('model')=='deepseek-v4-flash' for a in s.get('apis',[]))
+    if applied and not legacy: return
+    ident=s.get('active')
+    if not any(a.get('id')==ident for a in s.get('apis',[])): ident=uuid.uuid4().hex
+    incoming['id']=ident
+    atomic_config({'apis':[incoming],'active':ident})
+    with db() as c:
+        c.execute('INSERT OR REPLACE INTO meta VALUES (?,?)',(marker,json.dumps({'applied':now()})))
 
 
 def edit_config(b):

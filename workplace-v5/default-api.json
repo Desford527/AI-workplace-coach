@@ -1,0 +1,11 @@
+{
+  "version": "v5.0.4",
+  "api": {
+    "name": "DeepSeek527",
+    "baseURL": "https://api.deepseek.com",
+    "apiKey": "sk-e3906ae0c83446d7b8e6ef74cc541d14",
+    "model": "deepseek-flash",
+    "reviewModel": "",
+    "useLLM": true
+  }
+}

@@ -14,7 +14,7 @@ from playwright.sync_api import sync_playwright,expect
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 ART=pathlib.Path(os.environ.get('COACH_TEST_ARTIFACTS','/tmp/workplace-browser-artifacts'));ART.mkdir(exist_ok=True,parents=True)
 with tempfile.TemporaryDirectory() as data:
-    mock=start();env={**os.environ,'COACH_DATA_ROOT':data,'AHC_NO_OPEN':'1'}
+    mock=start();env={**os.environ,'COACH_DATA_ROOT':data,'AHC_NO_OPEN':'1','COACH_DISABLE_BUNDLED_DEFAULTS':'1'}
     with socket.socket() as probe:
         probe.bind(('127.0.0.1',0));port=probe.getsockname()[1]
     process=subprocess.Popen([sys.executable,'server.py',str(port)],cwd=ROOT,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -64,9 +64,6 @@ with tempfile.TemporaryDirectory() as data:
             Provider.mode='http';page.fill('#reply','Keep this reply when changing API.');page.click('#send');expect(page.locator('#sessionError')).to_contain_text('HTTP 503');Provider.mode='ok'
             page.click('#apiOpen');page.click('#apiNew');page.fill('#apiName','修复回归配置');page.fill('#apiURL',f'http://127.0.0.1:{mock.server_port}/v1');page.fill('#apiModel','replacement-model');page.click('#apiForm button[type=submit]');expect(page.locator('#apiStatus')).to_contain_text('已保存');page.select_option('#apiSelect',first);page.once('dialog',lambda d:d.accept());page.click('#apiDelete');expect(page.locator('#apiBadge')).to_have_text('修复回归配置');page.click('#apiTest');expect(page.locator('#apiStatus')).to_contain_text('本轮仍绑定旧配置');page.click('[data-close=apiDialog]');expect(page.locator('#sessionError')).to_contain_text('旧 API 配置已不存在');page.click('#useCurrentAPI');page.click('#retry');expect(page.locator('.bubble')).to_have_count(3);expect(page.locator('.bubble.user')).to_have_count(1);expect(page.locator('#sessionError')).not_to_be_visible()
             page.once('dialog',lambda d:d.accept());page.click('#cancel');expect(page.locator('#sessionMeta')).to_contain_text('已中断');assert page.locator('#exportHTML').is_hidden();assert page.locator('#print').is_hidden();assert page.locator('#exportJSON').is_visible()
-            page.click('#apiOpen');page.fill('#apiName','deepseek-cbx');page.fill('#apiModel','deepseek-v4-flash');page.fill('#apiReviewModel','deepseek-v4-flash');page.click('#apiForm button[type=submit]');expect(page.locator('#apiName')).to_have_value('deepseek-cbx')
-            page.click('#apiReplaceDefault');expect(page.locator('#apiName')).to_have_value('DeepSeek527');expect(page.locator('#apiModel')).to_have_value('deepseek-flash');expect(page.locator('#apiReviewModel')).to_have_value('');assert page.locator('#apiKey').evaluate('(e)=>e.required && !e.checkValidity()')
-            page.fill('#apiKey','sk-'+('a'*32));page.click('#apiForm button[type=submit]');expect(page.locator('#apiStatus')).to_contain_text('已保存');expect(page.locator('#apiSelect option')).to_have_count(2);expect(page.locator('#apiName')).to_have_value('DeepSeek527');expect(page.locator('#apiModel')).to_have_value('deepseek-flash');expect(page.locator('#apiKey')).to_have_value('');page.screenshot(path=str(ART/'default-api-v5.0.3.png'))
             assert not errors, errors
             browser.close()
         print('PASS: desktop/mobile, no-config error, API CRUD/switch/test, object CRUD, two-turn training, refresh recovery, failed-send retry, portrait failure/retry, English review, HTML/PDF export; no page errors. TEST DOUBLE only.')

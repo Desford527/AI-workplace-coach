@@ -11,6 +11,7 @@ import urllib.request
 import uuid
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]))
 sys.argv=[sys.argv[0]]
+os.environ['COACH_DISABLE_BUNDLED_DEFAULTS']='1'
 import server
 import workplace as w
 from fake_provider import Provider,start
@@ -188,6 +189,27 @@ class Workflow(unittest.TestCase):
         self.assertEqual(w.selected_config()['apiKey'],replacement)
         self.assertEqual(w.selected_config(s['apiId'])['id'],'p1')
         self.assertEqual(w.get('session',s['id'])['messages'],s['messages'])
+    def test_bundled_default_replaces_existing_legacy_on_startup(self):
+        s=self.begin();store=w.config_store();store['apis'][0].update(name='deepseek-cbx',model='deepseek-v4-flash',reviewModel='deepseek-v4-flash');w.atomic_config(store)
+        seed=json.loads((pathlib.Path(server.ROOT)/'default-api.json').read_text())
+        w.apply_bundled_defaults();cfg=w.config_store();self.assertEqual(len(cfg['apis']),1);self.assertEqual(cfg['active'],'p1')
+        actual={k:v for k,v in cfg['apis'][0].items() if k!='id'};self.assertTrue(actual==seed['api'],'Bundled profile mismatch')
+        self.assertEqual(w.get('session',s['id'])['messages'],s['messages'])
+        self.assertEqual(cfg['apis'][0]['name'],'DeepSeek527');self.assertEqual(cfg['apis'][0]['model'],'deepseek-flash')
+        # Later user edits are preserved after this release has been applied once.
+        cfg['apis'][0]['name']='用户后续编辑';w.atomic_config(cfg);w.apply_bundled_defaults();self.assertEqual(w.selected_config()['name'],'用户后续编辑')
+    def test_startup_does_not_reuse_older_release(self):
+        class OldRelease(server.http.server.BaseHTTPRequestHandler):
+            def log_message(self,*args):pass
+            def do_GET(self):
+                data=b'{"version":5,"release":"5.0.3"}'
+                self.send_response(200);self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
+        old=server.http.server.ThreadingHTTPServer(('127.0.0.1',0),OldRelease)
+        threading.Thread(target=old.serve_forever,daemon=True).start()
+        try:
+            self.assertFalse(server._probe_existing(old.server_port))
+            self.assertTrue(server._probe_existing(self.http.server_port))
+        finally:old.shutdown();old.server_close()
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')
