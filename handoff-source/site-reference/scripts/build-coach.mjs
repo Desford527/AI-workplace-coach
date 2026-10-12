@@ -1,0 +1,18 @@
+import {readFile,mkdir,rm,writeFile,cp} from 'node:fs/promises';
+const assets={};for(const f of ['index.html','style.css','app.js'])assets['/'+f]={type:f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8',body:await readFile('web/'+f,'utf8')};
+assets['/scenes.js']={type:'text/javascript; charset=utf-8',body:await readFile('shared/scenes.js','utf8')};
+await writeFile('worker/assets.js','export const ASSETS='+JSON.stringify(assets)+';\n');
+const data=(await readFile('shared/scenes.js','utf8')).replace(/export \{[^}]+\};?/g,'');
+assets['/profiles.js']={type:'text/javascript; charset=utf-8',body:await readFile('shared/profiles.js','utf8')};
+await writeFile('worker/assets.js','export const ASSETS='+JSON.stringify(assets)+';\n');
+assets['/portrait.js']={type:'text/javascript; charset=utf-8',body:await readFile('shared/portrait.js','utf8')};
+await writeFile('worker/assets.js','export const ASSETS='+JSON.stringify(assets)+';\n');
+const portrait=(await readFile('shared/portrait.js','utf8')).replace(/export \{[^}]+\};?/g,'');
+const profiles=(await readFile('shared/profiles.js','utf8')).replace(/export \{[^}]+\};?/g,'');
+const basic=(await readFile('worker/basic.js','utf8')).replace(/^import .*;\n/gm,'').replace(/export \{[^}]+\};?/g,'');
+const ai=(await readFile('worker/ai.js','utf8')).replace(/^import .*;\n/gm,'').replace(/export \{[^}]+\};?/g,'');
+const worker=(await readFile('worker/index.js','utf8')).replace(/^import .*;\n/gm,'');
+await rm('dist',{recursive:true,force:true});await mkdir('dist/server',{recursive:true});await mkdir('dist/.openai',{recursive:true});
+await writeFile('dist/server/index.js',data+'\n'+profiles+'\n'+portrait+'\n'+basic+'\n'+ai+'\nconst ASSETS='+JSON.stringify(assets)+';\n'+worker);
+await cp('.openai/hosting.json','dist/.openai/hosting.json');await cp('drizzle','dist/.openai/drizzle',{recursive:true});
+console.log('Worker, interface and schema migrations built.');

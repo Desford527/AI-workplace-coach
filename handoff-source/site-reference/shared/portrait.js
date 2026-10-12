@@ -1,0 +1,11 @@
+// Shared evidence validation for AI-generated communication portraits.
+function compilePortrait(input, sources, previous=null) {
+ const bad=s=>{throw new Error(s)}, txt=(s,max=4000)=>{if(typeof s!=='string'||!s.trim()||s.length>max)bad('画像描述不能为空或过长');return s.trim()};
+ if(!input||!Array.isArray(input.sourceSessions)||!input.sourceSessions.length||input.sourceSessions.length>200)bad('画像必须引用实际训练');
+ const seen=new Set();const refs=input.sourceSessions.map(ref=>{if(seen.has(ref.sessionId))bad('画像来源重复');seen.add(ref.sessionId);const r=sources.get(ref.sessionId);if(!r||r.revision!==ref.revision)bad('画像来源已更新或无权访问，请重新读取');if(!r.data.review||!r.data.messages.some(m=>m.role==='user'))bad('画像来源必须已完成真实复盘');return {sessionId:ref.sessionId,revision:ref.revision,scene:r.data.scene.title,at:r.data.reviewed||r.updated};});
+ for(const ref of previous?.sourceSessions||[])if(!seen.has(ref.sessionId))bad('长期画像不能遗漏已有训练来源');
+ const section=(items,label)=>{if(!Array.isArray(items)||items.length<1||items.length>6)bad(label+'需要1至6项观察');return items.map(item=>{if(!Array.isArray(item.evidence)||!item.evidence.length||item.evidence.length>12)bad('每项观察都需要原话证据');const evidence=item.evidence.map(e=>{const quote=txt(e.quote,6000),s=sources.get(e.sessionId);if(!seen.has(e.sessionId)||!s?.data.messages.some(m=>m.role==='user'&&m.text.includes(quote)))bad('画像证据必须来自当前用户真实回应');return {sessionId:e.sessionId,quote};});const count=new Set(evidence.map(e=>e.sessionId)).size;return {title:txt(item.title,200),description:txt(item.description),action:label==='提升方向'?txt(item.action):'',evidence,confidence:count>=3?'多轮观察':'初步观察'};});};
+ const traits=section(input.traits,'沟通特征'),strengths=section(input.strengths,'已有优势'),directions=section(input.directions,'提升方向');
+ return {kind:'observed',summary:txt(input.summary),traits,strengths,directions,focus:directions.map(d=>d.title+'：'+d.action).join('；'),sourceSessions:refs,stage:refs.length>=3?'持续积累':'初步画像',updated:new Date().toISOString(),history:[...(previous?.history||[]),...(previous?.kind==='observed'?[{summary:previous.summary,updated:previous.updated,sourceCount:previous.sourceSessions.length,traits:previous.traits,directions:previous.directions}]:[])].slice(-12)};
+}
+export { compilePortrait };

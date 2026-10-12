@@ -1,0 +1,9 @@
+delivery/
+**/__pycache__/
+*.pyc
+**/user_data/*
+!**/user_data/.gitignore
+**/legacy-backup/
+**/build/
+**/dist/
+*.spec

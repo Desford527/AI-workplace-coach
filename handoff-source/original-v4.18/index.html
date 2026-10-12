@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="模拟难沟通的领导或导师，在连续追问与全盘复盘中提升高压沟通能力。">
+<title>AI高压沟通教练｜让每一次重要沟通，都可以提前训练</title>
+<style>
+  :root{
+    --ink:#17231f;--paper:#f4f1e9;--green:#174f40;--green2:#2f7d63;
+    --lime:#d7ef7b;--red:#e8654a;--amber:#b8762e;--line:rgba(23,35,31,.16);
+    --panel:#fbf9f3;--panel2:#efeadd;--txt:#17231f;--sub:#59645f;
+    --shadow:6px 6px 0 var(--lime);--shadow-sm:4px 4px 0 var(--line)
+  }
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Microsoft YaHei","Noto Sans SC",Arial,sans-serif;line-height:1.6}
+  a{color:inherit;text-decoration:none}button,select,textarea{font:inherit}
+  .nav{height:78px;display:flex;align-items:center;justify-content:space-between;
+    max-width:1240px;margin:auto;padding:0 30px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800}
+  .mark{width:36px;height:36px;display:grid;place-items:center;background:var(--ink);
+    color:var(--lime);border-radius:50%;font-weight:900}
+  .links{display:flex;align-items:center;gap:18px;font-size:14px;font-weight:700}
+  .pill,.apipill{border:0;background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;cursor:pointer}
+  .apipill{background:none;color:var(--ink);border:1px solid var(--ink)}
+  .hero,.section{max-width:1240px;margin:auto;padding:90px 30px}
+  .hero{display:grid;grid-template-columns:1.05fr .75fr;gap:88px;align-items:center;min-height:680px}
+  .eyebrow{font-size:13px;font-weight:800;letter-spacing:.16em;color:var(--green)}
+  h1{font-size:clamp(48px,6vw,82px);line-height:1.05;letter-spacing:-.04em;margin:22px 0}
+  h1 em{color:var(--green);font-style:normal;background:linear-gradient(transparent 78%,var(--lime) 0)}
+  .lead{font-size:18px;line-height:1.9;color:#59645f;max-width:560px}
+  .actions{display:flex;gap:26px;align-items:center;margin-top:34px;flex-wrap:wrap}
+  .primary,.launch{border:0;background:var(--ink);color:#fff;padding:15px 22px;font-weight:800;
+    box-shadow:var(--shadow);cursor:pointer;transition:.15s}
+  .primary:hover,.launch:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--lime)}
+  .ghost{border:0;background:none;color:var(--green);font-weight:800;cursor:pointer;padding:8px 4px}
+  .trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;font-size:13px;font-weight:700;color:var(--sub)}
+  .trust span{position:relative;padding-left:18px}
+  .trust span:before{content:"";position:absolute;left:0;top:7px;width:8px;height:8px;background:var(--green);border-radius:50%}
+  .stage{background:var(--green);color:#fff;padding:30px;box-shadow:16px 16px 0 var(--lime);transform:rotate(1deg)}
+  .live{font-size:12px;letter-spacing:.12em;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:16px}
+  .live:before{content:"";display:inline-block;width:8px;height:8px;background:var(--red);border-radius:50%;margin-right:9px}
+  .speaker{display:flex;gap:12px;align-items:center;margin-top:22px}
+  .avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--lime);color:var(--green);font-weight:900}
+  .stage blockquote{font:700 24px/1.5 "Microsoft YaHei",sans-serif;margin:18px 0 0;border:0;padding:0}
+  .answer,.note{font-size:13.5px;line-height:1.7;margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.08);border-radius:10px}
+  .note{color:var(--lime)}
+  .head{margin-bottom:34px}.kicker{font-size:13px;font-weight:800;letter-spacing:.16em;color:var(--green);margin-bottom:10px}
+  h2{font-size:clamp(30px,4vw,46px);line-height:1.1;letter-spacing:-.03em;margin:0}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:var(--panel);border:1px solid var(--line);padding:30px;box-shadow:var(--shadow);cursor:pointer;transition:.16s}
+  .card:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--lime)}
+  .portrait{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--lime);font-size:24px;font-weight:900}
+  .card h3{font-size:22px;margin:16px 0 4px}
+  .card .role{font-size:13px;font-weight:700;color:var(--green)}
+  .card .desc{font-size:14px;color:var(--sub);margin:12px 0 14px}
+  .card .focus{font-size:12.5px;font-weight:700;color:var(--ink);background:var(--lime);display:inline-block;padding:6px 12px;border-radius:8px}
+  .process{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
+  .steps{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+  .steps li{display:flex;gap:18px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);padding:18px 20px;box-shadow:var(--shadow-sm)}
+  .steps li b{font-size:26px;color:var(--green);font-weight:900;min-width:42px}
+  .steps h3{font-size:17px;margin:0 0 4px}.steps p{font-size:13.5px;color:var(--sub);margin:0}
+  .room{max-width:1240px;margin:auto;padding:70px 30px}
+  .box{background:var(--panel);border:1px solid var(--line);padding:34px;box-shadow:var(--shadow)}
+  .box.hidden{display:none}
+  #setup label{display:block;font-weight:800;margin:18px 0 10px;font-size:14px}
+  #setup label:first-child{margin-top:0}
+  .roleChoices{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .roleChoices button{border:1px solid var(--line);background:var(--paper);padding:18px;border-radius:12px;cursor:pointer;text-align:left;transition:.15s}
+  .roleChoices button b{display:block;font-size:18px;margin-bottom:4px}
+  .roleChoices button span{font-size:12.5px;color:var(--sub)}
+  .roleChoices button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .roleChoices button.active span{color:var(--lime)}
+  .roleChoices button.addCoachCard{border:1px dashed var(--green);background:transparent;color:var(--green);display:flex;flex-direction:column;justify-content:center;gap:4px}
+  .roleChoices button.addCoachCard:hover{background:rgba(23,79,64,.05)}
+  .setupTools{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 4px}
+  .editCoachBtn,.delCoachBtn{border:1px solid var(--line);background:var(--paper);font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer;font-size:13px}
+  .editCoachBtn{color:var(--ink)}
+  .editCoachBtn:hover{border-color:var(--ink)}
+  .delCoachBtn{color:var(--red)}
+  .delCoachBtn:hover{border-color:var(--red)}
+  #begin{margin-top:16px}
+  select{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-size:15px}
+  .hint{display:block;margin:16px 0 0;font-size:12.5px;color:var(--sub)}
+  .training header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .identity{display:flex;gap:12px;align-items:center}.identity p{margin:0}.identity b{display:block;line-height:1.3}.identity small{display:block;color:var(--sub);font-size:12.5px;margin-top:3px;line-height:1.4}
+  .trainBtns{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .end{border:0;background:var(--red);color:#fff;font-weight:800;padding:11px 16px;border-radius:10px;cursor:pointer;box-shadow:5px 5px 0 rgba(232,101,74,.35)}
+  .abort{border:1px solid var(--amber);background:none;color:var(--amber);font-weight:800;padding:10px 15px;border-radius:10px;cursor:pointer;white-space:nowrap}
+  .abort:hover{background:var(--amber);color:#fff}
+  .chat{height:54vh;min-height:380px;overflow-y:auto;padding:22px 6px;display:flex;flex-direction:column;gap:16px}
+  .chat::-webkit-scrollbar{width:8px}.chat::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .bubble{display:flex;flex-direction:column;gap:3px;max-width:82%;padding:12px 15px;border-radius:14px;font-size:14.5px;white-space:pre-wrap;word-break:break-word}
+  .bubble small{font-size:11.5px;font-weight:700;color:var(--sub)}
+  .roleBubble{align-self:flex-start;background:var(--green);color:#fff;border:1px solid var(--green)}
+  .roleBubble small{color:var(--lime)}
+  .userBubble{align-self:flex-end;background:var(--lime);color:var(--ink);border:1px solid var(--ink)}
+  .sysBubble{align-self:center;max-width:90%;background:transparent;border:1px dashed var(--line);color:var(--sub);font-size:12.5px;text-align:center}
+  .typing{display:flex;gap:5px;padding:8px 4px;align-items:center}.typing i{width:7px;height:7px;border-radius:50%;background:var(--sub);animation:bl 1s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  .typing .note{font-size:12.5px;color:var(--amber);margin-left:4px;white-space:nowrap}
+  @keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+  .reply label{display:block;font-weight:800;margin:16px 0 8px;font-size:14px}
+  .reply textarea{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--ink);
+    padding:13px 15px;font-size:14.5px;resize:none;line-height:1.5}
+  .reply textarea:focus{outline:none;border-color:var(--green)}
+  .sendrow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:14px}
+  .sendrow small{font-size:12px;color:var(--sub)}
+  .send{border:0;background:var(--ink);color:#fff;font-weight:800;padding:13px 22px;border-radius:10px;cursor:pointer;box-shadow:5px 5px 0 var(--lime)}
+  .send:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+  .secondary{border:1px solid var(--ink);background:none;color:var(--ink);font-weight:800;padding:13px 20px;border-radius:10px;cursor:pointer}
+  #review.box{padding:0;background:none;border:0;box-shadow:none}
+  .rhead{background:var(--green);color:#fff;padding:30px 34px;box-shadow:var(--shadow)}
+  .rhead .tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.1em;background:rgba(215,239,123,.2);
+    color:var(--lime);padding:5px 12px;border-radius:30px}
+  .rhead h2{color:#fff;font-size:30px;margin:12px 0 6px}
+  .rhead .meta{color:rgba(255,255,255,.75);font-size:14px}
+  .verdict{display:flex;gap:22px;flex-wrap:wrap;align-items:center;margin-top:20px}
+  .scorebig{font-size:52px;font-weight:900;color:var(--lime);line-height:1}
+  .scorebig small{font-size:18px;color:rgba(255,255,255,.7);font-weight:700}
+  .vtext{flex:1;min-width:260px}.vtext b{color:#fff}
+  .pill2{display:inline-block;font-size:12.5px;padding:6px 12px;border-radius:8px;background:var(--red);color:#fff;font-weight:800}
+  section.r{background:var(--panel);border:1px solid var(--line);border-radius:0;padding:26px 30px;margin-top:22px;box-shadow:var(--shadow-sm)}
+  h2.r{font-size:21px;font-weight:800;display:flex;align-items:center;gap:10px;margin:0 0 18px}
+  h2.r .dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+  h2.r .num{font-size:12.5px;color:var(--sub);font-weight:700;margin-left:auto}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .radar-box{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .legend{display:flex;gap:14px;margin-top:8px;font-size:12.5px;color:var(--sub)}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:middle}
+  .bar{margin-bottom:14px}.bar .lab{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}
+  .bar .lab span:last-child{color:var(--sub);font-weight:700}
+  .track{height:10px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--green2))}
+  .loss{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .card2{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:10px;padding:16px}
+  .card2 .sev{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:6px;display:inline-block;margin-bottom:9px}
+  .sev.crit{background:rgba(232,101,74,.16);color:var(--red)}
+  .sev.high{background:rgba(184,118,46,.16);color:var(--amber)}
+  .sev.mid{background:rgba(23,79,64,.14);color:var(--green)}
+  .card2 h3{font-size:15px;margin:0 0 6px}.card2 p{font-size:13px;color:var(--sub);margin:0}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-weight:700;font-size:12.5px;letter-spacing:.5px}
+  td b{color:var(--ink)}.tt{background:var(--panel2);border-radius:10px;padding:10px 12px;color:var(--green);font-size:13px}
+  .tl{position:relative;padding-left:26px}.tl:before{content:"";position:absolute;left:9px;top:4px;bottom:4px;width:2px;background:var(--line)}
+  .node{position:relative;margin-bottom:20px}
+  .node:before{content:"";position:absolute;left:-22px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--paper)}
+  .node.you:before{background:var(--lime);border-color:var(--ink)}
+  .who{font-size:12.5px;font-weight:800;margin-bottom:4px}.who.ya{color:var(--green)}.who.you{color:var(--ink)}
+  .bub2{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+  .bub2 .tagmini{font-size:11px;color:var(--amber);margin-top:7px;display:block;font-weight:700}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ba .bx{border-radius:12px;padding:15px 16px;font-size:13.5px}
+  .ba .bad{background:rgba(232,101,74,.08);border:1px solid rgba(232,101,74,.3)}
+  .ba .good{background:rgba(23,79,64,.08);border:1px solid rgba(23,79,64,.3)}
+  .ba .h{font-size:12.5px;font-weight:800;margin-bottom:8px}
+  .ba .bad .h{color:var(--red)}.ba .good .h{color:var(--green)}
+  .next{display:flex;flex-direction:column;gap:11px}
+  .next .it{display:flex;gap:12px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:13.5px}
+  .next .it .k{font-weight:900;color:var(--green);font-size:16px;min-width:22px}
+  .reviewActions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+  footer{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
+    max-width:1240px;margin:60px auto 0;padding:28px 30px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+    padding:11px 18px;border-radius:12px;font-size:13px;box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1}
+  .modal{position:fixed;inset:0;background:rgba(23,35,31,.55);display:grid;place-items:center;z-index:60;padding:20px}
+  .modal.hidden{display:none}
+  .modalCard{background:var(--panel);border:1px solid var(--ink);box-shadow:var(--shadow);width:100%;max-width:460px;padding:20px 24px}
+  .modalCard.wide{max-width:540px}  /* 仅编辑教练 / API 管理两个弹窗加宽，不影响页面整体宽度 */
+  .modalCard.coachCard,.modalCard.apiCard{max-height:calc(100vh - 60px);display:flex;flex-direction:column;overflow:hidden;padding-bottom:14px}
+  .coachCard .modalBody,.apiCard .modalBody{overflow-y:auto;min-height:0;padding-right:6px;scrollbar-width:thin}
+  .coachCard .apiStatus,.apiCard .apiStatus{margin-top:8px;min-height:0}
+  .modalHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .modalHead b{font-size:18px}
+  .modalCard .x{border:0;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--sub)}
+  .modalHint{font-size:13px;color:var(--sub);margin:0 0 12px;line-height:1.6}
+  .modalCard label{display:block;font-weight:800;font-size:13px;margin:10px 0 5px}
+  .modalCard label.chk{font-weight:600;display:flex;gap:9px;align-items:center;margin-top:11px}
+  .modalCard input[type=text],.modalCard input[type=password],.modalCard select,.modalCard textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-size:14px}
+  .modalCard textarea{resize:vertical;min-height:90px;font-family:inherit;line-height:1.6;overflow-y:auto}
+  .modalCard input[type=color]{width:86px;height:36px;padding:2px 4px;border:1px solid var(--line);border-radius:10px;background:var(--paper);cursor:pointer}
+  .coachRow{display:grid;grid-template-columns:1fr 84px 100px;gap:10px;align-items:end}
+  .coachRow .crItem{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .coachRow input[type=color]{width:100%}
+  .modalCard select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);background-position:calc(100% - 18px) 15px,calc(100% - 13px) 15px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  .modalCard input:focus{outline:none;border-color:var(--green)}
+  .modalActions{display:flex;gap:12px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+  .modalActions button{padding:9px 16px;font-size:14px}  /* 弹窗操作按钮统一矮一些、协调 */
+  .apiFoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;flex-wrap:wrap}
+  .apiFoot .apiStatus{margin-top:0;min-height:0;flex:1;text-align:left}
+  .apiFoot .modalActions{margin-top:0;flex-shrink:0}
+  .modalActions .danger{border:1px solid var(--red);background:none;color:var(--red);font-weight:800;padding:11px 18px;border-radius:10px;cursor:pointer}
+  .modalActions .danger:hover{background:var(--red);color:#fff}
+  .modalActions .danger:disabled{opacity:.45;cursor:not-allowed}
+  .selRow{display:flex;gap:10px;align-items:center}
+  .selRow select{flex:1}
+  .addBtn{border:1px solid var(--green);background:var(--green);color:#fff;font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer;white-space:nowrap}
+  .addBtn:hover{filter:brightness(.92)}
+  .editHead{margin-top:10px;padding:8px 12px;border-radius:10px;background:rgba(23,79,64,.06);color:var(--green);font-weight:800;font-size:13px;line-height:1.5}
+  .apiStatus{font-size:12.5px;margin-top:10px;min-height:16px}
+  .apiStatus.ok{color:var(--green)}.apiStatus.err{color:var(--red)}
+  .apiInfo{margin-top:16px;font-size:12.5px;font-weight:700}
+  .apiInfo .on{color:var(--green)}.apiInfo .off{color:var(--amber)}
+  .loading{font-size:13px;color:var(--sub);padding:20px 0}
+  /* 复盘等待进度条 */
+  .reviewLoading{padding:46px 16px;text-align:center}
+  .rlTitle{font-size:20px;font-weight:900;color:var(--ink);margin-bottom:4px}
+  .rlSub{font-size:13px;color:var(--sub);margin-bottom:18px}
+  .rlSteps{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .rlSteps span{font-size:12.5px;color:var(--sub);padding:4px 10px;border:1px solid var(--line);border-radius:999px}
+  .rlSteps span.on{background:var(--green);color:#fff;border-color:var(--green)}
+  .rlBar{height:10px;background:rgba(23,35,31,.12);border-radius:999px;max-width:360px;margin:0 auto 12px;overflow:hidden}
+  .rlFill{height:100%;width:0;background:linear-gradient(90deg,#174f40,#2f7d63);border-radius:999px;transition:width .45s}
+  .rlText{font-size:13px;color:var(--sub)}
+  .rlErr{color:var(--red);font-weight:900;font-size:17px}
+  @media(max-width:900px){.hero,.process{grid-template-columns:1fr}.hero{gap:50px;padding-top:50px}.cards{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.ba{grid-template-columns:1fr}.roleChoices{grid-template-columns:1fr}}
+  @media(max-width:580px){.nav,.hero,.section,.room{padding-left:18px;padding-right:18px}.links a:not(.pill):not(.apipill){display:none}.stage{box-shadow:9px 9px 0 var(--lime)}.bubble{max-width:92%}footer{flex-direction:column;align-items:flex-start;gap:14px}}
+</style>
+</head>
+<body id="top">
+
+  <nav class="nav">
+    <a class="brand" href="#top"><span class="mark">压</span><span>AI高压沟通教练</span></a>
+    <div class="links">
+      <a href="#people">训练对象</a>
+      <a href="#process">训练方式</a>
+      <a class="pill" href="#start">开始训练</a>
+      <a class="apipill" onclick="openApi()">⚙ API</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">● AI 沟通实战训练场</div>
+      <h1>把下一次高压对话，<br><em>提前练一遍。</em></h1>
+      <p class="lead">面对难沟通的领导或导师，不再只靠临场反应。选择一位教练，接入你自己的大模型，在真实追问中识别对方真正关心的问题，并在完整复盘中学会更成熟地回答。</p>
+      <div class="actions">
+        <a class="primary" href="#start">选择训练对象 ↗</a>
+        <a class="ghost" href="#process">先了解怎么训练 ↓</a>
+      </div>
+      <div class="trust"><span>连续角色对话</span><span>动态难度追问</span><span>全盘复盘解析</span></div>
+    </div>
+    <div class="stage">
+      <div class="live">模拟训练中</div>
+      <div class="speaker"><span class="avatar">张</span><div><b>张总</b><br><small>企业管理型高压领导</small></div></div>
+      <blockquote>“所以，你的结论是什么？我不要过程，我只要结果。”</blockquote>
+      <div class="answer">你的回答<br>目前核心功能已完成，但还不能直接承诺上线。我的判断依据是……</div>
+      <div class="note">教练观察<br>先给判断，再用事实、风险和方案支撑。不要用“差不多”代替结论。</div>
+    </div>
+  </section>
+
+  <section class="section" id="people">
+    <div class="head"><div class="kicker">01 · 选择你的训练对象</div><h2>多种压力，<br>多套完全不同的沟通逻辑。</h2></div>
+    <div class="cards" id="coachCards"><div class="loading">正在加载教练技能……（若长时间无反应，请用本地服务器打开，见 README）</div></div>
+  </section>
+
+  <section class="section process" id="process">
+    <div>
+      <div class="kicker" style="color:var(--green)">02 · 一次完整训练</div>
+      <h2>不是听课，<br>而是真正开口。</h2>
+      <p style="color:#59645f;line-height:1.8">像真实汇报一样回答。教练依据你的上一句动态追问（由你配置的大模型驱动），结束后系统覆盖整场对话复盘，并生成可视化答辩分析。</p>
+    </div>
+    <ol class="steps">
+      <li><b>01</b><div><h3>选择对象与场景</h3><p>确定你要面对谁，以及这次想练什么。</p></div></li>
+      <li><b>02</b><div><h3>配置并接入大模型</h3><p>填入你自己的 API，对话由模型按教练人设生成。</p></div></li>
+      <li><b>03</b><div><h3>随时结束训练</h3><p>退出角色扮演，进入完整复盘。</p></div></li>
+      <li><b>04</b><div><h3>获得答辩分析</h3><p>雷达评分 + 失分点 + 翻译表，改进回答结构。</p></div></li>
+    </ol>
+  </section>
+
+  <section class="room" id="start">
+    <div class="head"><div class="kicker">公共高压沟通训练场</div><h2 id="roomTitle">选择对象，真正开始训练。</h2></div>
+
+    <div id="setup" class="box">
+      <label>1. 选择训练对象（来自 skills/ 文件夹，标准 Skill 格式）</label>
+      <div class="roleChoices" id="roleChoices"></div>
+      <div class="setupTools">
+        <button class="editCoachBtn" type="button" onclick="openEditCoachModal()">✎ 编辑当前教练</button>
+        <button class="delCoachBtn" type="button" onclick="deleteCoach()">删除当前教练</button>
+      </div>
+      <label for="scene">2. 选择训练场景</label>
+      <select id="scene"></select>
+      <button id="begin" class="launch" type="button" onclick="begin()">进入训练 ↗</button>
+      <div class="apiInfo" id="apiInfo"></div>
+      <small class="hint">角色由对应 skill 文件（SKILL.md + references）定义，根据你的回答连续追问（由你配置的大模型驱动）；任何时候都可以结束并获得完整答辩分析。点「＋ 新增教练」可自建训练对象，会写入本机 skills/ 并立即生效。</small>
+    </div>
+
+    <div id="training" class="box training hidden">
+      <header>
+        <div class="identity"><span id="trainAvatar" class="avatar">张</span>
+          <p><b id="trainRole">张总</b><small id="trainScene"></small></p></div>
+        <div class="trainBtns">
+          <button class="abort" type="button" onclick="abortTraining()">中断训练</button>
+          <button id="end" class="end" type="button" onclick="end()">结束并复盘</button>
+        </div>
+      </header>
+      <div id="chat" class="chat" aria-live="polite"></div>
+      <form id="replyForm" class="reply" onsubmit="return false">
+        <label for="reply">直接回应</label>
+        <textarea id="reply" rows="3" placeholder="像真实汇报一样回答……（Enter 发送 · Shift+Enter 换行）"></textarea>
+        <div class="sendrow">
+          <small>Enter 发送 · Shift + Enter 换行</small>
+          <button id="send" class="send" type="button" onclick="sendMsg()">发送回答 ↗</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="review" class="box hidden"></div>
+  </section>
+
+  <footer>
+    <span class="brand"><span class="mark">压</span>AI高压沟通教练</span>
+    <span>为高压沟通，提供一个安全的练习场。</span>
+    <span>教练均为虚拟人物，由本地 skills/ 定义</span>
+  </footer>
+
+  <div id="apiModal" class="modal hidden">
+    <div class="modalCard wide apiCard">
+      <div class="modalHead"><b>大模型 API 管理</b><button class="x" type="button" onclick="closeApi()">×</button></div>
+      <div class="modalBody">
+      <p class="modalHint">可保存多个 API 随时切换，模拟答辩用当前选中的 API 驱动（OpenAI 兼容接口）。以 DeepSeek 为例：Base URL 填 <code>https://api.deepseek.com</code>（自动补全 /chat/completions），Key 以 <code>sk-</code> 开头。Key 仅保存在本机，不上传任何第三方。</p>
+
+      <label for="apiSelect">选择已保存的 API</label>
+      <div class="selRow">
+        <select id="apiSelect" onchange="onSelectApi()"></select>
+        <button class="addBtn" type="button" onclick="newApi()">＋ 添加 API</button>
+      </div>
+      <div class="editHead" id="editHead"></div>
+
+      <label for="apiName">名称（可选，便于识别）</label>
+      <input id="apiName" type="text" placeholder="如：DeepSeek 主账号 / 本地 Ollama">
+      <label for="apiBase">API 地址（Base URL）</label>
+      <input id="apiBase" type="text" placeholder="https://api.deepseek.com">
+      <label for="apiKey">API Key</label>
+      <input id="apiKey" type="password" placeholder="sk-... / 你的密钥" autocomplete="new-password">
+      <label for="apiModel">对话模型</label>
+      <select id="apiModel" onchange="onModelChange()">
+        <option value="deepseek-v4-flash" selected>deepseek-v4-flash（默认）</option>
+        <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+        <option value="deepseek-chat">deepseek-chat（DeepSeek 真实可用）</option>
+        <option value="deepseek-reasoner">deepseek-reasoner（DeepSeek 真实可用）</option>
+      </select>
+      <label for="apiReviewModel">复盘模型（可选，留空=与对话模型相同）</label>
+      <select id="apiReviewModel">
+        <option value="">与对话模型相同</option>
+        <option value="deepseek-v4-flash">deepseek-v4-flash（默认）</option>
+        <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+        <option value="deepseek-chat">deepseek-chat（DeepSeek 真实可用）</option>
+        <option value="deepseek-reasoner">deepseek-reasoner（DeepSeek 真实可用）</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="apiUse" checked> 用大模型生成对话（关闭则仅总评可用）</label>
+      </div>
+
+      <div class="apiFoot">
+        <p class="apiStatus" id="apiStatus"></p>
+        <div class="modalActions">
+          <button class="danger" type="button" id="delBtn" onclick="deleteApiCfg()">删除</button>
+          <button class="secondary" type="button" onclick="testApi()">测试连接</button>
+          <button class="secondary" type="button" onclick="closeApi()">取消</button>
+          <button class="launch" type="button" onclick="saveApiCfg()">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="coachModal" class="modal hidden">
+    <div class="modalCard coachCard wide">
+      <div class="modalHead"><b id="coachModalTitle">新增教练</b><button class="x" type="button" onclick="closeCoachModal()">×</button></div>
+      <div class="modalBody">
+      <p class="modalHint">新增或编辑教练：所有字段都会写入本机 skills/ 对应文件（人设 → references 人物档案，其余 → manifest 清单），保存后立即生效。</p>
+      <div class="coachRow">
+        <div class="crItem">
+          <label for="coachName">教练名称（必填）</label>
+          <input id="coachName" type="text" placeholder="如：李总 / 王主任">
+        </div>
+        <div class="crItem">
+          <label for="coachAvatar">头像字</label>
+          <input id="coachAvatar" type="text" placeholder="留空=首字" maxlength="1">
+        </div>
+        <div class="crItem">
+          <label for="coachColor">主题色</label>
+          <input id="coachColor" type="color" value="#174f40" title="教练卡片与头像的强调色">
+        </div>
+      </div>
+      <label for="coachRole">身份 / 角色（必填）</label>
+      <input id="coachRole" type="text" placeholder="如：销售管理型高压领导">
+      <label for="coachSubtitle">一句话简介（可选）</label>
+      <input id="coachSubtitle" type="text" placeholder="如：区域销售总监 / 结果导向">
+      <label for="coachDimNote">回答结构提示（卡片展示，可选）</label>
+      <input id="coachDimNote" type="text" placeholder="如：结论—影响—根因—动作—请求">
+      <label for="coachPersona">人设描述（核心，尽量详细）</label>
+      <textarea id="coachPersona" rows="5" placeholder="建议涵盖：身份与权力位置、关注目标、性格、判断标准、常见口头禅、难沟通来源、典型追问、禁忌点。写越具体，模拟越像。"></textarea>
+      <label for="coachScenes">训练场景（每行一个；可用「场景名：开场白」自定义开场）</label>
+      <textarea id="coachScenes" rows="3" placeholder="季度目标沟通：你汇报「{scene}」。先给结论，再讲价值和风险。&#10;资源谈判"></textarea>
+      <label for="coachDims">复盘维度（每行一个，留空用默认 6 维）</label>
+      <textarea id="coachDims" rows="3" placeholder="结论清晰&#10;数字支撑&#10;边界风险"></textarea>
+      <label for="coachWhyHard">为什么难答（可选）</label>
+      <textarea id="coachWhyHard" rows="3" placeholder="说明对方为什么让下属觉得难沟通，如：只看结果数字、省略判断标准、多层问题嵌套……"></textarea>
+      <label for="coachGood">示范回答模板（可选）</label>
+      <textarea id="coachGood" rows="3" placeholder="结论：[……]。影响：[对核心指标带来什么]。根因：[……]。动作：[……]，[时间]出结果。"></textarea>
+      <label for="coachQuotes">语录 / 口头禅（每行一句，可选）</label>
+      <textarea id="coachQuotes" rows="2" placeholder="如：所以呢？&#10;对公司有什么价值？&#10;结果什么时候能出来？"></textarea>
+      </div>
+      <div class="modalActions">
+        <button class="secondary" type="button" onclick="closeCoachModal()">取消</button>
+        <button class="launch" type="button" id="coachSaveBtn" onclick="saveCoach()">创建教练</button>
+      </div>
+      <p class="apiStatus" id="coachStatus"></p>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal hidden">
+    <div class="modalCard" style="max-width:360px">
+      <div class="modalHead"><b id="confirmTitle">提示</b></div>
+      <p id="confirmMsg" style="font-size:14px;color:var(--ink);line-height:1.7;margin:2px 0 0"></p>
+      <div class="modalActions">
+        <button class="secondary" type="button" onclick="confirmCancel()">取消</button>
+        <button class="launch" type="button" onclick="confirmOk()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   技能加载：读取本地 skills/ 文件夹（每个教练一个子目录，标准 Skill 格式
+   SKILL.md + references/*.md）。由 server.py 的 /api/coach/<id> 组装成
+   可直接发给用户大模型的 system prompt（模拟 + 复盘两套）。
+   模拟答辩与分析均通过该 skill 驱动。
+============================================================ */
+let SKILLS = {};          // id -> coach 对象（含 simulateSystem / analyzeSystem）
+let COACH_ORDER = [];     // 显示顺序（coach id 列表）
+let selectedCoach = 'zhangzong';
+
+async function loadSkills(){
+  try{
+    // 清单优先走 /api/manifest（合并内置+自定义）；旧服务器没有该接口时退回静态 skills/manifest.json
+    let man;
+    try{
+      man = await fetch('/api/manifest',{cache:'no-store'});
+      if(!man.ok) throw new Error('manifest api '+man.status);
+    }catch(e1){
+      man = await fetch('skills/manifest.json',{cache:'no-store'});
+      if(!man.ok) throw e1;
+    }
+    const m = await man.json();
+    const list = (m.coaches&&m.coaches.length)?m.coaches:[];
+    if(list.length) COACH_ORDER = list.map(c=>c.id);
+    if(m.default && COACH_ORDER.includes(m.default)) selectedCoach = m.default;
+    if(!COACH_ORDER.includes(selectedCoach)) selectedCoach = COACH_ORDER[0];
+    // 逐个加载由 server.py 从 skill 文件组装好的教练对象
+    for(const id of COACH_ORDER){
+      const r = await fetch('/api/coach/'+encodeURIComponent(id),{cache:'no-store'});
+      if(!r.ok) throw new Error('coach '+id+' '+r.status);
+      SKILLS[id] = await r.json();
+    }
+  }catch(e){
+    console.warn('技能加载失败（请用本地服务器 python server.py 打开本项目）：',e);
+    SKILLS={};COACH_ORDER=[];
+    showSkillError();
+  }
+  renderCoachCards(); renderRoles(); renderScenes(); updateApiInfo();
+}
+function showSkillError(){
+  const el=document.getElementById('coachCards');
+  if(el) el.innerHTML='<p style="color:var(--red);padding:18px">未能加载 skills/ 下的教练。请用本地服务器打开（python server.py 后访问 http://localhost:8000），不要直接双击 file://。</p>';
+}
+
+function renderCoachCards(){
+  const el=document.getElementById('coachCards');
+  if(!el) return;
+  if(!COACH_ORDER.length){showSkillError();return;}
+  el.innerHTML=COACH_ORDER.map(id=>{
+    const c=SKILLS[id]; if(!c) return '';
+    const focus = c.dimNote ? c.dimNote : '';
+    const qs=(c.quotes||[]).slice(0,3);
+    const qline=qs.length?`<p class="focus" style="color:var(--green)">口头禅：${qs.map(escapeHtml).join(' · ')}</p>`:'';
+    return `<article class="card" onclick="choose('${id}');goRoom()">
+      <span class="portrait" style="background:${c.color||'#174f40'}">${escapeHtml(c.avatar)}</span>
+      <h3>${escapeHtml(c.name)}</h3>
+      <p class="role">${escapeHtml(c.role)}</p>
+      <p class="desc">${escapeHtml(c.subtitle||'虚拟训练对象，由 skills/'+id+'/ 下的 Skill 文件定义。')}</p>
+      <p class="focus">${escapeHtml(focus)}</p>
+      ${qline}
+    </article>`;
+  }).join('');
+}
+function renderRoles(){
+  const el=document.getElementById('roleChoices');
+  el.innerHTML=COACH_ORDER.map(id=>{
+    const c=SKILLS[id]; if(!c) return '';
+    return `<button type="button" data-id="${id}" class="${id===selectedCoach?'active':''}" onclick="choose('${id}')"><b>${escapeHtml(c.name)}</b><span>${escapeHtml(c.role)}</span></button>`;
+  }).join('')
+  + `<button type="button" class="addCoachCard" onclick="openCoachModal()"><b>＋ 新增教练</b><span>自建训练对象，写入 skills/</span></button>`;
+}
+/* ---------- 新增 / 编辑教练（同一表单） ---------- */
+let _editingCoach=null;
+function openCoachModal(){
+  _editingCoach=null;
+  document.getElementById('coachModalTitle').textContent='新增教练';
+  document.getElementById('coachSaveBtn').textContent='创建教练';
+  ['coachName','coachAvatar','coachRole','coachSubtitle','coachDimNote','coachPersona','coachScenes','coachDims','coachWhyHard','coachGood','coachQuotes'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('coachColor').value='#174f40';
+  document.getElementById('coachStatus').textContent='';
+  document.getElementById('coachModal').classList.remove('hidden');
+}
+function openEditCoachModal(){
+  const c=SKILLS[selectedCoach];
+  if(!c){toast('请先选择一个教练');return;}
+  _editingCoach=selectedCoach;
+  document.getElementById('coachModalTitle').textContent='编辑教练 · '+c.name;
+  document.getElementById('coachSaveBtn').textContent='保存修改';
+  document.getElementById('coachName').value=c.name||'';
+  document.getElementById('coachAvatar').value=c.avatar||'';
+  document.getElementById('coachRole').value=c.role||'';
+  document.getElementById('coachSubtitle').value=c.subtitle||'';
+  document.getElementById('coachColor').value=c.color||'#174f40';
+  document.getElementById('coachDimNote').value=c.dimNote||'';
+  document.getElementById('coachPersona').value=c.persona||'';
+  // 场景：每行「标签：开场白」
+  document.getElementById('coachScenes').value=(c.scenes||[]).map(s=>{
+    const opening=(s.opening||'').trim();
+    const def='你汇报「'+s.label+'」。说吧，你的内容和结论是什么。';
+    return opening&&opening!==def ? (s.label+'：'+opening) : s.label;
+  }).join('\n');
+  document.getElementById('coachDims').value=(c.dims||[]).map(d=>d.label).join('\n');
+  document.getElementById('coachWhyHard').value=c.whyHard||'';
+  document.getElementById('coachGood').value=c.goodTemplate||'';
+  document.getElementById('coachQuotes').value=(c.quotes||[]).join('\n');
+  document.getElementById('coachStatus').textContent='';
+  document.getElementById('coachModal').classList.remove('hidden');
+}
+function parseScenesInput(text){
+  // 每行一个场景；「标签：开场白」形式
+  return text.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const idx=l.indexOf('：');
+    if(idx>0){return {label:l.slice(0,idx).trim(), opening:l.slice(idx+1).trim()};}
+    return {label:l, opening:''};
+  });
+}
+function parseQuotesInput(text){return text.split('\n').map(l=>l.trim()).filter(Boolean);}
+function closeCoachModal(){_editingCoach=null;document.getElementById('coachModal').classList.add('hidden');}
+async function saveCoach(){
+  const st=document.getElementById('coachStatus');st.className='apiStatus';
+  const name=document.getElementById('coachName').value.trim();
+  const role=document.getElementById('coachRole').value.trim();
+  if(!name){st.className='apiStatus err';st.textContent='教练名称不能为空。';return;}
+  if(!role){st.className='apiStatus err';st.textContent='身份 / 角色不能为空。';return;}
+  const payload={
+    name,
+    avatar:document.getElementById('coachAvatar').value.trim(),
+    role:document.getElementById('coachRole').value.trim(),
+    subtitle:document.getElementById('coachSubtitle').value.trim(),
+    color:document.getElementById('coachColor').value.trim(),
+    dimNote:document.getElementById('coachDimNote').value.trim(),
+    persona:document.getElementById('coachPersona').value.trim(),
+    scenes:parseScenesInput(document.getElementById('coachScenes').value),
+    dims:document.getElementById('coachDims').value.trim(),
+    whyHard:document.getElementById('coachWhyHard').value.trim(),
+    goodTemplate:document.getElementById('coachGood').value.trim(),
+    quotes:parseQuotesInput(document.getElementById('coachQuotes').value)
+  };
+  if(_editingCoach)payload.id=_editingCoach;
+  const isEdit=!!_editingCoach;
+  st.textContent=isEdit?'正在保存修改……':'正在创建并写入 skills/……';
+  try{
+    const r=await fetch(isEdit?'/api/coach/update':'/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await r.json();
+    if(!j.ok){st.className='apiStatus err';st.textContent=j.error||'保存失败';return;}
+    const savedId=(j.coach&&j.coach.id)||_editingCoach;
+    closeCoachModal();
+    toast((isEdit?'已保存教练「':'已创建教练「')+name+'」');
+    await loadSkills();   // 重新加载清单与全部教练（含新的人设/字段）
+    if(savedId&&SKILLS[savedId]){choose(savedId);}  // 选中刚操作的对象
+    goRoom();
+  }catch(e){
+    st.className='apiStatus err';st.textContent='保存失败：'+e.message;
+  }
+}
+/* ---------- 删除教练 ---------- */
+function deleteCoach(){
+  const c=SKILLS[selectedCoach];
+  if(!c)return;
+  const isCustom=(selectedCoach||'').startsWith('c_');
+  showConfirm(
+    '确定删除教练「'+c.name+'」吗？\n'+(isCustom?'该教练的自定义文件（skills/ 目录、语录）将被永久删除，不可恢复。':'内置教练将从列表移除（skill 文件保留，编辑 skills/deleted.json 可恢复）。'),
+    async ()=>{
+      try{
+        const r=await fetch('/api/coach/'+encodeURIComponent(selectedCoach),{method:'DELETE'});
+        const j=await r.json();
+        if(!j.ok){toast(j.error||'删除失败');return;}
+        toast('已删除教练「'+c.name+'」');
+        await loadSkills();   // 重新加载清单；被删教练不在时自动选中第一个
+      }catch(e){toast('删除失败：'+e.message);}
+    }
+  );
+}
+
+/* ============================================================
+   文本分析器
+============================================================ */
+const VAGUE = ['差不多','应该','可能','大概','也许','似乎','好像','估计','还行','尚可','基本','一般','问题不大','大概率','差不多了','效果很好','运行良好','挺好','不错'];
+function analyze(t){
+  const has = (re)=>re.test(t);
+  const vagueWords = VAGUE.filter(w=>t.includes(w));
+  const numMatches = t.match(/\d{2,}|\d+(\.\d+)?\s*(%|Hz|kHz|MHz|V|A|W|kW|k|万|个|天|周|月|年|倍|ppm|ms|us|ns)/g)||[];
+  const hasConclusion = has(/结论|结果是|所以我|建议|决定|我认为|整体来看|总计|最终|状态是|目标是|已?完成|上线|交付|通过|目前|已经|尚未|可以|不能/) && t.length<140;
+  const hasValue = has(/价值|收益|ROI|增长|成本|效率|指标|提升|降低|利润|收入|用户|转化|留存|营收|省|赚|回本/);
+  const hasRoot = has(/因为|根因|原因|由于|导致|症结|在于|源头|本质/);
+  const hasRisk = has(/风险|失败|预案|兜底|如果.*失败|损失|最坏|B方案|止损|备用|例外|异常|问题|不确定|影响|误差|不足|对照/);
+  const hasTime = has(/\d+\s*(天|周|个月|月|工作日)|年底|Q[1-4]|截止|上线时间|交付时间|完成于|下周|本周|两周内/);
+  const hasBoundary = has(/轻载|过载|满载|边界|极端|温升|输入波动|波动|裕量|降额|低载|高载|突变|启停|瞬态|饱和|最坏|温度|最高|最低/);
+  const hasParam = has(/\d+(\.\d+)?\s*(Hz|kHz|MHz|V|A|W|kW|%)|Kp|Ki|带宽|THD|效率|相位裕量|占空比|开关频率|采样频率|结温|尖峰/);
+  const hasMethod = has(/仿真|实测|示波器|样机|双脉冲|测试|实验|测量|探头|采样率|台架|方法|采用|控制|调制|拓扑|模型|设计|计算|验证/);
+  const hasRationale = has(/依据|理论|为什么|理由|文献|模型|公式|推导|设计|权衡|对比|替代|方案|研究问题/);
+  const defends = has(/你(这|不|怎么)|其实|不是的|我说的是|你没|你理解|你搞错了|本来|我之前/);
+  return {vagueWords,num:numMatches.length,hasConclusion,hasValue,hasRoot,hasRisk,hasTime,
+    hasBoundary,hasParam,hasMethod,hasRationale,defends,len:t.length};
+}
+
+/* ============================================================
+   模拟对话引擎：已改为「技能 + 用户大模型」驱动。
+   对话的 system prompt 由 server.py 从 skills/<目录>/ 下标准 Skill 文件
+   （SKILL.md + references/<personaFile>.md）组装得到，前端直接发给用户
+   配置的大模型。离线规则引擎已移除，未配置 API 时给出明确提示。
+============================================================ */
+
+/* ============================================================
+   大模型接入（用户自主配置，OpenAI 兼容接口）
+============================================================ */
+const API_LS='ahc_api_cfg_v1';
+let apiCfg=null;              // 内存中的完整多 API 存储
+let editing=null;             // 正在编辑的 API（草稿或已存对象的副本）
+
+function genId(){return 'api_'+Math.random().toString(36).slice(2,10);}
+function guessName(base){
+  try{return new URL(base).hostname||'API';}catch(e){return 'API';}
+}
+function newDraft(){return {id:genId(),name:'',baseURL:'',apiKey:'',model:'deepseek-v4-flash',reviewModel:'',useLLM:true};}
+/* 存储结构：{ apis:[{id,name,baseURL,apiKey,model,useLLM}], active:<id> }
+   兼容旧版单配置格式（含 apiKey+baseURL 但无 apis）——自动迁移。 */
+function normalizeStore(raw){
+  if(!raw||typeof raw!=='object')return {apis:[],active:null};
+  if(!raw.apis&&raw.apiKey&&raw.baseURL){
+    const id=genId();
+    return {apis:[{id:id,name:guessName(raw.baseURL),baseURL:raw.baseURL,apiKey:raw.apiKey,
+      model:raw.model||'deepseek-v4-flash',useLLM:raw.useLLM!==false}],active:id};
+  }
+  if(!Array.isArray(raw.apis))raw.apis=[];
+  raw.apis.forEach(a=>{a.id=a.id||genId();a.useLLM=(a.useLLM===undefined?true:!!a.useLLM);});
+  if(!raw.apis.some(a=>a.id===raw.active))raw.active=raw.apis.length?raw.apis[0].id:null;
+  return raw;
+}
+function loadStore(){
+  let raw=null;
+  try{raw=JSON.parse(localStorage.getItem(API_LS))||apiCfg||null;}catch(e){raw=apiCfg||null;}
+  return normalizeStore(raw);
+}
+function saveStoreRaw(s){
+  s=normalizeStore(s);
+  apiCfg=s;
+  try{localStorage.setItem(API_LS,JSON.stringify(s));}catch(e){console.warn('浏览器存储不可用（仅保留在内存）：',e);}
+}
+/* 当前生效的 API（对话 / 总评 / 状态栏都取它） */
+function loadApi(){
+  const s=loadStore();
+  return (s.apis||[]).find(a=>a.id===s.active)||(s.apis||[])[0]||{};
+}
+/* 把完整存储保存到本机文件（user_data/apiconfig.json，由本地服务器落地）。失败不影响使用。 */
+async function persistServer(store){
+  try{
+    const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(store)});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return true;
+  }catch(e){console.warn('保存到本地文件失败（已保留到浏览器）：',e);return false;}
+}
+/* 打开页面时自动读取本地配置文件（旧/新格式均可），回填后再刷新状态栏 */
+async function loadServerConfig(){
+  try{
+    const r=await fetch('/api/config',{cache:'no-store'});
+    if(!r.ok) return;
+    const obj=await r.json();
+    if(obj&&(obj.apis||(obj.apiKey&&obj.baseURL))){
+      saveStoreRaw(normalizeStore(obj));
+    }
+  }catch(e){console.warn('读取本地配置文件失败（将使用浏览器已存配置）：',e);}
+}
+/* 把用户填的 Base URL 归一化为真实的 /chat/completions 端点
+   例：https://api.deepseek.com -> https://api.deepseek.com/chat/completions */
+function endpointURL(base){
+  let u=(base||'').trim().replace(/\/+$/,'');
+  if(!u) return base||'';
+  if(/\/chat\/completions$/i.test(u)) return u;
+  if(/\/v1$/i.test(u)) return u+'/chat/completions';
+  return u+'/chat/completions';
+}
+function updateApiInfo(){
+  const el=document.getElementById('apiInfo');if(!el)return;
+  const c=loadApi();
+  if(c.apiKey&&c.baseURL){
+    el.innerHTML='大模型：<span class="on">已配置</span>（'+escapeHtml(c.name||c.model||'默认模型')+' · '+(c.useLLM?'对话+总评':'仅总评')+'）';
+  }else{
+    el.innerHTML='大模型：<span class="off">未配置</span> · 请点右上角 ⚙ API 添加并保存（模拟答辩需要大模型驱动）';
+  }
+}
+/* ---------- 弹窗交互（多 API 管理） ---------- */
+function openApi(){
+  const active=loadApi();
+  editing=(active&&active.id)?JSON.parse(JSON.stringify(active)):newDraft();
+  renderApiSelect();syncForm();
+  document.getElementById('apiStatus').textContent='';
+  document.getElementById('apiModal').classList.remove('hidden');
+}
+function closeApi(){document.getElementById('apiModal').classList.add('hidden');}
+/* 渲染「已保存 API」下拉框；当前编辑的是草稿时选中「＋ 新建 API…」 */
+function renderApiSelect(){
+  const sel=document.getElementById('apiSelect');if(!sel)return;
+  const s=loadStore();
+  let html='<option value="__new__">＋ 新建 API…</option>';
+  (s.apis||[]).forEach(a=>{
+    html+='<option value="'+a.id+'">'+escapeHtml(a.name||guessName(a.baseURL)+' · '+(a.model||''))+'</option>';
+  });
+  sel.innerHTML=html;
+  if(editing&&s.apis.some(a=>a.id===editing.id))sel.value=editing.id;
+  else sel.value='__new__';
+}
+function onSelectApi(){
+  const id=document.getElementById('apiSelect').value;
+  const s=loadStore();
+  const found=(s.apis||[]).find(a=>a.id===id);
+  editing=found?JSON.parse(JSON.stringify(found)):newDraft();
+  syncForm();
+  document.getElementById('apiStatus').textContent='';
+}
+/* 读取表单 → 当前编辑对象 */
+function collectForm(){
+  return {
+    id:editing?editing.id:genId(),
+    name:document.getElementById('apiName').value.trim(),
+    baseURL:document.getElementById('apiBase').value.trim(),
+    apiKey:document.getElementById('apiKey').value.trim(),
+    model:document.getElementById('apiModel').value.trim()||'deepseek-v4-flash',
+    reviewModel:document.getElementById('apiReviewModel').value.trim(),
+    useLLM:document.getElementById('apiUse').checked
+  };
+}
+/* 模型选项表（value / 显示文案 / 厂商系列）。同一厂商的 API 通常只能用该厂商的模型 */
+const MODEL_OPTIONS=[
+  {value:'deepseek-v4-flash',label:'deepseek-v4-flash（默认）',prov:'deepseek'},
+  {value:'deepseek-v4-pro',label:'deepseek-v4-pro',prov:'deepseek'},
+  {value:'deepseek-chat',label:'deepseek-chat（DeepSeek 真实可用）',prov:'deepseek'},
+  {value:'deepseek-reasoner',label:'deepseek-reasoner（DeepSeek 真实可用）',prov:'deepseek'}
+];
+function provOf(model){
+  model=(model||'').trim().toLowerCase();
+  for(const o of MODEL_OPTIONS){if(o.value===model)return o.prov;}
+  return (model.split('-')[0]||'deepseek');
+}
+/* 根据「对话模型」的厂商系列，重建「复盘模型」下拉（仅同系列 + 首项留空=与对话相同） */
+function renderReviewModelSelect(){
+  const sel=document.getElementById('apiReviewModel');if(!sel)return;
+  const prev=sel.value;
+  const prov=provOf(document.getElementById('apiModel').value);
+  let html='<option value="">与对话模型相同</option>';
+  MODEL_OPTIONS.filter(o=>o.prov===prov).forEach(o=>{html+='<option value="'+o.value+'">'+o.label+'</option>';});
+  sel.innerHTML=html;
+  sel.value=(prev&&MODEL_OPTIONS.some(o=>o.value===prev&&o.prov===prov))?prev:'';
+}
+function onModelChange(){renderReviewModelSelect();}
+/* 把 editing 同步到表单，并更新编辑区标题 */
+function syncForm(){
+  const e=editing||newDraft();
+  document.getElementById('apiName').value=e.name||'';
+  document.getElementById('apiBase').value=e.baseURL||'';
+  document.getElementById('apiKey').value=e.apiKey||'';
+  document.getElementById('apiModel').value=e.model||'deepseek-v4-flash';
+  document.getElementById('apiReviewModel').value=e.reviewModel||'';
+  document.getElementById('apiUse').checked=(e.useLLM===undefined?true:!!e.useLLM);
+  renderReviewModelSelect();
+  const head=document.getElementById('editHead');
+  if(head){
+    const saved=loadStore().apis.some(a=>a.id===e.id);
+    head.textContent=saved?('正在编辑：'+(e.name||guessName(e.baseURL))):'正在编辑：新建 API（未保存）';
+  }
+}
+/* 点击「＋ 添加 API」：开一个全新的空白表单 */
+function newApi(){
+  editing=newDraft();
+  renderApiSelect();syncForm();
+  const st=document.getElementById('apiStatus');
+  st.className='apiStatus';st.textContent='正在新建 API：填写信息后点「保存」。';
+}
+/* 保存：新增或覆盖当前编辑的 API，并设为当前生效 */
+function saveApiCfg(){
+  const c=collectForm();
+  if(!c.baseURL||!c.apiKey){document.getElementById('apiStatus').className='apiStatus err';
+    document.getElementById('apiStatus').textContent='Base URL 和 API Key 都为必填。';return;}
+  if(!c.name)c.name=guessName(c.baseURL);
+  const s=loadStore();
+  const idx=s.apis.findIndex(a=>a.id===c.id);
+  if(idx>=0)s.apis[idx]=c;else s.apis.push(c);
+  s.active=c.id;
+  saveStoreRaw(s);updateApiInfo();
+  editing=JSON.parse(JSON.stringify(c));
+  renderApiSelect();syncForm();
+  // 保存后不自动关闭弹窗，方便继续新增/切换其他 API
+  const st=document.getElementById('apiStatus');
+  st.className='apiStatus ok';
+  st.textContent='已保存「'+(c.name||guessName(c.baseURL))+'」并设为当前生效。';
+  persistServer(s).then(ok=>toast(ok?'API 已保存（本机文件 + 浏览器）':'API 已保存（仅浏览器，写入本地文件失败）'));
+}
+/* 删除当前编辑的 API；若是未保存的新草稿则直接清空为空白 */
+function deleteApiCfg(){
+  const s=loadStore();
+  const isSaved=editing&&s.apis.some(a=>a.id===editing.id);
+  if(!isSaved){
+    editing=newDraft();renderApiSelect();syncForm();
+    document.getElementById('apiStatus').className='apiStatus ok';
+    document.getElementById('apiStatus').textContent='已清空新建的 API（未保存，无需删除）。';
+    return;
+  }
+  const label=editing.name||guessName(editing.baseURL);
+  if(!confirm('确定删除「'+label+'」吗？\n删除后模拟答辩将改用其他已保存的 API。'))return;
+  s.apis=s.apis.filter(a=>a.id!==editing.id);
+  if(s.active===editing.id)s.active=s.apis.length?s.apis[0].id:null;
+  saveStoreRaw(s);updateApiInfo();
+  const next=s.apis.find(a=>a.id===s.active);
+  editing=next?JSON.parse(JSON.stringify(next)):newDraft();
+  renderApiSelect();syncForm();
+  document.getElementById('apiStatus').className='apiStatus ok';
+  document.getElementById('apiStatus').textContent='已删除「'+label+'」。';
+  persistServer(s).then(ok=>toast(ok?'已删除 API':'已删除（仅浏览器，清除本机文件失败）'));
+}
+/* 测试连接：仅校验当前表单内容，成功后提示去保存 */
+async function testApi(){
+  const st=document.getElementById('apiStatus');st.className='apiStatus';
+  const base=document.getElementById('apiBase').value.trim();
+  const key=document.getElementById('apiKey').value.trim();
+  const model=document.getElementById('apiModel').value.trim()||'deepseek-v4-flash';
+  if(!base||!key){st.className='apiStatus err';st.textContent='请先填写 Base URL 和 API Key。';return;}
+  st.textContent='正在测试……';
+  try{
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),15000);
+    const res=await fetch(endpointURL(base),{method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model,temperature:0,messages:[{role:'user',content:'ping'}]})});
+    clearTimeout(to);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    await res.json();
+    st.className='apiStatus ok';st.textContent='连接成功 ✓ —— 别忘了点「保存」生效';
+  }catch(e){
+    st.className='apiStatus err';
+    st.textContent='连接失败：'+e.message+'（若提示 CORS，请用本地服务器打开本项目）';
+  }
+}
+async function chatCompletion(messages,opts){
+  const c=loadApi();
+  opts=opts||{};
+  const model=opts.model||c.model||'deepseek-v4-flash';
+  const temperature=(opts.temperature!==undefined?opts.temperature:0.8);
+  // 推理模型（如 deepseek-v4-flash）+ 长 system prompt + 对话历史，响应可能较慢；
+  // 超时放宽到 60 秒，避免经常被误判为“大模型对话失败”。
+  const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),60000);
+  try{
+    const res=await fetch(endpointURL(c.baseURL),{method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.apiKey},
+      body:JSON.stringify({model,messages,temperature})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const j=await res.json();
+    return j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'';
+  }finally{clearTimeout(to);}
+}
+function parseLLMJson(s){
+  s=(s||'').trim();
+  if(!s) return {line:{text:''}};
+  const m=s.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)s=m[1];
+  const start=s.indexOf('{');const end=s.lastIndexOf('}');
+  if(start>=0&&end>start)s=s.slice(start,end+1);
+  try{
+    const o=JSON.parse(s);
+    return {line:{text:o.line||o.追问||'',surface:o.surface||o.表面||'',real:o.real||o.真正关心||'',hidden:o.hidden||o.隐藏||''}};
+  }catch(e){
+    // 解析失败也不静默回退规则引擎，至少保留大模型原文
+    return {line:{text:s}};
+  }
+}
+/* 用教练 skill 组装好的 simulateSystem 驱动大模型对话 */
+async function llmReply(coach,userText){
+  const sys=(coach.simulateSystem||'').replace(/\{scene\}/g, state.scene||'');
+  const msgs=[{role:'system',content:sys},{role:'assistant',content:state.opening}];
+  const n=state.hpLines.length;
+  for(let i=0;i<n;i++){
+    msgs.push({role:'user',content:state.userMsgs[i].text});
+    msgs.push({role:'assistant',content:state.hpLines[i].text});
+  }
+  msgs.push({role:'user',content:userText});
+  const content=await chatCompletion(msgs);
+  return parseLLMJson(content);
+}
+/* 统一入口：技能 + 用户大模型驱动；未配置时给出明确提示，不伪造对话 */
+function llmUsable(coach){
+  const c=loadApi();
+  const use=(c.useLLM===undefined?true:!!c.useLLM);
+  return !!(use && c.apiKey && c.baseURL && coach.simulateSystem);
+}
+async function getReply(coach,userText,a){
+  if(!llmUsable(coach)){
+    return {line:{text:'（未配置大模型 API：「'+coach.name+'」的模拟答辩需要你自己的大模型驱动。请点右上角 ⚙ API，填入 Base URL 与 Key，并勾选「用大模型生成对话」后重试。）',surface:'',real:'',hidden:''},a,ll:false,blocked:true};
+  }
+  const isTimeout=e=>/abort|timeout|timed/i.test((e&&e.message)||'');
+  const retryable=e=>isTimeout(e)||/返回为空/.test((e&&e.message)||'');
+  const MAX_RETRY=2;   // 超时/空返回自动重连次数
+  let lastErr=null;
+  for(let attempt=0;attempt<=MAX_RETRY;attempt++){
+    try{
+      const r=await llmReply(coach,userText);
+      if(r&&r.line&&r.line.text)return {line:r.line,a,ll:true};
+      throw new Error('大模型返回为空');
+    }catch(e){
+      lastErr=e;
+      console.warn('LLM 对话失败（第'+(attempt+1)+'次）：',e);
+      if(retryable(e)&&attempt<MAX_RETRY){
+        // 自动重连：换一次全新请求再试（每次都是独立连接，无需手动重连）
+        typingNote('连接超时，正在自动重连…（第'+(attempt+1)+'次）');
+        await new Promise(res=>setTimeout(res,900));
+        continue;
+      }
+      break; // 非可重试错误（如 401/404/429）或已达重试上限
+    }
+  }
+  const timed=isTimeout(lastErr);
+  toast(timed?'大模型多次响应超时，请稍后再试':'大模型对话失败，请检查 API 配置或网络');
+  const hint=timed?'响应超时，已自动重连仍失败':'请检查 API 配置。错误：'+((lastErr&&lastErr.message)||'未知');
+  return {line:{text:'（大模型调用失败：'+hint+'）',surface:'',real:'',hidden:''},a,ll:false,blocked:true};
+}
+/* ============================================================
+   全量复盘（LLM 版）：让大模型按 skill 复盘框架一次性输出
+   6 维评分 + 总判断 + 失分点 + 高压话翻译 + 示范回答 + 下一轮重点。
+   解析失败或未配置 API 时，回退到 buildRuleReview 的规则复盘。
+============================================================ */
+function extractJSON(s){
+  s=(s||'').trim();
+  if(!s)return null;
+  const m=s.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)s=m[1];
+  const start=s.indexOf('{');const end=s.lastIndexOf('}');
+  if(start<0||end<=start)return null;
+  try{return JSON.parse(s.slice(start,end+1));}catch(e){return null;}
+}
+async function tryLLMReview(ruleR){
+  const c=loadApi();
+  if(!(c.useLLM&&c.apiKey&&c.baseURL&&state.coach&&state.coach.analyzeSystem))return null;
+  let conv='';
+  const turns=Math.min(state.userMsgs.length,state.hpLines.length);
+  for(let i=0;i<turns;i++){conv+=`下属：${state.userMsgs[i].text}\n${state.coach.name}：${state.hpLines[i].text}\n`;}
+  const dimLabels=(state.coach.dims&&state.coach.dims.length)?state.coach.dims.map(d=>d.label):['结论清晰','数字支撑','工况覆盖','设计依据','边界风险','应对追问'];
+  const dimExample='['+dimLabels.map(n=>'{"name":"'+n+'","score":0}').join(',')+']';
+  const userPrompt=`下面是一场「${state.coach.name}」与用户的高压沟通模拟（场景：${state.scene}），共 ${turns} 轮对话。\n${conv}\n请严格按你的复盘框架，输出专业、具体、可执行的复盘。只输出一个 JSON 对象（不要 Markdown 代码块、不要任何额外文字），结构：\n{"dims":${dimExample},"tag":"有效沟通|基本合格|勉强推进|尚未建立信任","overall":"一句话总体判断","loss":[{"sev":"crit|high|mid","title":"失分点标题","desc":"结合本轮具体对话的说明"}],"translation":[{"line":"对方高压原话","surface":"表面问题","real":"真正关心","hidden":"隐藏判断标准"}],"demo":{"bad":"本轮最弱的原回答(从对话摘取)","good":"按框架给一个更强版本"},"next":["下一轮重点1","重点2","重点3"]}\n要求：dims 恰好包含上述 ${dimLabels.length} 个维度且 score 为 0-100 整数；loss 给 2-5 条并按影响排序；translation 针对本轮真实高压句 1-4 条；demo.bad 从本轮用户原话摘取；next 给 2-4 条。`;
+  try{
+    // 复盘用可独立指定的模型（默认=对话模型）；若填了非推理模型（如 deepseek-chat）可显著提速；
+    // 温度降到 0.4，结构化输出更稳、收敛更快。
+    const reviewModel=(c.reviewModel||'').trim()||c.model;
+    const content=await chatCompletion([{role:'system',content:state.coach.analyzeSystem},{role:'user',content:userPrompt}],{model:reviewModel,temperature:0.4});
+    const o=extractJSON(content);
+    if(!o)return null;
+    return mergeReview(ruleR,o,dimLabels);
+  }catch(e){
+    console.warn('大模型复盘失败，保留规则复盘：',e);
+    return null;
+  }
+}
+function mergeReview(r,o,labels){
+  let dims=null;
+  if(Array.isArray(o.dims)&&o.dims.length===labels.length){
+    dims=labels.map((name,i)=>{
+      const d=o.dims[i]||{};
+      let v=Math.round(Number(d.score!==undefined?d.score:d.v));
+      if(!isFinite(v))v=50;
+      return {name,v:clamp(v)};
+    });
+  }
+  if(!dims)dims=r.dims;
+  let score=Math.round(Number(o.score));
+  if(!isFinite(score))score=Math.round(dims.reduce((s,d)=>s+d.v,0)/dims.length);
+  score=clamp(score);
+  const loss=(Array.isArray(o.loss)&&o.loss.length)?o.loss.slice(0,5).map(l=>({
+    sev:['crit','high','mid'].includes(l.sev)?l.sev:'mid',
+    title:(l.title||l.t||'失分点').toString(),
+    desc:(l.desc||l.d||'').toString()
+  })):r.loss;
+  const translation=(Array.isArray(o.translation)&&o.translation.length)?o.translation.slice(0,4).map(t=>({
+    line:(t.line||t.原话||'').toString(),
+    surface:(t.surface||t.表面||'—').toString(),
+    real:(t.real||t.真正关心||'—').toString(),
+    hidden:(t.hidden||t.隐藏||'—').toString()
+  })):r.translation;
+  const demo={bad:(o.demo&&o.demo.bad)||r.demo.bad,good:(o.demo&&o.demo.good)||r.demo.good};
+  const next=(Array.isArray(o.next)&&o.next.length)?o.next.slice(0,4).map(String):r.next;
+  return {dims,score,
+    tag:((o.tag||r.tag)||'').toString(),
+    overall:((o.overall||r.overall)||'').toString(),
+    loss,translation,demo,next,
+    whyHard:r.whyHard,n:r.n,dimNote:r.dimNote,dateStr:r.dateStr};
+}
+
+/* ============================================================
+   训练场流程
+============================================================ */
+let state = null;
+function goRoom(){document.getElementById('start').scrollIntoView({behavior:'smooth'});}
+function choose(id){
+  selectedCoach=id;
+  document.querySelectorAll('#roleChoices button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  renderScenes();
+  document.getElementById('roomTitle').textContent='已选择 '+SKILLS[id].name+'，选择场景后进入训练。';
+}
+function renderScenes(){
+  const el=document.getElementById('scene');
+  const c=SKILLS[selectedCoach];
+  if(!c||!c.scenes) {el.innerHTML='';return;}
+  el.innerHTML=c.scenes.map(x=>`<option value="${escapeHtml(x.key)}">${escapeHtml(x.label)}</option>`).join('');
+}
+function begin(){
+  const coach=SKILLS[selectedCoach];
+  const sceneKey=document.getElementById('scene').value;
+  const sceneObj=(coach.scenes||[]).find(s=>s.key===sceneKey)||(coach.scenes||[])[0]||{label:sceneKey,opening:'开始。'};
+  const scene=sceneObj.label||sceneKey;
+  const opening=(sceneObj.opening||'开始。').replace(/\{scene\}/g,scene);
+  state={coachId:coach.id,coach,scene,opening,hpLines:[],userMsgs:[]};
+  hits=new Set();
+  document.getElementById('chat').innerHTML='';
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('review').classList.add('hidden');
+  document.getElementById('training').classList.remove('hidden');
+  document.getElementById('roomTitle').textContent='正在面对'+coach.name;
+  document.getElementById('trainRole').textContent=coach.name;
+  document.getElementById('trainAvatar').textContent=coach.avatar;
+  document.getElementById('trainScene').textContent=scene+' · 训练进行中';
+  sysBubble('已进入与'+coach.name+'的高压对话（'+scene+'）。训练结束前不会教学——直接答，被追问就补。');
+  botSay(opening);
+}
+function botSay(text){
+  const d=document.createElement('div');d.className='bubble roleBubble';
+  d.innerHTML=`<small>${escapeHtml(state.coach.name)}</small><div>${escapeHtml(text)}</div>`;
+  const c=document.getElementById('chat');c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function userSay(t){
+  const d=document.createElement('div');d.className='bubble userBubble';
+  d.innerHTML=`<small>你</small><div>${escapeHtml(t)}</div>`;
+  const c=document.getElementById('chat');c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function sysBubble(t){
+  const d=document.createElement('div');d.className='bubble sysBubble';
+  d.innerHTML=`<div>${escapeHtml(t)}</div>`;
+  const c=document.getElementById('chat');c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function typing(){
+  const c=document.getElementById('chat');
+  const d=document.createElement('div');d.className='bubble roleBubble';d.id='typing';
+  d.innerHTML=`<small>${escapeHtml(state.coach.name)}</small><div class="typing"><i></i><i></i><i></i></div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function untyping(){const t=document.getElementById('typing');if(t)t.remove();}
+function typingNote(note){
+  const t=document.getElementById('typing');if(!t)return;
+  let d=t.querySelector('.typing');
+  if(!d){d=document.createElement('div');d.className='typing';t.appendChild(d);}
+  d.innerHTML='<i></i><i></i><i></i><span class="note">'+escapeHtml(note)+'</span>';
+}
+async function sendMsg(){
+  const inp=document.getElementById('reply');const t=inp.value.trim();if(!t)return;
+  const coach=state.coach;
+  if(!llmUsable(coach)){
+    toast('请先配置大模型 API（⚙ API）');
+    sysBubble('（未配置大模型 API：「'+coach.name+'」的模拟答辩需要你自己的大模型驱动。请点右上角 ⚙ API 配置 Base URL 与 Key，并勾选「用大模型生成对话」。）');
+    return;
+  }
+  inp.value='';document.getElementById('send').disabled=true;
+  userSay(t);
+  const a=analyze(t);
+  state.userMsgs.push({text:t,a});
+  typing();
+  const r=await getReply(coach,t,a);
+  untyping();
+  botSay(r.line.text);
+  // 失败/超时后的占位气泡不计入对话历史，保证下一次回复是干净的重连
+  if(!r.blocked){
+    state.hpLines.push({text:r.line.text,surface:r.line.surface,real:r.line.real,hidden:r.line.hidden,a});
+  }
+}
+/* 页面内确认弹窗（替代浏览器原生 confirm） */
+let _confirmCb=null;
+function showConfirm(msg,onOk,title){
+  const m=document.getElementById('confirmMsg');
+  const t=document.getElementById('confirmTitle');
+  if(m)m.textContent=msg||'';
+  if(t)t.textContent=title||'提示';
+  _confirmCb=onOk||null;
+  document.getElementById('confirmModal').classList.remove('hidden');
+}
+function confirmOk(){
+  document.getElementById('confirmModal').classList.add('hidden');
+  const cb=_confirmCb;_confirmCb=null;
+  if(cb)cb();
+}
+function confirmCancel(){
+  document.getElementById('confirmModal').classList.add('hidden');
+  _confirmCb=null;
+}
+/* 复盘等待进度条（大模型生成期间展示） */
+let _rlTimer=null;
+function stopReviewLoading(){if(_rlTimer){clearInterval(_rlTimer);_rlTimer=null;}}
+function showReviewLoading(){
+  const box=document.getElementById('review');
+  box.innerHTML=`<div class="reviewLoading">
+    <div class="rlTitle">正在生成专业复盘</div>
+    <div class="rlSub">大模型正按 skill 复盘框架分析本轮对话</div>
+    <div class="rlSteps"><span>提交对话</span><span>大模型思考</span><span>解析结果</span></div>
+    <div class="rlBar"><div class="rlFill"></div></div>
+    <div class="rlText" id="rlText">正在提交本轮对话…</div>
+  </div>`;
+  const fill=box.querySelector('.rlFill');
+  const txt=box.querySelector('#rlText');
+  const steps=['正在提交本轮对话…','大模型按复盘框架思考中…','正在解析复盘结果…'];
+  let p=0;
+  stopReviewLoading();
+  _rlTimer=setInterval(()=>{
+    p=Math.min(90,p+Math.random()*9+3);
+    if(fill)fill.style.width=p+'%';
+    if(txt)txt.textContent=steps[p<35?0:(p<75?1:2)];
+  },420);
+}
+function setReviewProgress(pct,msg){
+  const fill=document.querySelector('.rlFill');
+  if(fill)fill.style.width=pct+'%';
+  const txt=document.getElementById('rlText');
+  if(txt&&msg)txt.textContent=msg;
+}
+async function end(){
+  // 尚未对话：弹出页面内确认框；确定则返回主界面，不生成复盘
+  if(!state||!state.userMsgs.length){
+    showConfirm('你还没进行对话，是否确定结束？\n确定将返回主界面（不生成复盘）；取消则继续对话。',()=>{change();});
+    return;
+  }
+  document.getElementById('training').classList.add('hidden');
+  document.getElementById('review').classList.remove('hidden');
+  document.getElementById('roomTitle').textContent='本次训练全盘答辩分析';
+  document.getElementById('review').scrollIntoView({behavior:'smooth'});
+  const ruleR=buildRuleReview(computeScores());
+  const c=loadApi();
+  const canLLM=!!(c.useLLM&&c.apiKey&&c.baseURL&&state.coach&&state.coach.analyzeSystem);
+  if(!canLLM){renderReview(ruleR);return;}
+  // 等待大模型返回：先展示进度条，成功再显示复盘；失败提示并回退本地模板
+  showReviewLoading();
+  const llmR=await tryLLMReview(ruleR);
+  stopReviewLoading();
+  if(llmR){
+    setReviewProgress(100,'复盘完成');
+    await new Promise(res=>setTimeout(res,250));
+    renderReview(llmR);
+  }else{
+    const box=document.getElementById('review');
+    box.innerHTML=`<div class="reviewLoading">
+      <div class="rlErr">大模型生成失败</div>
+      <p style="color:var(--sub);font-size:13px;margin-top:8px">已自动回退到本地模板复盘…</p>
+    </div>`;
+    await new Promise(res=>setTimeout(res,900));
+    renderReview(ruleR);
+  }
+}
+function again(){begin();}
+function change(){
+  document.getElementById('review').classList.add('hidden');
+  document.getElementById('training').classList.add('hidden');
+  document.getElementById('setup').classList.remove('hidden');
+  document.getElementById('roomTitle').textContent='选择对象，真正开始训练。';
+}
+/* 随时中断训练，返回主界面（不生成复盘、不保留对话） */
+function abortTraining(){
+  showConfirm('确定中断本次训练并返回主界面吗？\n当前对话不会生成复盘，记录也会清空。',()=>{change();});
+}
+
+/* ============================================================
+   复盘评分（来自本轮真实对话信号，禁止随机填数）
+============================================================ */
+function clamp(v){return Math.max(0,Math.min(100,Math.round(v)));}
+function computeScores(){
+  const msgs=state.userMsgs,n=msgs.length,coach=state.coach;
+  let vague=0,num=0,conclusion=0,value=0,root=0,risk=0,time=0,boundary=0,param=0,method=0,rationale=0,defends=0;
+  msgs.forEach(m=>{const a=m.a;
+    vague+=a.vagueWords.length;num+=a.num;if(a.hasConclusion)conclusion++;
+    if(a.hasValue)value++;if(a.hasRoot)root++;if(a.hasRisk)risk++;if(a.hasTime)time++;
+    if(a.hasBoundary)boundary++;if(a.hasParam)param++;if(a.hasMethod)method++;if(a.hasRationale)rationale++;
+    if(a.defends)defends++;});
+  const firstC=msgs.length?msgs[0].a.hasConclusion:false;
+  const sConclusion=45+(firstC?25:0)+(conclusion>0?15:0)-Math.min(vague*6,28);
+  const sNumber=28+Math.min(num*11,50)-Math.min(vague*4,14)+Math.min((value+time+param+method)*3,16);
+  const sCondition=15+risk*20+boundary*22+Math.min(param,4)*3;
+  const sRationale=18+root*22+rationale*16+Math.min(value,3)*4;
+  const sBoundary=14+risk*18+boundary*16+time*4;
+  const sDefense=72-defends*16-Math.min(vague*5,30)+Math.min(num*3,12)+(n>=4?6:0);
+  const nameMap={'结论清晰':sConclusion,'数字支撑':sNumber,'工况覆盖':sCondition,
+    '设计依据':sRationale,'边界风险':sBoundary,'应对追问':sDefense};
+  const dimNames=(coach.dims&&coach.dims.length)?coach.dims.map(d=>d.label):['结论清晰','数字支撑','工况覆盖','设计依据','边界风险','应对追问'];
+  const dims=dimNames.map(name=>({name,v:clamp(nameMap[name]!==undefined?nameMap[name]:50)}));
+  const score=clamp(dims.reduce((s,d)=>s+d.v,0)/dims.length);
+  return {dims,score,vague,num,conclusion,value,root,risk,boundary,param,method,rationale,defends,firstC,n};
+}
+
+/* ============================================================
+   复盘渲染（答辩分析模块）
+============================================================ */
+function weakest(r){const s=[...r.dims].sort((a,b)=>a.v-b.v);return s[0].name+'（'+s[0].v+'分）';}
+function lossDesc(name,isZhang){
+  const m={
+    '结论清晰':isZhang?'回答常陷在过程里，没先给结论；对方被迫自己抽重点。':'结论不够明确，关键得到什么没一句话说清。',
+    '数字支撑':'陈述多定性、少定量；被追问时拿不出具体参数或时间点。',
+    '工况覆盖':isZhang?'缺风险、失败预案与替代方案，方案显得单薄。':'只报额定/单一工况，极端边界未验证，鲁棒性存疑。',
+    '设计依据':isZhang?'根因未确认或只猜不证，方案像赌。':'参数与选型缺理论/工程依据，难以辩护。',
+    '边界风险':isZhang?'没主动亮风险与B方案，对方不放心授权。':'边界工况与裕量未交代，最易出问题的地方没覆盖。',
+    '应对追问':isZhang?'被追问时绕圈、辩解或重复原话，没正面补数字。':'被追问时回避可验证缺口，未先承认再补证据。'
+  };return m[name]||'该维度表现不足，需针对性补强。';
+}
+function effGap(a,isZhang){
+  const ok=[];
+  if(a.hasConclusion)ok.push('有结论');if(a.num)ok.push('有数字');if(a.hasValue)ok.push('有价值');
+  if(a.hasRoot)ok.push('有根因');if(a.hasRisk)ok.push('有风险预案');if(a.hasBoundary)ok.push('有边界');
+  if(a.hasParam)ok.push('有参数');if(a.hasMethod)ok.push('有测试方法');
+  const gap=[];
+  if(a.vagueWords.length)gap.push('模糊词×'+a.vagueWords.length);
+  if(!a.hasConclusion)gap.push('缺结论');if(!a.num)gap.push('缺数字');
+  if(isZhang&&!a.hasValue)gap.push('缺价值');if(!isZhang&&!a.hasBoundary)gap.push('缺边界');
+  if(a.defends)gap.push('有辩解');
+  return '有效:'+(ok.join('、')||'—')+' ｜ 缺口:'+(gap.join('、')||'—');
+}
+function buildRuleReview(sig){
+  const coach=state.coach,isZhang=(coach.id==='zhangzong');
+  let tag,overall;
+  if(sig.score<50){tag='尚未建立信任';overall='本轮回答偏空泛或模糊，对方多次追问仍未拿到确定结论、数字与依据，沟通在"挤牙膏"。最大问题：'+weakest(sig)+'。';}
+  else if(sig.score<65){tag='勉强推进';overall='框架有了，但关键问题没压实——结论、数字或边界仍有缺口，对方被迫逐条逼问。最大问题：'+weakest(sig)+'。';}
+  else if(sig.score<80){tag='基本合格';overall='结论与证据较扎实，能撑住大部分追问；仍有少量边界/依据可再压实。最大可优化点：'+weakest(sig)+'。';}
+  else {tag='有效沟通';overall='结论先行、数字与依据跟上、边界主动交代，对方快速收敛到决策点。继续保持。';}
+
+  const sorted=[...sig.dims].sort((a,b)=>a.v-b.v);
+  const loss=[];
+  if(sig.vague>0)loss.push({sev:sig.vague>=2?'crit':'high',title:'高频模糊词',desc:'出现「'+(isZhang?'差不多 / 应该':'差不多 / 应该 / 效果很好')+'」等'+sig.vague+'次，触发对方立刻索要确定数字。'});
+  sorted.slice(0,3).forEach(d=>{const sev=d.v<50?'crit':(d.v<65?'high':'mid');loss.push({sev,title:d.name+'偏低 ('+d.v+')',desc:lossDesc(d.name,isZhang)});});
+
+  const translation=state.hpLines.slice(0,4).map(h=>({line:h.text,surface:h.surface||'—',real:h.real||'—',hidden:h.hidden||'—'}));
+
+  let weakestMsg=state.userMsgs[0],wScore=999;
+  state.userMsgs.forEach(m=>{const s=m.a.vagueWords.length*3-(m.a.num+m.a.hasConclusion+m.a.hasValue+m.a.hasRoot+m.a.hasRisk?1:0);if(s<wScore){wScore=s;weakestMsg=m;}});
+  const demo={bad:weakestMsg?weakestMsg.text:'(无)',good:coach.goodTemplate||'（该教练未提供示范模板）'};
+
+  const nexts=[];
+  if(!sig.firstC)nexts.push('先结论后过程：开场一句话把状态说清，再补支撑。');
+  if(sig.vague>0)nexts.push('清除模糊词：所有"效果好/差不多"后面必须跟工况和数字。');
+  if(sig[isZhang?'risk':'boundary']===0)nexts.push(isZhang?'主动亮出风险与B方案，不等对方问。':'主动交代边界工况与裕量，覆盖轻载/过载/温升。');
+  if(sig[isZhang?'root':'rationale']===0)nexts.push(isZhang?'结论后立刻给已确认的根因。':'每个参数都要能回溯到理论/工程依据。');
+  if(nexts.length<3)nexts.push('被追问时先回答当前问题，不辩解、不扩散。');
+
+  return {
+    dims:sig.dims,score:sig.score,tag,overall,
+    loss:loss.slice(0,5),translation,demo,next:nexts.slice(0,4),
+    whyHard:coach.whyHard||'对方的问题层层压缩，把你该主动展开的确定性、证据与边界，变成一句反问。你觉得难，是因为要在压力下自己补全逻辑链。',
+    n:sig.n,dimNote:coach.dimNote||'',dateStr:new Date().toLocaleDateString('zh-CN')
+  };
+}
+function renderReview(r){
+  const coach=state.coach;
+  const tag=r.tag,overall=r.overall;
+
+  const cardHtml=(r.loss||[]).map(c=>`<div class="card2" style="border-left-color:${c.sev==='crit'?'var(--red)':c.sev==='high'?'var(--amber)':'var(--green)'}">
+    <span class="sev ${c.sev}">${c.sev==='crit'?'致命':c.sev==='high'?'严重':'中等'}</span>
+    <h3>${escapeHtml(c.title)}</h3><p>${escapeHtml(c.desc)}</p></div>`).join('')||'<p style="color:var(--sub)">（本轮无显著失分点）</p>';
+
+  const rows=(r.translation||[]).map(t=>`<tr><td><b>${escapeHtml(t.line)}</b></td><td>${escapeHtml(t.surface)}</td><td>${escapeHtml(t.real)}</td><td>${escapeHtml(t.hidden)}</td></tr>`).join('')||'<tr><td colspan="4" style="color:var(--sub)">（本轮未记录到显著高压句）</td></tr>';
+  const whyHard=r.whyHard||'对方的问题层层压缩，把你该主动展开的确定性、证据与边界，变成一句反问。你觉得难，是因为要在压力下自己补全逻辑链。';
+
+  const isZhang=(coach.id==='zhangzong');
+  const turns=Math.min(state.userMsgs.length,state.hpLines.length);
+  let tl='';
+  for(let i=0;i<turns;i++){
+    const u=state.userMsgs[i],h=state.hpLines[i];
+    tl+=`<div class="node you"><div class="who you">你（第${i+1}轮）</div><div class="bub2">${escapeHtml(u.text)}<span class="tagmini">${effGap(u.a,isZhang)}</span></div></div>`;
+    tl+=`<div class="node"><div class="who ya">${coach.name}</div><div class="bub2">${escapeHtml(h.text)}</div></div>`;
+  }
+
+  const bad=(r.demo&&r.demo.bad)||'(无)';
+  const good=(r.demo&&r.demo.good)||'（未提供示范版本）';
+
+  const nextHtml=(r.next||[]).map((s,i)=>`<div class="it"><div class="k">${i+1}</div><div>${escapeHtml(s)}</div></div>`).join('');
+
+  const bars=r.dims.map(d=>`<div class="bar"><div class="lab"><span>${d.name}</span><span>${d.v}</span></div><div class="track"><div class="fill" style="width:${d.v}%"></div></div></div>`).join('');
+  const dateStr=r.dateStr||new Date().toLocaleDateString('zh-CN');
+  const dimNote=r.dimNote||'';
+
+  const html=`
+  <div class="rhead">
+    <span class="tag">答辩分析 · ${coach.name}</span>
+    <h2>${coach.name} · 答辩复盘 ${dateStr}</h2>
+    <div class="meta">${coach.role} ｜ 训练场景：${state.scene} ｜ 共 ${r.n} 轮对话</div>
+    <div class="verdict">
+      <div class="scorebig">${r.score}<small> / 100</small></div>
+      <div class="vtext"><span class="pill2">${tag}</span>
+        <p style="margin-top:9px"><b>总体判断：</b>${overall}</p></div>
+    </div>
+  </div>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>能力雷达与维度评分<span class="num">${dimNote}</span></h2>
+    <div class="grid2">
+      <div class="radar-box"><svg id="radar" width="340" height="340" viewBox="0 0 340 340"></svg>
+        <div class="legend"><span><i style="background:linear-gradient(90deg,#174f40,#2f7d63)"></i>本轮表现</span><span><i style="background:rgba(23,35,31,.16)"></i>及格线(60)</span></div></div>
+      <div id="bars">${bars}</div>
+    </div>
+  </section>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>关键失分点<span class="num">按对结果影响排序</span></h2>
+    <div class="loss">${cardHtml}</div>
+  </section>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>对方「真正想问什么」<span class="num">高压话翻译</span></h2>
+    <table><tr><th style="width:30%">原话</th><th style="width:18%">表面问题</th><th style="width:24%">真正关心</th><th style="width:28%">隐藏判断标准</th></tr>
+      ${rows||'<tr><td colspan="4" style="color:var(--sub)">（本轮未记录到显著高压句）</td></tr>'}</table>
+    <p style="margin-top:14px;color:var(--sub);font-size:13px"><b style="color:var(--ink)">你为什么觉得难答：</b>${whyHard}</p>
+  </section>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>过程逐段拆解<span class="num">对方视角</span></h2>
+    <div class="tl">${tl}</div>
+  </section>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>示范回答：更强版本<span class="num">${dimNote}</span></h2>
+    <div class="ba">
+      <div class="bx bad"><div class="h">原回答（弱）</div>${escapeHtml(bad)}</div>
+      <div class="bx good"><div class="h">更强版本（${dimNote}）</div>${escapeHtml(good)}</div>
+    </div>
+  </section>
+
+  <section class="r">
+    <h2 class="r"><span class="dot"></span>下一轮训练重点<span class="num">只保留高价值目标</span></h2>
+    <div class="next">${nextHtml}</div>
+  </section>
+
+  <div class="reviewActions">
+    <button class="launch" type="button" onclick="again()">同场景再练一次</button>
+    <button class="secondary" type="button" onclick="change()">更换对象或场景</button>
+    <button class="secondary" type="button" onclick="exportReview()">⬇ 导出答辩分析(HTML)</button>
+  </div>`;
+  document.getElementById('review').innerHTML=html;
+  drawRadar(r.dims);
+  setTimeout(()=>{document.querySelectorAll('#bars .fill').forEach(f=>{const w=f.style.width;f.style.width='0';requestAnimationFrame(()=>f.style.width=w);});},50);
+}
+
+/* ============================================================
+   雷达图（内联 SVG，无外部库）
+============================================================ */
+function drawRadar(dims){
+  const svg=document.getElementById('radar');if(!svg)return;
+  const cx=170,cy=170,R=120,N=dims.length,ns='http://www.w3.org/2000/svg';
+  svg.innerHTML='';
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/N;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  [0.25,0.5,0.75,1].forEach(f=>{let d='';for(let i=0;i<N;i++){const[x,y]=pt(i,R*f);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}d+='Z';
+    const p=document.createElementNS(ns,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke','rgba(23,35,31,.14)');p.setAttribute('stroke-width','1');svg.appendChild(p);});
+  let dg='';for(let i=0;i<N;i++){const[x,y]=pt(i,R*0.6);dg+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}dg+='Z';
+  const pg=document.createElementNS(ns,'path');pg.setAttribute('d',dg);pg.setAttribute('fill','none');pg.setAttribute('stroke','rgba(23,35,31,.5)');pg.setAttribute('stroke-dasharray','4 4');pg.setAttribute('stroke-width','1.2');svg.appendChild(pg);
+  for(let i=0;i<N;i++){const[x,y]=pt(i,R);const ln=document.createElementNS(ns,'line');ln.setAttribute('x1',cx);ln.setAttribute('y1',cy);ln.setAttribute('x2',x);ln.setAttribute('y2',y);ln.setAttribute('stroke','rgba(23,35,31,.14)');ln.setAttribute('stroke-width','1');svg.appendChild(ln);
+    const[lx,ly]=pt(i,R+22);const t=document.createElementNS(ns,'text');t.setAttribute('x',lx);t.setAttribute('y',ly);t.setAttribute('fill','#59645f');t.setAttribute('font-size','12');t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');t.textContent=dims[i].name;svg.appendChild(t);}
+  let dp='';dims.forEach((d,i)=>{const[x,y]=pt(i,R*d.v/100);dp+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);});dp+='Z';
+  const poly=document.createElementNS(ns,'path');poly.setAttribute('d',dp);poly.setAttribute('fill','rgba(23,79,64,.22)');poly.setAttribute('stroke','#174f40');poly.setAttribute('stroke-width','2');svg.appendChild(poly);
+  dims.forEach((d,i)=>{const[x,y]=pt(i,R*d.v/100);const c=document.createElementNS(ns,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r','3.5');c.setAttribute('fill','#d7ef7b');c.setAttribute('stroke','#174f40');c.setAttribute('stroke-width','1.5');svg.appendChild(c);});
+}
+
+/* ============================================================
+   导出独立答辩分析 HTML
+============================================================ */
+function exportReview(){
+  const reviewHtml=document.getElementById('review').innerHTML;
+  const css=document.querySelector('style').innerHTML;
+  const full=`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>答辩分析報告</title>
+<style>${css}<\/style></head>
+<body><div class="room" style="padding-top:30px">${reviewHtml}</div>
+<footer><span>由 AI 高压沟通教练生成 · 单文件离线报告</span><span>教练均为虚拟人物</span></footer></body></html>`;
+  const blob=new Blob([full],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='答辩分析_'+state.coach.name+'_'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();toast('已导出答辩分析');
+}
+
+/* ============================================================
+   工具
+============================================================ */
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+document.getElementById('reply').addEventListener('input',e=>{document.getElementById('send').disabled=!e.target.value.trim();});
+document.getElementById('reply').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+loadSkills();
+loadServerConfig().then(updateApiInfo);
+</script>
+</body>
+</html>

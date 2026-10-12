@@ -1,0 +1,250 @@
+{
+  "scenes": [
+    {
+      "id": "progress",
+      "cat": "report",
+      "title": "项目进度与决策汇报",
+      "short": "进展 · 卡点 · 决策",
+      "role": "项目负责人",
+      "position": "协调资源，推动交付",
+      "avatar": "项",
+      "lang": "zh",
+      "description": "项目即将进入交付节点，部分验证工作尚未完成。你需要向项目负责人汇报状态，并提出清晰的决策请求。",
+      "goal": "说明当前判断、影响与卡点，提出可执行的推进方案和所需支持。",
+      "focus": "让信息支持决策",
+      "focusDesc": "过程可以简洁，影响、行动与请求需要明确。",
+      "criteria": [
+        "conclusion",
+        "evidence",
+        "need",
+        "boundary",
+        "action"
+      ],
+      "opening": "我们用几分钟对齐交付状态。先说你的判断：能否按计划推进？今天需要我协调或决定什么？",
+      "demo": "我的判断是可以继续准备交付，但暂不承诺最终验收日期。已完成主要功能验证，尚有[待验证项]未关闭，可能影响[里程碑]。我负责组织验证，[时间]提交结果。需要您协调[资源]；若验证不通过，启动[备选计划]。"
+    },
+    {
+      "id": "resources",
+      "cat": "report",
+      "title": "资源协调与方案选择",
+      "short": "价值 · 优先级 · 投入",
+      "role": "业务负责人",
+      "position": "评估投入，协调优先级",
+      "avatar": "业",
+      "lang": "zh",
+      "description": "两个任务的时间窗口重叠。你希望获得额外支持，需要解释投入的必要性与不增加资源时的影响。",
+      "goal": "用目标和依据说明资源需求，比较替代方案，并提出明确的决策选项。",
+      "focus": "把需求转成可比较的选择",
+      "focusDesc": "说明最小投入、收益与机会成本，有助于合理配置资源。",
+      "criteria": [
+        "need",
+        "evidence",
+        "boundary",
+        "action",
+        "conclusion"
+      ],
+      "opening": "你提了新增支持的申请。先说它解决什么问题？如果不加资源，我们有哪些可选方案？",
+      "demo": "建议在[时间窗口]协调[资源]，优先保障[目标]。依据是[工作量或里程碑证据]。方案一是增加支持，方案二是调整优先级；两者对[交付或成本]的影响分别是[待补数据]。需要您确认选择，我在[时间]更新执行计划。"
+    },
+    {
+      "id": "design",
+      "cat": "technical",
+      "title": "技术方案评审",
+      "short": "依据 · 对比 · 边界",
+      "role": "技术评审专家",
+      "position": "审查可验证性与工程可靠性",
+      "avatar": "技",
+      "lang": "zh",
+      "description": "你需要说明一项变换器方案的设计理由、验证证据及适用边界。评审专家会围绕证据链追问。",
+      "goal": "区分仿真与实测，交代条件与指标，说明方案取舍及未覆盖的验证项。",
+      "focus": "用证据闭合设计逻辑",
+      "focusDesc": "结论需要测试条件与对比依据，边界需要验证计划。",
+      "criteria": [
+        "conclusion",
+        "evidence",
+        "boundary",
+        "need",
+        "action"
+      ],
+      "opening": "请先给出方案结论。它解决了什么问题？关键指标是在什么条件下、通过什么方法得到的？",
+      "demo": "结论是该方案在[已验证条件]下满足[目标指标]。证据来自[仿真/实测]，关键数据为[数据]，测试条件包括[输入、负载、温度]。相较[替代方案]，优势是[依据]，代价是[取舍]。[边界条件]尚未覆盖，我负责在[时间]完成验证并提交记录。"
+    },
+    {
+      "id": "anomaly",
+      "cat": "technical",
+      "title": "异常结果与风险说明",
+      "short": "事实 · 根因 · 验证",
+      "role": "质量与技术专家",
+      "position": "明确影响范围与闭环措施",
+      "avatar": "质",
+      "lang": "zh",
+      "description": "样机在某项测试中出现异常。你需要报告事实，区分已确认根因与假设，并说明后续验证。",
+      "goal": "准确说明异常条件与影响范围，给出根因排查依据和风险控制计划。",
+      "focus": "把假设与事实分开",
+      "focusDesc": "承认不确定性，同时明确如何验证，比过早下结论更有效。",
+      "criteria": [
+        "evidence",
+        "conclusion",
+        "boundary",
+        "action",
+        "need"
+      ],
+      "opening": "先对齐事实：异常发生在什么条件下，影响哪些结果？根因是已确认，还是待验证的假设？",
+      "demo": "已确认的事实是[条件]下出现[异常]，当前影响范围为[范围]，根因仍待确认。根据[记录或对照测试]，优先排查[假设]。我先采取[风险控制措施]，由[责任人]在[时间]完成[验证]，再根据结果决定是否扩大排查。"
+    },
+    {
+      "id": "requirement",
+      "cat": "customer",
+      "title": "客户需求与技术澄清",
+      "short": "需求 · 条件 · 价值",
+      "role": "客户技术代表",
+      "position": "关注应用适配与交付价值",
+      "avatar": "客",
+      "lang": "zh",
+      "description": "客户提出效率、稳定性和交期要求，但部分应用条件不明确。你需要澄清需求，避免过早承诺。",
+      "goal": "确认使用条件与优先级，将技术方案对应到客户价值，并约定后续确认事项。",
+      "focus": "先理解需求，再解释方案",
+      "focusDesc": "同一个指标，在不同工况和验收方式下可能意味着不同要求。",
+      "criteria": [
+        "need",
+        "evidence",
+        "boundary",
+        "action",
+        "conclusion"
+      ],
+      "opening": "我们比较关注效率和稳定性，也希望尽快交付。你们能满足吗？你还需要我们提供哪些应用条件？",
+      "demo": "我理解您最关注[目标]，想先确认[输入范围、负载、环境和验收方式]，以及性能与交期的优先级。已有[验证记录]适用于[条件]，尚不能据此承诺全部工况。我们建议先对齐验收标准，我负责在[时间]提交方案与验证计划，请您确认[关键需求]。"
+    },
+    {
+      "id": "delivery",
+      "cat": "customer",
+      "title": "交期变化与客户协调",
+      "short": "影响 · 承诺 · 闭环",
+      "role": "客户项目经理",
+      "position": "保障项目节点与信息透明",
+      "avatar": "客",
+      "lang": "zh",
+      "description": "一项验证工作影响了原定交期。客户希望获得明确说明，你需要沟通影响、替代方案和更新机制。",
+      "goal": "正面回应交期变化，说明已确认的事实，提供可执行选择，避免无法兑现的承诺。",
+      "focus": "用透明信息维护信任",
+      "focusDesc": "客户需要知道实际影响、可以选择什么、何时得到下一次更新。",
+      "criteria": [
+        "conclusion",
+        "need",
+        "evidence",
+        "boundary",
+        "action"
+      ],
+      "opening": "原定交付节点对我们很重要。现在到底有什么变化？请给我影响范围和可以执行的处理方案。",
+      "demo": "目前[验证项]导致原节点存在风险，我先向您说明这一变化。已确认影响[范围]，最终日期需要[验证结果]才能确定。可选方案是[分批交付/替代计划]，我们会同时说明各自限制。我负责在[时间]更新结果，建议双方确认[下一节点]，避免影响您的后续安排。"
+    },
+    {
+      "id": "en-requirement",
+      "cat": "english",
+      "title": "英文技术需求会议",
+      "short": "Clarify · Confirm · Align",
+      "role": "Customer engineer",
+      "position": "海外客户技术代表",
+      "avatar": "EN",
+      "lang": "en",
+      "description": "你与海外客户交流产品应用条件和验证计划。对话使用英文，界面与复盘保持中文。",
+      "goal": "用简洁英文确认需求、说明已有证据与边界，并约定下一步。",
+      "focus": "准确表达，确认共同理解",
+      "focusDesc": "专业交流的关键是表达清楚、确认假设，避免含糊或过度承诺。",
+      "criteria": [
+        "need",
+        "evidence",
+        "boundary",
+        "action",
+        "conclusion"
+      ],
+      "opening": "We need a reliable solution for variable-load operation. Could you clarify what has been verified and what information you need from us?",
+      "demo": "To confirm my understanding, your priority is reliable operation under variable load. Could you share the input range, load profile, ambient temperature, and acceptance criteria? Our current test results cover [verified conditions]. We still need to validate [open items]. I will send a proposed test plan by [date]. Could you confirm the requirements before we proceed?"
+    },
+    {
+      "id": "en-delay",
+      "cat": "english",
+      "title": "英文交付协调会议",
+      "short": "Explain · Options · Follow-up",
+      "role": "Customer project manager",
+      "position": "海外客户项目经理",
+      "avatar": "EN",
+      "lang": "en",
+      "description": "你需要向海外客户说明验证进展对交期的影响，并讨论可行的交付安排。",
+      "goal": "直接说明现状，表达对客户影响的理解，提供选择与明确更新节点。",
+      "focus": "清晰承诺，建立协作节奏",
+      "focusDesc": "比起笼统保证，事实、可选方案和下一次更新更有价值。",
+      "criteria": [
+        "conclusion",
+        "need",
+        "boundary",
+        "evidence",
+        "action"
+      ],
+      "opening": "Our installation schedule depends on your delivery. What has changed, and what options can you offer to protect our timeline?",
+      "demo": "The remaining validation may affect the original delivery date. I understand this could impact your installation schedule. We can discuss [option A] and [option B], with the limitations clearly stated. I cannot confirm the final date until [validation] is complete. I will provide an update by [date]. Could we agree on the preferred option and the next checkpoint?"
+    }
+  ],
+  "objects": [
+    {
+      "id": "builtin-project",
+      "name": "项目负责人",
+      "role": "项目与业务协调者",
+      "relationship": "跨层级项目协作",
+      "goals": "明确进展、业务影响和需要协调的决策，保证交付",
+      "standards": "结论清晰、事实可核查、资源请求有理由、责任人与时间明确",
+      "style": "直接、简洁；时间有限时追问结论与下一步",
+      "quotes": "现在需要我确认什么？\n下一步由谁负责？",
+      "difficulty": "默认汇报者主动说明影响和风险，常压缩完整判断链",
+      "facts": "虚拟训练对象，不对应现实人物",
+      "inferences": "场景推断：优先关注交付与协同效率",
+      "boundaries": "尊重对方；不进行人格评价或羞辱"
+    },
+    {
+      "id": "builtin-technical",
+      "name": "技术评审专家",
+      "role": "工程技术与可靠性评审者",
+      "relationship": "技术方案评审与专业协作",
+      "goals": "确认技术结论的可验证性、选型依据与工程边界",
+      "standards": "区分仿真与实测；测试条件、重复性、对比方案、未覆盖边界明确",
+      "style": "严谨、有逻辑的连续追问；不替用户回答",
+      "quotes": "测试条件是什么？\n这个结论的适用边界在哪里？",
+      "difficulty": "一个问题可能同时涉及参数、依据、方法和边界",
+      "facts": "虚拟训练对象，不对应现实人物",
+      "inferences": "场景推断：证据不足时继续追问，证据完整时推进结论",
+      "boundaries": "不扮演导师或毕业答辩，不人格攻击"
+    },
+    {
+      "id": "builtin-customer",
+      "name": "客户技术代表",
+      "role": "客户项目与技术需求代表",
+      "relationship": "市场化客户合作",
+      "goals": "确认需求满足程度、应用适配、交期、验收标准与承诺边界",
+      "standards": "需求被准确理解，方案价值明确，承诺可执行，风险信息透明",
+      "style": "合作但要求明确；关心实际影响而不只听专业术语",
+      "quotes": "这对我们的应用有什么影响？\n哪些已经验证，哪些还需要确认？",
+      "difficulty": "需求信息可能不完整，需要主动澄清而非过早承诺",
+      "facts": "虚拟训练对象，不对应现实人物",
+      "inferences": "场景推断：优先关注应用效果、可信交付与后续支持",
+      "boundaries": "不把客户塑造成对立对象，不作未验证保证"
+    },
+    {
+      "id": "builtin-global",
+      "name": "海外客户代表",
+      "role": "国际项目与技术沟通对象",
+      "relationship": "跨语言客户协作",
+      "goals": "准确理解技术信息、交付安排和下一步行动",
+      "standards": "简洁英文、术语准确、理解得到确认、已验证和待验证区分清楚",
+      "style": "英文交流，重视确认理解与会议行动项",
+      "quotes": "Could you clarify the test conditions?\nWhat are the next steps?",
+      "difficulty": "专业表达与跨语言理解需要同时清晰",
+      "facts": "虚拟训练对象，不对应现实人物",
+      "inferences": "场景推断：语言流利不替代技术证据与工作闭环",
+      "boundaries": "不基于国籍或文化刻板印象塑造角色"
+    }
+  ],
+  "examples": {
+    "zh": "我的判断是可以继续准备交付，但暂不承诺最终验收日期。我理解您最关注交付节点和稳定性。当前测试记录显示，在600V输入、额定负载条件下，已完成8项验证，还有2项高温测试尚未覆盖，存在延期风险。如果高温验证不通过，备选方案是先分批交付已验证部分。我负责明天17点前提交完整测试记录和验证计划，并同步剩余风险。需要您协调测试资源，请确认是否优先保障稳定性，再由双方共同确认最终交付节点。",
+    "en": "I recommend continuing delivery preparation, but we cannot commit to final acceptance yet. I understand your concern about delivery and stability. The test record covers 8 items at 600V input and rated load; 2 high-temperature conditions are not yet verified. If validation fails, our fallback is phased delivery. I will send the test record and update the validation plan by Friday. Please confirm your acceptance requirement and priority so both teams can align on the next checkpoint. Thank you."
+  }
+}

@@ -1,0 +1,8 @@
+user_data/*
+!user_data/.gitignore
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+legacy-backup/
