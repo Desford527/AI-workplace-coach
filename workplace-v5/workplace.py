@@ -378,7 +378,15 @@ def atomic_config(s):
 
 def edit_config(b):
     s=config_store(); s.setdefault('apis',[])
-    if b.get('configOperation')=='delete':
+    if b.get('configOperation')=='replace-deepseek-default':
+        key=text(b.get('apiKey'),'新的 DeepSeek API Key',200)
+        if not re.fullmatch(r'sk-[A-Za-z0-9_-]{20,}',key):
+            raise Problem('请输入完整的新 DeepSeek Key；不会沿用旧配置中的密钥')
+        ident=s.get('active')
+        if not any(a.get('id')==ident for a in s['apis']): ident=uuid.uuid4().hex
+        s={'apis':[{'id':ident,'name':'DeepSeek527','baseURL':'https://api.deepseek.com',
+                    'apiKey':key,'model':'deepseek-flash','reviewModel':'','useLLM':True}], 'active':ident}
+    elif b.get('configOperation')=='delete':
         ident=text(b.get('id'),'配置 ID',200)
         s['apis']=[a for a in s['apis'] if a.get('id')!=ident]
         if s.get('active')==ident: s['active']=s['apis'][0]['id'] if s['apis'] else None

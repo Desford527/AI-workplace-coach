@@ -1,4 +1,4 @@
-# AI职场沟通训练师 v5.0.2
+# AI职场沟通训练师 v5.0.3
 
 由 AI高压沟通教练 v4.18 的 Python 服务器副本改造，运行时仅使用 Python 标准库。保留原配置/manifest/coach/quotes 接口和原始 skills；新增完整工作流，不依赖在线 Worker，也不发布到原 Site。
 
@@ -79,3 +79,11 @@ Windows 打包脚本已更新以包含新增 `web/`、数据目录及 Python 模
 新建配置时预填 DeepSeek527、https://api.deepseek.com、deepseek-flash。已保存的本机配置保持原样。下载包不携带密钥；请在本机 API 设置里填写并保存您自己的 Key，云项目的配置不会自动同步到电脑。
 
 DeepSeek 返回 HTTP 402 表示账户余额不足，需在官方控制台检查余额/充值后重试；更换代码或反复保存同一 Key 不能解决账户计费问题。复盘模型留空时使用对话模型。
+
+## v5.0.3：替换电脑上已有的旧 API 配置
+
+此前仅给新建表单设置默认值，不会改变现存 deepseek-cbx/deepseek-v4-flash 配置。现在打开 API 设置，点击「替换为 DeepSeek527 默认配置」，在本机输入完整的新 Key，再点击「保存并启用」。操作将删除其他 API 条目，仅保留名称 DeepSeek527、https://api.deepseek.com、deepseek-flash；复盘模型留空跟随对话模型。必须输入新 Key，不会把旧 Key 当作新 Key。
+
+当前配置 ID 尽量保留，以便继续已有训练；完整对话、画像及历史不会被此配置操作删除。普通编辑/添加多 API 仍可使用。此替换操作不会自动执行或发起模型请求。
+
+下载包不含密钥，云项目设置不会同步到电脑。更新请先关闭服务器，覆盖程序文件 workplace.py、index.html、web/app.js，保留本机 user_data 和 skills，重启并 Ctrl+F5，然后执行上述替换操作。

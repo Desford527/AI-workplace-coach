@@ -176,6 +176,18 @@ class Workflow(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError) as cm:self.send(s,'余额不足时保留原话')
         error=json.load(cm.exception)['error'];self.assertIn('HTTP 402',error);self.assertIn('余额不足',error)
         self.assertEqual(w.get('session',s['id'])['messages'][-1]['text'],'余额不足时保留原话')
+    def test_replace_legacy_default_updates_name_models_and_key(self):
+        s=self.begin();store=w.config_store();store['apis'][0].update(name='deepseek-cbx',model='deepseek-v4-flash',reviewModel='deepseek-v4-flash');w.atomic_config(store)
+        self.call('config',api={'id':'other','name':'其他配置','baseURL':'https://example.com','model':'other'})
+        self.call('config',configOperation='activate',id='p1')
+        with self.assertRaises(urllib.error.HTTPError):self.call('config',configOperation='replace-deepseek-default',apiKey='')
+        self.assertEqual(w.selected_config()['name'],'deepseek-cbx')
+        replacement='sk-'+('a'*32)
+        public=self.call('config',configOperation='replace-deepseek-default',apiKey=replacement)
+        self.assertEqual(len(public['apis']),1);a=public['apis'][0];self.assertEqual(a['name'],'DeepSeek527');self.assertEqual(a['model'],'deepseek-flash');self.assertEqual(a['reviewModel'],'');self.assertNotIn('apiKey',a)
+        self.assertEqual(w.selected_config()['apiKey'],replacement)
+        self.assertEqual(w.selected_config(s['apiId'])['id'],'p1')
+        self.assertEqual(w.get('session',s['id'])['messages'],s['messages'])
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')
