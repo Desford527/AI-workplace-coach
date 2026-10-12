@@ -156,6 +156,21 @@ class Workflow(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError):self.call('start',requestId=rid,sceneId='progress',objectId='builtin-project')
         s=w.get('session',rid);self.assertIsNotNone(s);self.assertEqual(len(s['messages']),0)
         Provider.mode='ok';s=self.call('retry',sessionId=rid,revision=s['revision']);self.assertEqual(len(s['messages']),1)
+    def test_test_connection_does_not_rebind_old_training(self):
+        s=self.begin();Provider.mode='http'
+        with self.assertRaises(urllib.error.HTTPError):self.send(s,'配置切换也要保留原话')
+        s=w.get('session',s['id']);before=copy.deepcopy(s)
+        self.call('config',api={'id':'new-api','name':'新配置','baseURL':f'http://127.0.0.1:{self.provider.server_port}/v1','model':'new-model'})
+        self.call('config',configOperation='delete',id='p1');Provider.mode='ok'
+        self.assertTrue(self.call('test',apiId='new-api')['ok'])
+        with self.assertRaises(urllib.error.HTTPError) as cm:self.call('retry',sessionId=s['id'],revision=s['revision'])
+        self.assertIn('本轮绑定',json.load(cm.exception)['error'])
+        s=w.get('session',s['id']);s=self.call('use-current-api',sessionId=s['id'],revision=s['revision'])
+        self.assertEqual(s['apiId'],'new-api');self.assertEqual(s['messages'],before['messages']);self.assertEqual(s['object'],before['object'])
+        s=self.call('retry',sessionId=s['id'],revision=s['revision'])
+        self.assertEqual(len([m for m in s['messages'] if m['role']=='user']),1)
+        self.assertEqual(Provider.calls[-1]['body']['model'],'new-model')
+        self.assertEqual(s['apiChanges'][0]['from'],'p1')
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')

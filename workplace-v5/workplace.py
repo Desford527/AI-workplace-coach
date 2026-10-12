@@ -139,6 +139,8 @@ def selected_config(api_id=None):
     ident = api_id or s.get('active')
     c = next((a for a in s.get('apis',[]) if a.get('id') == ident), None)
     if not c:
+        if api_id:
+            raise Problem('本轮绑定的 API 配置已不存在，请使用当前 API 配置后重试；原话和画像快照仍保留', 422)
         raise Problem('请在 API 设置中添加并启用一个 OpenAI 兼容服务商', 422)
     if c.get('useLLM') is False:
         raise Problem('当前配置未启用模型对话，请在 API 设置中启用', 422)
@@ -482,6 +484,15 @@ def action(b):
         s=get('session',b.get('sessionId'))
         if not s: raise Problem('训练记录不存在',404)
         if b.get('revision')!=s['revision']: raise Problem('记录已更新，请刷新后继续',409)
+        if op=='use-current-api':
+            if s['status']!='active': raise Problem('已结束的训练不修改 API 绑定',409)
+            cfg=selected_config()
+            if s.get('apiId')!=cfg['id']:
+                s.setdefault('apiChanges',[]).append({'from':s.get('apiId'),'to':cfg['id'],'at':now()})
+                s['apiId']=cfg['id']
+            s.pop('error',None)
+            s['revision']+=1;save('session',s['id'],s)
+            return s
         if op=='cancel':
             if s.get('review'): raise Problem('已复盘记录不需要中断',409)
             s['status']='archived'; s['revision']+=1; save('session',s['id'],s); return s
