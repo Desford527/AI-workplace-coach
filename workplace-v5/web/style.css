@@ -196,6 +196,7 @@ details p { margin: 14px 0; font-size: 15px; overflow-wrap: anywhere; }
 .object-kind { color: var(--muted); font-size: 12px; }
 .object-card h3 { margin: 0 0 8px; }
 .object-card p { font-size: 14px; }
+.object-fact { white-space: pre-line; }
 .object-card details { margin-bottom: 0; }
 .record { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 25px 0; border-bottom: 1px solid var(--line); }
 .record .actions { margin: 0; }

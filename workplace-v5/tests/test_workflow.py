@@ -6,6 +6,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 import urllib.error
 import urllib.request
 import uuid
@@ -86,14 +87,17 @@ class Workflow(unittest.TestCase):
         w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
         self.assertNotIn('builtin-project',[o['id'] for o in w.objects()])
     def test_deleted_legacy_and_edited_builtin_do_not_reappear(self):
-        imported=next(o for o in w.objects() if o['id'].startswith('legacy-'))
-        builtin=next(o for o in w.objects() if o['id']=='builtin-technical')
-        builtin['goals']='编辑后的目标';self.call('object',object=builtin)
-        for o in (imported,builtin):self.call('delete-object',objectId=o['id'])
-        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
-        ids={o['id'] for o in w.objects()};self.assertNotIn(imported['id'],ids);self.assertNotIn(builtin['id'],ids)
-        with self.assertRaises(urllib.error.HTTPError) as cm:self.call('object',object=builtin)
-        self.assertEqual(cm.exception.code,409)
+        coach={'id':'c_fixture','name':'额外测试对象','role':'协作对象'}
+        with patch.object(server,'load_manifest',return_value={'coaches':[coach]}), patch.object(server,'assemble_coach',return_value={'quotes':[]}):
+            w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+            imported=next(o for o in w.objects() if o['id']=='legacy-c_fixture')
+            builtin=next(o for o in w.objects() if o['id']=='builtin-technical')
+            builtin['goals']='编辑后的目标';self.call('object',object=builtin)
+            for o in (imported,builtin):self.call('delete-object',objectId=o['id'])
+            w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+            ids={o['id'] for o in w.objects()};self.assertNotIn(imported['id'],ids);self.assertNotIn(builtin['id'],ids)
+            with self.assertRaises(urllib.error.HTTPError) as cm:self.call('object',object=builtin)
+            self.assertEqual(cm.exception.code,409)
     def test_delete_custom_idempotent_and_active_session_continues(self):
         o=copy.deepcopy(w.objects()[0]);o.pop('id');o=self.call('object',object=o)
         s=self.call('start',sceneId='progress',objectId=o['id'])
@@ -110,6 +114,63 @@ class Workflow(unittest.TestCase):
         o=copy.deepcopy(w.CATALOG['objects'][0]);o.pop('id');o=self.call('object',object=o)
         self.assertEqual(len(w.objects()),1)
         self.assertEqual(self.call('start',sceneId='progress',objectId=o['id'])['object'],o)
+    def reset_roster_migration(self):
+        with w.db() as c:c.execute('DELETE FROM meta WHERE id=?',('object-roster:'+w.ROSTER_VERSION,))
+    def test_curated_roster_fresh_and_original_interfaces(self):
+        roster=w.objects();self.assertEqual(len(roster),4)
+        self.assertEqual([o['name'] for o in roster[:2]],['朱总：项目负责人','严工：技术评审专家'])
+        self.assertFalse(any(o['id'].startswith('legacy-') for o in roster))
+        with urllib.request.urlopen(self.url+'/api/coach/zhangzong') as r:coach=json.load(r)
+        self.assertIn('朱总',str(coach));self.assertIn('变流',str(coach))
+        self.assertFalse(any(c['name']=='啦啦啦' for c in server.load_manifest()['coaches']))
+    def test_roster_merge_archives_sources_preserves_history_config(self):
+        s=self.review(self.send(self.begin()));snapshot=copy.deepcopy(s)
+        portrait=copy.deepcopy(w.get('portrait','self'));cfg=copy.deepcopy(w.config_store())
+        p=copy.deepcopy(w.CATALOG['objects'][0]);p.update(id='legacy-zhangzong',name='张总',style='原来记录的表达习惯')
+        y=copy.deepcopy(w.CATALOG['objects'][1]);y.update(id='legacy-yanlaoshi',name='严工')
+        dummy={**p,'id':'legacy-c_cnbg1swm','name':'啦啦啦'}
+        extra={**p,'id':'custom-keep','name':'独立客户'}
+        for o in (p,y,dummy,extra):w.save('object',o['id'],o)
+        # This fixture represents a pre-merge install with live legacy profiles.
+        with w.db() as c:
+            for o in (p,y,dummy):c.execute('DELETE FROM docs WHERE kind="deleted-object" AND id=?',(o['id'],))
+        self.reset_roster_migration();w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        roster=w.objects();ids={o['id'] for o in roster}
+        self.assertEqual(len(roster),5);self.assertTrue({'builtin-project','builtin-technical','custom-keep'}<=ids)
+        self.assertFalse({'legacy-zhangzong','legacy-yanlaoshi','legacy-c_cnbg1swm'}&ids)
+        archived=w.get('object-archive',w.ROSTER_VERSION+':legacy-zhangzong')
+        self.assertEqual(archived['object'],p);self.assertEqual(archived['mergedInto'],'builtin-project')
+        self.assertEqual(w.get('session',s['id']),snapshot);self.assertEqual(w.get('portrait','self'),portrait)
+        self.assertEqual(w.config_store(),cfg)
+        updated=copy.deepcopy(next(o for o in roster if o['id']=='builtin-project'));updated['style']='后续用户修改保留'
+        self.call('object',object=updated);w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertEqual(w.get('object','builtin-project')['style'],'后续用户修改保留')
+    def test_live_duplicate_promotes_canonical_but_fully_deleted_stays_deleted(self):
+        p=copy.deepcopy(w.CATALOG['objects'][0]);p.update(id='legacy-zhangzong',name='张总')
+        self.call('delete-object',objectId='builtin-project');w.save('object',p['id'],p)
+        with w.db() as c:c.execute('DELETE FROM docs WHERE kind="deleted-object" AND id=?',(p['id'],))
+        self.reset_roster_migration();w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertIn('builtin-project',[o['id'] for o in w.objects()])
+        self.call('delete-object',objectId='builtin-project');self.reset_roster_migration()
+        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertNotIn('builtin-project',[o['id'] for o in w.objects()])
+    def test_name_duplicate_removal_and_legacy_reimport_guard(self):
+        for ident,name in [('custom-project','项目负责人'),('custom-review','严工'),('custom-remove','啦啦啦')]:
+            w.save('object',ident,{**w.CATALOG['objects'][0],'id':ident,'name':name})
+        self.reset_roster_migration()
+        coaches=[{'id':'zhangzong','name':'张总'},{'id':'yanlaoshi','name':'严工'},{'id':'c_cnbg1swm','name':'啦啦啦'}]
+        with patch.object(server,'load_manifest',return_value={'coaches':coaches}):
+            w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+            w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertEqual(len(w.objects()),4)
+        self.assertIsNotNone(w.get('deleted-object','custom-remove'))
+    def test_profile_extensions_roundtrip_and_reach_model(self):
+        p=copy.deepcopy(w.CATALOG['objects'][0]);p['technicalBackground']+='额外技术背景标记'
+        out=self.call('object',object=p);self.assertEqual(out['personality'],p['personality'])
+        s=self.begin();prompt=Provider.calls[-1]['body']['messages'][0]['content']
+        self.assertIn('额外技术背景标记',prompt);self.assertIn('长线权衡',prompt)
+        self.assertIn('现代职场专业人员',prompt);self.assertIn('不复刻历史人物身份',prompt)
+        self.assertEqual(s['object']['technicalBackground'],p['technicalBackground'])
     def test_config_multi_provider_key_retention(self):
         a={'id':'p1','name':'改名','baseURL':f'http://127.0.0.1:{self.provider.server_port}/v1/chat/completions','model':'new-model','reviewModel':'other-model'}
         out=self.call('config',api=a);self.assertTrue(out['apis'][0]['hasKey']);self.assertNotIn('apiKey',out['apis'][0])
