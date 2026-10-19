@@ -143,3 +143,15 @@
 - `python -m py_compile workplace.py workspace_tools.py server.py`、`node --check web/app.js` 与 `git diff --check` 通过。
 
 浏览器图保存在本次环境 `/tmp/workplace-browser-artifacts/v5.0.13-*`。模型协议与操作均使用明确标注的本机测试替身，没有生产规则回复或假评分降级；真实 DeepSeek 的自然语言理解、实际回复质量和计费未实测。Windows EXE 未构建；源码本地服务与浏览器流程已实测。原交接源目录未修改，新增功能不重置 API 或历史记录。
+
+## v5.0.14 会议纪要验收 · 2026-10-19
+
+- `python tests/test_meetings.py`：10 项通过。包括有依据的提取预览且不修改资料、人物/项目/经验一次保存、保留旧训练与配置、部分保存复用新人物、错误归属整批无修改、同正文免重复模型调用、错误依据/说话人/语句/操作类型及 HTTP 402 拒绝、UTF-8/GB18030/UTF-16/DOCX 读取与无效文件拒绝、同名歧义、项目追加与训练快照、编辑背景不额外发送旧背景正文、空提取原文保留。
+- `python tests/meeting_browser_check.py`：真实 Chromium 桌面及四主题手机通过。覆盖 DOCX 导入、无配置/HTTP 402 保留输入、原文依据预览、人物归属、分批保存、项目与经验库联动、项目背景编辑后开始训练、重复导入、刷新恢复，无页面脚本错误或横向溢出。
+- `python tests/test_workflow.py`：原有 50 项后端测试通过。`python tests/test_workspace_tools.py`：原有 8 项自由输入与经验库测试通过。后端合计 68 项通过。
+- `python tests/workspace_browser_check.py`：原有自由输入、经验库文件导入/导出和手机四主题流程通过。
+- `python tests/browser_check.py`、`python tests/theme_object_check.py`：既有训练、复盘、画像、对象、四主题、HTML/PDF 导出回归通过。
+- `python tests/default_setup_check.py`：全新及旧数据启动默认配置检查通过，无真实模型请求。默认 API 文件保持不变。
+- Python 编译、JavaScript 语法与 `git diff --check` 通过。截图位于本次环境 `/tmp/workplace-browser-artifacts/v5.0.14-*`。
+
+模型协议测试使用明确标注的本机替身，不代表真实 DeepSeek 的纪要提取质量；本次未实测真实模型及计费。Word 读取已用生成的实际 DOCX 文件验证，复杂排版、扫描图片、PDF/OCR 和旧 DOC 不在支持范围；Windows EXE 未构建。源码服务本地启动、导入保存与浏览器流程已实测。

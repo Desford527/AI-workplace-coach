@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',quoteObjectId='',freePreviousId='',preferencesReady=false,toastTimer;
+let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',quoteObjectId='',meetingDraft=null,freePreviousId='',preferencesReady=false,toastTimer;
 let reviewBusyId=null,reviewPolling=false;const reviewIntent=new Set(),reviewLocalErrors=new Map();
 const categories=[['report','项目汇报','Project briefing'],['technical','技术评审','Technical review'],['customer','客户沟通','Customer dialogue'],['english','国际协作','Global collaboration']];
 const objectLabels={name:'称呼',role:'角色 / 工作关系',goals:'工作目标',standards:'关注点 / 判断标准',style:'表达风格',personality:'性格与沟通习惯（可选）',technicalBackground:'变流技术背景（可选）',responseGuide:'追问与推进方式（可选）',quotes:'语录（每行一句，可选）',difficulty:'沟通难点（可选）',facts:'已知事实 / 来源',inferences:'推断 / 虚拟补充',boundaries:'模拟边界'};
@@ -21,11 +21,12 @@ function shortVerdict(r){
 }
 function stamp(value){return new Date(value).toLocaleString('zh-CN');}
 const visualButton=b=>b.matches('[data-expand-answer],[data-theme-choice],#themeOpen,[data-close="themeDialog"]');
-function lock(value,note='模型生成中，请稍候…'){busy=value;document.querySelectorAll('button').forEach(b=>b.disabled=value&&!visualButton(b));$('reply').disabled=value;$('freeInput').disabled=value;$('experienceFile').disabled=value;$('intensity').disabled=value;$('modelStatus').textContent=value?note:'';if(!value)syncSessionButtons();}
+function lock(value,note='模型生成中，请稍候…'){busy=value;document.querySelectorAll('button').forEach(b=>b.disabled=value&&!visualButton(b));$('reply').disabled=value;$('freeInput').disabled=value;$('experienceFile').disabled=value;$('intensity').disabled=value;$('meetingText').disabled=value;$('meetingTitle').disabled=value;$('meetingFile').disabled=value;$('projectSelect').disabled=value;$('meetingPreview').querySelectorAll('input,select').forEach(el=>el.disabled=value||el.dataset.applied==='1');$('modelStatus').textContent=value?note:'';if(!value)syncSessionButtons();}
 function isReviewFlow(s){return !!s&&(!!s.review||!!s.reviewStatus||['review_pending','review_failed','ended'].includes(s.status)||reviewIntent.has(s.id)||localStorage.getItem('workplace_review_intent:'+s.id)==='1');}
 function markReviewIntent(id){reviewIntent.add(id);localStorage.setItem('workplace_review_intent:'+id,'1');}
 function reviewIsPending(s){return reviewBusyId===s.id||(s.status==='review_pending'&&!reviewLocalErrors.has(s.id));}
 function syncSessionButtons(){
+ if($('meetingApply'))$('meetingApply').disabled=busy||meetingDraft.items.every(i=>meetingDraft.appliedItems.includes(i.id));
  $('start').disabled=busy||!ws?.objects?.length;$('objectSelect').disabled=busy||!ws?.objects?.length;
  if(!session)return;
  const active=session.status==='active'&&!isReviewFlow(session),pending=!session.messages.length||session.messages.at(-1)?.role==='user';
@@ -35,7 +36,7 @@ function syncSessionButtons(){
 }
 
 async function refresh(){ws=await request('/api/workplace/workspace');renderWorkspace();return ws;}
-function renderWorkspace(){renderSelection();renderObjects();renderExperiences();renderFreeHistory();renderPortrait();renderRecords();if(!preferencesReady){$('intensity').value=ws.preferences?.intensity||'标准';preferencesReady=true;}const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
+function renderWorkspace(){renderSelection();renderObjects();renderMeetings();renderExperiences();renderFreeHistory();renderPortrait();renderRecords();if(!preferencesReady){$('intensity').value=ws.preferences?.intensity||'标准';preferencesReady=true;}const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
 function selectedScene(){return ws.scenes.find(s=>s.id===sceneId)||ws.scenes[0];}
 function defaultObject(s){const preferred={report:'builtin-project',technical:'builtin-technical',customer:'builtin-customer',english:'builtin-global'}[s.cat];return ws.objects.some(o=>o.id===preferred)?preferred:ws.objects[0]?.id||'';}
 function objectLabel(o){return o.name.replace(/：/g,':').endsWith(':'+o.role)||o.name===o.role?o.name:`${o.name} · ${o.role}`;}
@@ -85,7 +86,7 @@ function renderSession(){
  $('sessionTitle').textContent=reviewMode?'本次训练复盘':s.object.name;
  const state=reviewMode?(s.review?(s.review.timeline.some(t=>!t.improved||!t.feedback)?'评分已生成 · 说明可补全':'已完成复盘'):reviewIsPending(s)?'训练已结束 · 正在生成复盘':'训练已结束 · 对话已保留'):s.status==='archived'?'已中断，记录保留':'训练进行中';
  $('sessionMeta').textContent=`${s.scene.title} · ${s.scene.lang==='en'?'英文对话 / 中文复盘':'中文对话'} · ${state} · ${s.intensity}追问`;
- $('snapshot').innerHTML=`<p><b>本轮目标</b><br>${esc(s.goal)}</p><p><b>背景</b><br>${esc(s.background||'未提供')}</p>${objectFacts(s.object)}${s.experiences?.length?`<p><b>本轮参考经验（训练开始时保存）</b></p>${s.experiences.map(e=>`<p><b>${esc(e.title)}</b><br>${esc(e.content)}</p>`).join('')}`:''}${s.intensityChanges?.length?`<p><b>强度调整记录</b><br>${s.intensityChanges.map(e=>esc(e.from+' → '+e.to+' · '+stamp(e.at))).join('<br>')}</p>`:''}`;
+ $('snapshot').innerHTML=`<p><b>本轮目标</b><br>${esc(s.goal)}</p><p><b>背景</b><br>${esc(s.background||'未提供')}</p>${s.project?`<p><b>参考项目</b><br>${esc(s.project.name)}</p>`:''}${objectFacts(s.object)}${s.experiences?.length?`<p><b>本轮参考经验（训练开始时保存）</b></p>${s.experiences.map(e=>`<p><b>${esc(e.title)}</b><br>${esc(e.content)}</p>`).join('')}`:''}${s.intensityChanges?.length?`<p><b>强度调整记录</b><br>${s.intensityChanges.map(e=>esc(e.from+' → '+e.to+' · '+stamp(e.at))).join('<br>')}</p>`:''}`;
  $('chat').hidden=reviewMode;
  $('chat').innerHTML=s.messages.map(m=>`<article class="bubble ${m.role==='user'?'user':''}" id="message-${esc(m.id)}"><small>${m.role==='user'?'你':esc(s.object.name)}</small><p>${esc(m.text)}</p>${m.interpretation?`<details><summary>展开原话三层解读 · 模拟推断</summary><div class="interpretation"><p><b>表面问题</b><br>${esc(m.interpretation.surface)}</p><p><b>核心关切</b><br>${esc(m.interpretation.real)}</p><p><b>判断依据</b><br>${esc(m.interpretation.hidden)}</p><p class="muted">这是模型的模拟解读，不代表现实人物的心理事实。</p></div></details>`:''}</article>`).join('')||'<p class="muted">等待模型生成开场；失败可重试。</p>';
  $('chat').scrollTop=$('chat').scrollHeight;
@@ -212,7 +213,7 @@ function selectAPI(id){$('apiKey').required=false;$('clearKey').disabled=false;f
 function renderAPI(){const apis=ws.config.apis||[];$('apiSelect').innerHTML='<option value="">＋ 新配置</option>'+apis.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}${a.id===ws.config.active?' · 当前':''}</option>`).join('');selectAPI(apiEditId||ws.config.active);}
 function download(content,type,name){const u=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 async function exportHTML(){if(!session.review)return;const css=await (await fetch('/web/style.css')).text();const content=renderReview(session,true).replace(/<details(?![^>]*\bopen\b)(?=[\s>])/g,'<details open');download(`<!doctype html><html lang="zh-CN" data-theme="${window.CoachTheme.current.id}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI职场沟通训练师 · 复盘</title><style>${css}</style></head><body><main class="shell"><article class="panel">${content}<footer>AI职场沟通训练师 · 离线复盘报告</footer></article></main></body></html>`,'text/html;charset=utf-8',`沟通复盘_${session.id.slice(0,8)}.html`);}
-document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewDetails)await sessionOperation('review-details');if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.freeExample){$('freeInput').value=b.dataset.freeExample;$('freeInput').focus();}if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.objectQuotes)openQuotes(b.dataset.objectQuotes);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewDetails)await sessionOperation('review-details');if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.freeExample){$('freeInput').value=b.dataset.freeExample;$('freeInput').focus();}if(b.dataset.openMeeting)await openMeeting(b.dataset.openMeeting);if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.objectQuotes)openQuotes(b.dataset.objectQuotes);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
 function renderThemes(){
  const active=window.CoachTheme.current;
  $('themeName').textContent=active.name;
@@ -225,12 +226,12 @@ $('themeOpen').onclick=()=>{renderThemes();$('themeDialog').showModal();};
 $('quotesSave').onclick=()=>saveQuotes(false);$('quotesAnalyze').onclick=()=>saveQuotes(true);
 $('objectSelect').onchange=renderFocus;$('newObject').onclick=()=>openObject();$('editSelected').onclick=()=>openObject($('objectSelect').value);
 $('objectForm').onsubmit=async e=>{e.preventDefault();if(busy)return;lock(true,'正在保存画像…');try{const o=Object.fromEntries(new FormData(e.target));if(objectEditId)o.id=objectEditId;await action('object',{object:o});await refresh();$('objectDialog').close();toast('画像已保存；已有训练快照保持不变。');}catch(e){$('objectStatus').textContent=e.message;}finally{lock(false);}};
-$('start').onclick=async()=>{if(busy)return;lock(true);showError('globalError','');const rid=crypto.randomUUID();try{applySession(await action('start',{requestId:rid,sceneId,objectId:$('objectSelect').value,goal:$('goal').value,background:$('background').value,intensity:$('intensity').value}));await refresh();$('sessionPanel').scrollIntoView({behavior:'smooth'});}catch(e){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(rid)));}catch{}try{await refresh();}catch{}showError(session?.id===rid?'sessionError':'globalError',e.message);}finally{lock(false);}};
+$('start').onclick=async()=>{if(busy)return;lock(true);showError('globalError','');const rid=crypto.randomUUID();try{applySession(await action('start',{requestId:rid,sceneId,objectId:$('objectSelect').value,goal:$('goal').value,background:$('background').value,projectId:$('projectSelect').value,intensity:$('intensity').value}));await refresh();$('sessionPanel').scrollIntoView({behavior:'smooth'});}catch(e){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(rid)));}catch{}try{await refresh();}catch{}showError(session?.id===rid?'sessionError':'globalError',e.message);}finally{lock(false);}};
 $('reply').oninput=syncSessionButtons;$('send').onclick=async()=>{const t=$('reply').value.trim();if(!t||busy)return;await sessionOperation('send',{text:t});if(session?.messages.some(m=>m.role==='user'&&m.text===t))$('reply').value='';syncSessionButtons();};$('reply').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();$('send').click();}};
 $('useCurrentAPI').onclick=async()=>{await sessionOperation('use-current-api');if(!session?.error)toast('本轮已使用当前 API 配置。请重试模型回应或继续训练。');};
 $('retry').onclick=()=>sessionOperation('retry');$('end').onclick=()=>sessionOperation('review');$('cancel').onclick=async()=>{if(confirm('中断本轮？已提交原话会保留，可在记录中查看。'))await sessionOperation('cancel');};
 function backToSelection(){document.body.classList.remove('session-active');session=null;localStorage.removeItem('workplace_active_session');$('selection').hidden=false;$('sessionPanel').hidden=true;showTab('practice');renderSelection();$('workspace').scrollIntoView({behavior:'smooth'});}
-$('back').onclick=backToSelection;$('again').onclick=()=>{const s=session;chooseScene(s.scene.id);$('objectSelect').value=s.object.id;$('goal').value=s.goal;$('background').value=s.background;$('intensity').value=s.intensity;backToSelection();toast('本次再练将冻结最新对象画像，请点击进入连续对话。');};
+$('back').onclick=backToSelection;$('again').onclick=()=>{const s=session;chooseScene(s.scene.id);$('objectSelect').value=s.object.id;$('goal').value=s.goal;$('background').value=s.background;$('projectSelect').value=s.project?.id||'';$('intensity').value=s.intensity;backToSelection();toast('本次再练将冻结最新对象画像，请点击进入连续对话。');};
 $('copyExample').onclick=async()=>{try{await navigator.clipboard.writeText($('exampleText').textContent);toast('已复制虚构示例，尚未提交到训练。');}catch{toast('复制失败，可选择示例文字手动复制。');}};
 $('exportHTML').onclick=()=>exportHTML().catch(e=>toast(e.message));$('exportJSON').onclick=()=>download(JSON.stringify(session,null,2),'application/json',`沟通记录_${session.id.slice(0,8)}.json`);$('print').onclick=()=>window.print();
 let printState=null;window.addEventListener('beforeprint',()=>{const details=[...$('review').querySelectorAll('details')];printState=details.map(d=>[d,d.open]);details.forEach(d=>d.open=true);});window.addEventListener('afterprint',()=>{for(const [d,opened] of printState||[])d.open=opened;printState=null;});
@@ -244,7 +245,7 @@ $('importHistory').onclick=()=>$('legacyFile').click();$('legacyFile').onchange=
 function renderExperiences(){
  const query=$('experienceSearch').value.trim().toLowerCase();
  const items=(ws.experiences||[]).filter(e=>(e.title+' '+e.content+' '+e.category).toLowerCase().includes(query));
- $('experienceCards').innerHTML=items.map(e=>`<article class="experience-card"><div class="experience-meta"><span>${esc(e.category)}</span><small>${esc(e.source||'用户导入')}</small></div><h3>${esc(e.title)}</h3><p>${esc(brief(e.content,140))}</p><details><summary>查看完整经验</summary><p class="experience-content">${esc(e.content)}</p></details></article>`).join('')||'<p class="empty">没有找到经验，可添加或在下方直接输入。</p>';
+ $('experienceCards').innerHTML=items.map(e=>`<article class="experience-card"><div class="experience-meta"><span>${esc(e.category)}</span><small>${esc(e.source||'用户导入')}</small></div><h3>${esc(e.title)}</h3><p>${esc(brief(e.content,140))}</p><details><summary>查看完整经验</summary><p class="experience-content">${esc(e.content)}</p>${e.meetingId?`<p class="muted">从会议纪要提炼，需结合适用场景验证。</p>${e.evidence.map(q=>`<blockquote class="quote-evidence">${esc(q)}</blockquote>`).join('')}<button class="outline" data-open-meeting="${esc(e.meetingId)}">查看来源纪要</button>`:''}</details></article>`).join('')||'<p class="empty">没有找到经验，可添加或在下方直接输入。</p>';
 }
 function renderFreeHistory(){
  $('freeHistory').innerHTML=(ws.commands||[]).map(c=>`<article class="free-log"><small>${esc(stamp(c.at))}</small><p>${esc(brief(c.text,100))}</p>${c.clarification?`<p class="muted">待补充：${esc(c.clarification)}</p>`:`<ul>${c.changes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`}</article>`).join('')||'<p class="muted">办理结果会保存在这里。</p>';
@@ -283,4 +284,59 @@ $('freeForm').onsubmit=async e=>{
 };
 $('freeInput').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();$('freeForm').requestSubmit();}};
 $('intensity').onchange=async()=>{if(busy)return;try{await action('training-preferences',{intensity:$('intensity').value});}catch(e){toast(e.message);}};
+
+function renderMeetings(){
+ const selected=$('projectSelect').value;
+ $('projectSelect').innerHTML='<option value="">不引用已保存项目</option>'+(ws.projects||[]).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+ $('projectSelect').value=(ws.projects||[]).some(p=>p.id===selected)?selected:'';
+ $('projectCards').innerHTML=(ws.projects||[]).map(p=>`<details><summary>${esc(p.name)}</summary><p class="experience-content">${esc(p.background)}</p><p class="muted">${p.sources.length} 条纪要依据 · 更新于 ${esc(stamp(p.updated))}</p>${[...new Set(p.sources.map(x=>x.meetingId))].map(id=>`<button class="outline" data-open-meeting="${esc(id)}">查看来源纪要</button>`).join('')}</details>`).join('')||'<p class="muted">保存提取结果中的项目背景后，会在这里显示。</p>';
+ $('meetingRecords').innerHTML=(ws.meetings||[]).map(m=>`<article class="record"><div><h3>${esc(m.title)}</h3><p class="muted">${esc(stamp(m.at))} · ${m.appliedItems.length?`已保存 ${m.appliedItems.length} 项`:'等待核对'}<br>${esc(brief(m.summary,100))}</p></div><button class="outline" data-open-meeting="${esc(m.id)}">查看提取与原文</button></article>`).join('')||'<p class="empty">还没有导入会议纪要。</p>';
+}
+function meetingEvidence(item){return `<details class="meeting-evidence"><summary>查看原文依据</summary>${item.evidence.map(q=>`<blockquote class="quote-evidence">${esc(q)}</blockquote>`).join('')}</details>`;}
+function renderMeetingPreview(){
+ const m=meetingDraft;if(!m){$('meetingPreview').hidden=true;$('meetingPreview').replaceChildren();return;}
+ $('meetingPreview').hidden=false;const saved=new Set(m.appliedItems),names=[...new Set(m.items.filter(i=>['observation','quote'].includes(i.kind)).map(i=>i.name))];
+ let html=`<div class="section-heading"><p class="eyebrow">先核对，再收录</p><h2>${esc(m.title)}</h2><p>${esc(m.summary)}</p><p class="muted">勾选需要保存的条目。画像会追加并注明来源，已有训练不改写。纪要中的记载语句不等同于录音逐字稿。</p></div>`;
+ for(const name of names){
+  const items=m.items.filter(i=>i.name===name&&['observation','quote'].includes(i.kind));
+  const target=m.targets[name]||items[0].objectId||(items[0].ambiguous?'':'new');
+  html+=`<section class="meeting-group"><div class="meeting-person"><div><h3>${esc(name)}</h3><p class="muted">${esc(ws.objects.find(o=>o.id===target)?.role||items.find(i=>i.role!=='会议相关人员（角色待确认）')?.role||items[0].role)}</p></div><label>归入哪个对象<select data-meeting-target="${esc(name)}"><option value="">请选择归属</option>${ws.objects.map(o=>`<option value="${esc(o.id)}" ${o.id===target?'selected':''}>${esc(o.name)}</option>`).join('')}<option value="new" ${target==='new'?'selected':''}>新建对象：${esc(name)}</option></select></label></div>${items.map(item=>`<article class="meeting-item"><label class="check"><input type="checkbox" data-meeting-item="${item.id}" ${saved.has(item.id)?'disabled data-applied="1"':'checked'}><span><small class="meeting-kind">${saved.has(item.id)?'已保存 · ':''}${item.kind==='quote'?'纪要记载语句':item.certainty==='inferred'?'AI 特征推测 · '+esc(objectLabels[item.field]):'纪要观察 · '+esc(objectLabels[item.field])}</small><p>${esc(item.text)}</p></span></label>${meetingEvidence(item)}</article>`).join('')}</section>`;
+ }
+ for(const kind of ['project','experience']){
+  const items=m.items.filter(i=>i.kind===kind);if(!items.length)continue;
+  html+=`<section class="meeting-group"><h3>${kind==='project'?'项目背景与行动项':'可复用沟通经验'}</h3>${items.map(item=>`<article class="meeting-item"><label class="check"><input type="checkbox" data-meeting-item="${item.id}" ${saved.has(item.id)?'disabled data-applied="1"':'checked'}><span><small class="meeting-kind">${saved.has(item.id)?'已保存 · ':''}${kind==='project'?esc(item.name):esc(item.title)+' · '+esc(item.category)}</small><p>${esc(item.text||item.content)}</p></span></label>${kind==='project'?`<label class="meeting-project-target">归入项目<select data-meeting-project="${esc(item.name)}"><option value="new">新建项目：${esc(item.name)}</option>${(ws.projects||[]).map(p=>`<option value="${esc(p.id)}" ${(m.projectTargets[item.name]||item.projectId)===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>`:''}${meetingEvidence(item)}</article>`).join('')}</section>`;
+ }
+ html+=`<p id="meetingApplyStatus" role="status" class="muted"></p><div class="actions"><button id="meetingApply" class="primary" ${m.items.every(i=>saved.has(i.id))?'disabled':''}>保存勾选结果</button><span class="muted">已保存 ${saved.size} / ${m.items.length} 项；未勾选的条目可稍后继续保存。</span></div><details><summary>查看完整纪要原文</summary><p class="meeting-original">${esc(m.text)}</p></details>`;
+ $('meetingPreview').innerHTML=html;
+ $('meetingApply').onclick=applyMeeting;
+}
+async function openMeeting(id){
+ meetingDraft=await request('/api/workplace/meeting?id='+encodeURIComponent(id));renderMeetingPreview();showTab('meetings');$('meetingPreview').scrollIntoView({behavior:'smooth'});
+}
+$('projectSelect').onchange=()=>{const project=(ws.projects||[]).find(p=>p.id===$('projectSelect').value);if(project)$('background').value=project.background;};
+function clearMeetingPreview(){meetingDraft=null;renderMeetingPreview();}
+$('meetingText').oninput=clearMeetingPreview;$('meetingTitle').oninput=clearMeetingPreview;
+$('meetingFileOpen').onclick=()=>$('meetingFile').click();
+$('meetingFile').onchange=async e=>{
+ const file=e.target.files[0];if(!file||busy)return;if(file.size>5000000){$('meetingStatus').textContent='文件最大 5 MB，请精简后重试。';e.target.value='';return;}
+ lock(true,'正在读取会议纪要…');$('meetingStatus').textContent='正在读取文件正文…';
+ try{const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=16384)binary+=String.fromCharCode(...bytes.subarray(i,i+16384));
+  const parsed=await action('meeting-file',{filename:file.name,data:btoa(binary)});$('meetingText').value=parsed.text;$('meetingTitle').value=parsed.title;clearMeetingPreview();$('meetingStatus').textContent='已读取正文。可先脱敏或修改，再点击 AI 提取并预览。';
+ }catch(e){$('meetingStatus').textContent=e.message;}finally{lock(false);e.target.value='';}
+};
+$('meetingForm').onsubmit=async e=>{
+ e.preventDefault();if(busy||!$('meetingText').value.trim())return;clearMeetingPreview();lock(true,'正在提取会议纪要…');$('meetingStatus').textContent='AI 正在整理人物、项目与沟通经验，尚未修改画像或背景…';
+ try{meetingDraft=await action('meeting-analyze',{title:$('meetingTitle').value,text:$('meetingText').value});renderMeetingPreview();await refresh();$('meetingStatus').textContent=meetingDraft.items.length?'提取结果已保留，请核对人物归属和原文依据后保存。':'本次未提取到可保存条目。可补充人物、项目或决议后重试。';$('meetingPreview').scrollIntoView({behavior:'smooth'});}
+ catch(e){$('meetingStatus').textContent='尚未更新资料：'+e.message;}finally{lock(false);}
+};
+async function applyMeeting(){
+ if(busy||!meetingDraft)return;
+ const selected=[...$('meetingPreview').querySelectorAll('[data-meeting-item]:checked')].map(el=>el.dataset.meetingItem);
+ if(!selected.length){$('meetingApplyStatus').textContent='请至少勾选一项尚未保存的结果。';return;}
+ const targets=Object.fromEntries([...$('meetingPreview').querySelectorAll('[data-meeting-target]')].map(el=>[el.dataset.meetingTarget,el.value]));
+ const projectTargets=Object.fromEntries([...$('meetingPreview').querySelectorAll('[data-meeting-project]')].map(el=>[el.dataset.meetingProject,el.value]));
+ lock(true,'正在保存纪要提取结果…');
+ try{const result=await action('meeting-apply',{meetingId:meetingDraft.id,selected,targets,projectTargets});meetingDraft=result.meeting;await refresh();renderMeetingPreview();$('meetingApplyStatus').textContent=result.applied?`已保存 ${result.applied} 项：`+result.changes.join('；'):'这些条目此前已保存，没有重复追加。';}
+ catch(e){$('meetingApplyStatus').textContent='未保存本次修改：'+e.message;}finally{lock(false);$('meetingApply').disabled=meetingDraft.items.every(i=>meetingDraft.appliedItems.includes(i.id));}
+}
 (async()=>{try{await refresh();let old=null;try{old=JSON.parse(localStorage.getItem('ahc_api_cfg_v1'));}catch{}if(old&&!ws.config.apis?.length){await action('import-config',{config:old});await refresh();}const id=localStorage.getItem('workplace_active_session');if(id){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(id)));}catch{localStorage.removeItem('workplace_active_session');}}}catch(e){showError('globalError',e.message);}})();

@@ -540,3 +540,25 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
  .experience-card { padding: 22px; }
 }
 @media print { .free-workspace { display: none !important; } }
+
+.meeting-archive { margin-top: 28px; }
+.meeting-group { margin: 30px 0; padding-top: 24px; border-top: 1px solid var(--line); }
+.meeting-person { display: grid; grid-template-columns: 1fr minmax(230px, 420px); align-items: center; gap: 24px; }
+.meeting-person h3, .meeting-group > h3 { font-size: 22px; }
+.meeting-person label { font-size: 13px; }
+.meeting-item { padding: 22px; margin: 16px 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
+.meeting-item .check { align-items: flex-start; margin: 0; font-weight: 400; }
+.meeting-item input[type="checkbox"] { flex-shrink: 0; margin-top: 4px; }
+.meeting-kind { color: var(--green); display: block; margin-bottom: 10px; }
+.meeting-item p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.85; }
+.meeting-item details { margin-top: 16px; padding: 12px 0 0; background: transparent; }
+.meeting-project-target { margin: 18px 0 0; font-size: 13px; }
+.meeting-original { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 500px; overflow: auto; }
+#meetingStatus, #meetingApplyStatus { overflow-wrap: anywhere; }
+#meetingForm .send-row { gap: 24px; align-items: center; }
+#meetingForm .send-row > span { max-width: 670px; font-size: 13px; }
+@media(max-width: 700px) {
+ .meeting-person { grid-template-columns: 1fr; gap: 0; }
+ .meeting-item { padding: 18px 14px; }
+ #meetingForm .send-row { flex-direction: column; align-items: stretch; }
+}

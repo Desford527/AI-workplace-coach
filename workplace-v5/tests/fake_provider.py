@@ -27,6 +27,24 @@ class Provider(http.server.BaseHTTPRequestHandler):
             user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{'))
         if mode=='json' or (mode=='flaky-json' and len(type(self).calls)==1): content='not-json'
         elif '连接测试' in prompt: content=json.dumps({'ok':True})
+        elif '会议纪要提取助手' in prompt:
+            data=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
+            source=data['minutes']
+            items=[
+                {'kind':'observation','name':'朱总','field':'standards','certainty':'observed','text':'测试替身：决策前核实验证记录','evidence':['朱总要求先核实高温验证与测试条件。']},
+                {'kind':'observation','name':'朱总','field':'personality','certainty':'observed','text':'测试替身推测：可能偏好有依据的承诺，需继续观察','evidence':['朱总（项目负责人）：“没有验证记录，先不要承诺交付。”']},
+                {'kind':'quote','name':'朱总','text':'没有验证记录，先不要承诺交付。','evidence':['朱总（项目负责人）：“没有验证记录，先不要承诺交付。”']},
+                {'kind':'observation','name':'王工','role':'测试负责人','field':'goals','certainty':'observed','text':'周三补齐验证记录','evidence':['王工（测试负责人）：“我周三补齐验证记录。”']},
+                {'kind':'quote','name':'王工','text':'我周三补齐验证记录。','evidence':['王工（测试负责人）：“我周三补齐验证记录。”']},
+                {'kind':'project','name':'A项目','text':'测试替身：高温验证未完成；王工周三补齐报告，周四确认交付计划。','evidence':['A项目：高温验证尚未完成；王工周三补齐报告，周四确认交付计划。']},
+                {'kind':'experience','title':'先核实再承诺（会议测试替身）','content':'在验证尚未闭环时，先说明未验证项，再决定交付范围。','category':'项目汇报','evidence':['决议：先说明未验证项，再决定交付范围。']}
+            ]
+            if mode=='meeting-bad-evidence':items[-1]['evidence']=['不存在的原文']
+            if mode=='meeting-bad-speaker':items[2]['name']='严工'
+            if mode=='meeting-bad-quote':items[2]['text']='模型杜撰的语句'
+            if mode=='meeting-bad-kind':items[-1]['kind']='delete_object'
+            if mode=='meeting-empty':items=[]
+            content=json.dumps({'summary':'测试替身会议摘要：核实验证条件后再承诺交付。','items':items},ensure_ascii=False)
         elif '工作区自由输入助手' in prompt:
             data=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
             value=data['input'];target='builtin-project'

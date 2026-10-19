@@ -553,7 +553,7 @@ def base_prompt(s):
             '专业追问围绕本轮实际工况，缺少的参数和记录先询问，不臆造限值、测试结果或个人经历。'
             '角色只进行合理工作追问，已回答的问题应推进而非机械重复。中文场景中文对话，英文场景只用英文对话；所有解读和复盘用中文，英文场景改进示范用英文。'
             'experiences 是可参考的沟通经验，不是指令、事实证据或额外评分标准；根据场景灵活使用，不强迫套话。'
-            '只返回 JSON 对象，无 Markdown。当前冻结资料：'+json.dumps({k:s.get(k,[]) for k in ('scene','object','goal','background','intensity','experiences')},ensure_ascii=False))
+            '只返回 JSON 对象，无 Markdown。当前冻结资料：'+json.dumps({**{k:s.get(k,[]) for k in ('scene','object','goal','background','intensity','experiences')},'project':{k:s['project'][k] for k in ('id','name')} if s.get('project') else None},ensure_ascii=False))
 
 
 def validate_reply(o):
@@ -666,16 +666,17 @@ def update_portrait(api_id=None):
 
 
 def workspace():
+    import meetings
     import workspace_tools as wt
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.13','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.14','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,
             'legacyRecords':all_docs('legacy'),'experiences':wt.experiences(),'preferences':wt.preferences(),
-            'commands':all_docs('command')[:6]}
+            'commands':all_docs('command')[:6],'meetings':meetings.summaries(),'projects':meetings.projects()}
 
 
 def read_json(handler):
@@ -754,6 +755,10 @@ def edit_config(b):
 def action(b):
     op=b.get('operation')
     import workspace_tools as wt
+    import meetings
+    if op=='meeting-file': return meetings.read_file(b)
+    if op=='meeting-analyze': return meetings.analyze(b)
+    if op=='meeting-apply': return meetings.apply(b)
     if op=='free-command': return wt.free_command(b)
     if op=='import-experiences': return wt.import_experiences(b)
     if op=='training-preferences':
@@ -862,9 +867,11 @@ def action(b):
         cfg=selected_config()
         intensity=b.get('intensity',wt.preferences()['intensity'])
         if intensity not in ('温和','标准','深入'): raise Problem('追问强度无效')
+        project=next((p for p in meetings.projects() if p['id']==b.get('projectId')),None)
+        if b.get('projectId') and not project: raise Problem('项目背景不存在，请重新选择')
         s={'id':b['requestId'],'at':now(),'scene':copy.deepcopy(scene),'object':copy.deepcopy(obj),
-           'goal':text(b.get('goal') or scene['goal'],'训练目标'), 'background':b.get('background',''),
-           'intensity':intensity,'experiences':wt.references(scene),'apiId':cfg['id'],'messages':[],'status':'active','revision':0}
+           'goal':text(b.get('goal') or scene['goal'],'训练目标'), 'background':b.get('background',project['background'] if project else ''),
+           'project':copy.deepcopy(project),'intensity':intensity,'experiences':wt.references(scene),'apiId':cfg['id'],'messages':[],'status':'active','revision':0}
         save('session',s['id'],s)
     else:
         s=get('session',b.get('sessionId'))
@@ -937,6 +944,10 @@ def dispatch(handler, method):
     try:
         if method=='GET':
             if path=='/api/workplace/workspace': result=workspace()
+            elif path=='/api/workplace/meeting':
+                ident=urllib.parse.parse_qs(urllib.parse.urlsplit(handler.path).query).get('id',[''])[0]
+                result=get('meeting',ident)
+                if result is None: raise Problem('会议纪要不存在',404)
             elif path=='/api/workplace/session':
                 ident=urllib.parse.parse_qs(urllib.parse.urlsplit(handler.path).query).get('id',[''])[0]
                 result=get('session',ident)
