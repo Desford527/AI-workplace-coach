@@ -1,9 +1,9 @@
 'use strict';
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',toastTimer;
+let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',quoteObjectId='',toastTimer;
 let reviewBusyId=null,reviewPolling=false;const reviewIntent=new Set(),reviewLocalErrors=new Map();
 const categories=[['report','项目汇报','Project briefing'],['technical','技术评审','Technical review'],['customer','客户沟通','Customer dialogue'],['english','国际协作','Global collaboration']];
-const objectLabels={name:'称呼',role:'角色 / 工作关系',goals:'工作目标',standards:'关注点 / 判断标准',style:'表达风格',personality:'性格与沟通习惯（可选）',technicalBackground:'变流技术背景（可选）',responseGuide:'追问与推进方式（可选）',quotes:'典型原话（可选）',difficulty:'沟通难点（可选）',facts:'已知事实 / 来源',inferences:'推断 / 虚拟补充',boundaries:'模拟边界'};
+const objectLabels={name:'称呼',role:'角色 / 工作关系',goals:'工作目标',standards:'关注点 / 判断标准',style:'表达风格',personality:'性格与沟通习惯（可选）',technicalBackground:'变流技术背景（可选）',responseGuide:'追问与推进方式（可选）',quotes:'语录（每行一句，可选）',difficulty:'沟通难点（可选）',facts:'已知事实 / 来源',inferences:'推断 / 虚拟补充',boundaries:'模拟边界'};
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,3500);}
 function showError(id,message){$(id).textContent=message||'';$(id).hidden=!message;}
 async function request(url,options={}){let r;try{r=await fetch(url,{cache:'no-store',...options});}catch{throw Error('本机服务器连接中断，请确认启动窗口仍在运行；已保存原话可恢复。');}const j=await r.json();if(!r.ok)throw Error(j.error||'请求失败 '+r.status);return j;}
@@ -44,7 +44,31 @@ function chooseScene(id){sceneId=id;cat=selectedScene().cat;$('goal').value=sele
 function objectFacts(o){return Object.entries(objectLabels).filter(([k])=>!['name','role'].includes(k)).map(([k,label])=>`<p class="object-fact"><b>${label}</b><br>${esc(o[k]||'尚未补充')}</p>`).join('');}
 function renderFocus(){const o=ws.objects.find(p=>p.id===$('objectSelect').value);$('focusContent').innerHTML=o?objectFacts(o):'';const name=o?.name||selectedScene().role;$('previewAvatar').textContent=[...name][0]||'';$('previewRole').textContent=name;}
 function showTab(id){currentTab=id;document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==id);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));}
-function renderObjects(){$('objectCards').innerHTML=ws.objects.map(o=>`<article class="object-card"><div class="object-card-top"><span class="profile-avatar">${esc(o.name.slice(0,1))}</span><span class="object-kind">沟通对象</span></div><h3>${esc(o.name)}</h3><p class="muted">${esc(o.role)}</p><p>${esc(brief(o.goals,90))}</p><details><summary>画像详情 · 事实与推断</summary>${objectFacts(o)}</details><div class="actions object-actions"><button class="outline" data-edit-object="${esc(o.id)}">编辑画像</button><button class="delete-object" data-delete-object="${esc(o.id)}">删除对象</button></div></article>`).join('')||'<div class="empty"><h3>给下一次沟通，选一个新对象。</h3><p>已删除对象的训练记录仍可在「训练记录」查看。</p></div>';}
+function renderObjects(){$('objectCards').innerHTML=ws.objects.map(o=>`<article class="object-card"><div class="object-card-top"><span class="profile-avatar">${esc(o.name.slice(0,1))}</span><span class="object-kind">沟通对象</span></div><h3>${esc(o.name)}</h3><p class="muted">${esc(o.role)}</p><p>${esc(brief(o.goals,90))}</p><details><summary>画像详情 · 事实与推断</summary>${objectFacts(o)}</details><div class="actions object-actions"><button class="outline" data-edit-object="${esc(o.id)}">编辑画像</button><button class="outline" data-object-quotes="${esc(o.id)}">语录与分析</button><button class="delete-object" data-delete-object="${esc(o.id)}">删除对象</button></div></article>`).join('')||'<div class="empty"><h3>给下一次沟通，选一个新对象。</h3><p>已删除对象的训练记录仍可在「训练记录」查看。</p></div>';}
+function renderQuoteAnalysis(o){
+ const a=o.quoteAnalysis;
+ if(!a)return `<p class="muted">${o.quoteAnalysisStale?'语录已更新，原分析已失效，请重新分析。':'记录语录后，可让 AI 分析沟通特征并生成可能的表达。'}</p>`;
+ return `<div class="quote-analysis-head"><h3>基于语录的特征推测</h3><small>${a.sampleCount} 条语录 · ${esc(stamp(a.at))}</small></div><p class="muted">${esc(a.summary)}</p>${a.traits.map(t=>`<article class="quote-trait"><h4>${esc(t.title)} <small>AI 推测</small></h4><p>${esc(t.description)}</p><details><summary>查看原话依据</summary>${t.evidence.map(q=>`<blockquote class="quote-evidence">${esc(q)}</blockquote>`).join('')}</details></article>`).join('')}<h3>可能的表达 · AI 模拟</h3><p class="muted">以下不是对象说过的原话，不会自动加入语录。</p>${a.likelyLines.map(t=>`<article class="quote-prediction"><p>${esc(t.text)}</p><details><summary>参考了哪些语录</summary>${t.basis.map(q=>`<blockquote class="quote-evidence">${esc(q)}</blockquote>`).join('')}</details></article>`).join('')}`;
+}
+function openQuotes(id){
+ const o=ws.objects.find(p=>p.id===id);if(!o)return;
+ quoteObjectId=id;$('quotesDialogTitle').textContent=o.name+' · 语录';$('objectQuotes').value=o.quotes||'';
+ $('quoteAnalysis').innerHTML=renderQuoteAnalysis(o);$('quotesStatus').textContent='';$('quotesDialog').showModal();
+}
+async function saveQuotes(analyze=false){
+ if(busy||!quoteObjectId)return;
+ const raw=$('objectQuotes').value;let saved=false;
+ if(analyze&&!raw.trim()){$('quotesStatus').textContent='请先记录至少一句语录。';return;}
+ lock(true,analyze?'正在分析对象语录…':'正在保存语录…');$('objectQuotes').disabled=true;
+ $('quotesStatus').textContent=analyze?'正在保存并分析，语录会先保留…':'正在保存…';
+ try{
+  await action('object-quotes',{objectId:quoteObjectId,quotes:raw});saved=true;await refresh();
+  const obj=ws.objects.find(p=>p.id===quoteObjectId);if(obj)$('quoteAnalysis').innerHTML=renderQuoteAnalysis(obj);
+  if(analyze){await action('analyze-object',{objectId:quoteObjectId});await refresh();$('quoteAnalysis').innerHTML=renderQuoteAnalysis(ws.objects.find(p=>p.id===quoteObjectId));}
+  $('quotesStatus').textContent=analyze?'语录与 AI 分析已保存，供新训练参考。':'语录已保存，供新训练参考。';
+ }catch(e){$('quotesStatus').textContent=e.message+(saved?'；语录已保存，可重试分析。':'；输入仍保留在此页，可重试保存。');}
+ finally{lock(false);$('objectQuotes').disabled=false;}
+}
 async function deleteObject(id){
  const o=ws.objects.find(p=>p.id===id);if(!o||busy)return;
  if(!confirm(`删除「${o.name}」？该对象将从可选名单移除，已有对话、复盘和画像证据保留。`))return;
@@ -53,13 +77,13 @@ async function deleteObject(id){
  catch(e){toast(e.message);}
  finally{lock(false);}
 }
-function openObject(id){const o=ws.objects.find(p=>p.id===id)||{};objectEditId=o.id||'';$('objectDialogTitle').textContent=o.id?'编辑对象画像':'新建对象画像';$('objectFields').innerHTML=Object.entries(objectLabels).map(([k,label])=>`<label>${label}${['name','role'].includes(k)?`<input name="${k}" value="${esc(o[k]||'')}" required maxlength="200">`:`<textarea name="${k}" rows="${['personality','technicalBackground','responseGuide'].includes(k)?6:2}" ${['quotes','difficulty','personality','technicalBackground','responseGuide'].includes(k)?'':'required'}>${esc(o[k]||(k==='facts'?'虚拟训练对象，不对应现实人物':k==='inferences'?'仅用于本场景模拟的推断':k==='boundaries'?'尊重对方，不羞辱、不作人格攻击':''))}</textarea>`}</label>`).join('');$('objectStatus').textContent='';$('objectDialog').showModal();}
+function openObject(id){const o=ws.objects.find(p=>p.id===id)||{};objectEditId=o.id||'';$('objectDialogTitle').textContent=o.id?'编辑对象画像':'新建对象画像';$('objectFields').innerHTML=Object.entries(objectLabels).map(([k,label])=>`<label>${label}${['name','role'].includes(k)?`<input name="${k}" value="${esc(o[k]||'')}" required maxlength="200">`:`<textarea name="${k}" rows="${['quotes','personality','technicalBackground','responseGuide'].includes(k)?6:2}" ${['quotes','difficulty','personality','technicalBackground','responseGuide'].includes(k)?'':'required'}>${esc(o[k]||(k==='facts'?'虚拟训练对象，不对应现实人物':k==='inferences'?'仅用于本场景模拟的推断':k==='boundaries'?'尊重对方，不羞辱、不作人格攻击':''))}</textarea>`}</label>`).join('');$('objectStatus').textContent='';$('objectDialog').showModal();}
 function applySession(s){document.body.classList.add('session-active');session=s;localStorage.setItem('workplace_active_session',s.id);$('selection').hidden=true;$('sessionPanel').hidden=false;showTab('practice');renderSession();}
 function renderSession(){
  if(!session)return;const s=session,reviewMode=isReviewFlow(s);$('sessionPanel').classList.toggle('is-review',reviewMode);
  $('sessionPhase').textContent=reviewMode?'03 / 结束与复盘':'02 / 连续对话';
  $('sessionTitle').textContent=reviewMode?'本次训练复盘':s.object.name;
- const state=reviewMode?(s.review?'已完成复盘':reviewIsPending(s)?'训练已结束 · 正在生成复盘':'训练已结束 · 对话已保留'):s.status==='archived'?'已中断，记录保留':'训练进行中';
+ const state=reviewMode?(s.review?(s.review.timeline.some(t=>!t.improved||!t.feedback)?'评分已生成 · 说明可补全':'已完成复盘'):reviewIsPending(s)?'训练已结束 · 正在生成复盘':'训练已结束 · 对话已保留'):s.status==='archived'?'已中断，记录保留':'训练进行中';
  $('sessionMeta').textContent=`${s.scene.title} · ${s.scene.lang==='en'?'英文对话 / 中文复盘':'中文对话'} · ${state}`;
  $('snapshot').innerHTML=`<p><b>本轮目标</b><br>${esc(s.goal)}</p><p><b>背景</b><br>${esc(s.background||'未提供')}</p>${objectFacts(s.object)}`;
  $('chat').hidden=reviewMode;
@@ -125,6 +149,7 @@ function renderReview(s,expanded=false){
  <div class="verdict-copy"><h2>${esc(s.scene.title)}</h2><p class="review-lead">${esc(shortVerdict(r))}</p><div class="verdict-meta"><span>${esc(s.object.name)}</span><span>${s.messages.filter(m=>m.role==='user').length} 次回应</span><span>${s.scene.lang==='en'?'英文训练':'中文训练'}</span></div></div></div></header>
  <div class="review-focus"><div class="focus-strength"><span class="focus-caption">本轮较高得分</span><strong>${esc(strong.name)}</strong><b>${strong.score}<small> / 100</small></b></div><div class="focus-priority"><span class="focus-caption">下一轮优先练习</span><strong>${esc(weak.name)}</strong><b>${weak.score}<small> / 100</small></b></div></div>
  <details class="overall-details" data-detail="overall"><summary>查看完整总评与评分说明</summary><div class="overall-full"><p>${esc(r.overall)}</p><p class="muted">${esc(r.sampleLimit)} 总分为六维平均取整数。AI 评分用于训练反馈，不是经验证的心理或能力测量。</p></div></details>
+ ${r.timeline.some(t=>!t.improved||!t.feedback)?`<div class="review-notice" role="status">六维评分与原话依据已保存，部分点评或改进示范尚待补全。${r.detailError&&!expanded?`<details class="review-diagnostic"><summary>查看补全说明</summary><p>${esc(r.detailError)}</p></details>`:''}${!expanded?'<div class="actions"><button class="outline" data-review-details="1">补全点评与示范</button></div>':''}</div>`:''}
  <section class="review-section radar-section">${reportHeading('01','六维表现','先看图，再看具体依据')}
  <div class="radar-layout"><div>${radar(r.dims)}<div class="radar-legend"><span><i class="legend-actual"></i>本轮 AI 评分</span><span><i class="legend-reference"></i>60 分参考线</span></div></div><div class="dimension-meters">${scoreLines(r.dims)}<p class="muted">每维 0–100 分，数值来自本轮 AI 复盘。</p></div></div>
  <details class="dimension-details" data-detail="dimensions"><summary>展开六维依据与原话证据</summary>${r.dims.map(dimension).join('')}</details></section>
@@ -133,9 +158,9 @@ function renderReview(s,expanded=false){
  ${moreIssues.length?`<details class="more-issues" data-detail="more-issues"><summary>其余模型观察（${moreIssues.length}）</summary><div class="issue-grid">${moreIssues.map((l,i)=>issueCard(l,i+2)).join('')}</div></details>`:''}</section>
  <section class="review-section rounds-section">${reportHeading('03','逐轮回看，换一种表达','原话、反馈与示范放在一起')}
  ${r.timeline.map((t,i)=>`<details class="round" data-detail="round-${i}" ${i===0?'open':''}><summary><span class="round-index">${String(i+1).padStart(2,'0')}</span><span>回应 ${i+1}</span><span class="round-score">${t.score}<small> / 100</small></span></summary><div class="round-body">
- <p class="round-feedback">${esc(brief(t.feedback,100))}</p>
- <div class="answer-comparison ${expanded?'answers-expanded':''}" data-answer="${i}"><div class="answer-box answer-original"><span class="answer-label">原回答</span><p class="answer-copy original">${esc(quoteFor(s,t.messageId))}</p></div><div class="answer-box answer-improved demo"><span class="answer-label">改进示范${s.scene.lang==='en'?' · English':''}</span><p class="answer-copy">${esc(t.improved)}</p></div>${!expanded?'<button class="text-button" data-expand-answer="1" aria-expanded="false">展开完整回答</button>':''}</div>
- <details class="round-evidence" data-detail="round-evidence-${i}"><summary>查看完整点评与本轮六维依据</summary><p>${esc(t.feedback)}</p>${scoreLines(t.dims)}${t.dims.map(dimension).join('')}</details></div></details>`).join('')}</section>
+ <p class="round-feedback">${esc(brief(t.feedback||'本轮点评尚待补全，评分依据可展开查看。',100))}</p>
+ <div class="answer-comparison ${expanded?'answers-expanded':''}" data-answer="${i}"><div class="answer-box answer-original"><span class="answer-label">原回答</span><p class="answer-copy original">${esc(quoteFor(s,t.messageId))}</p></div><div class="answer-box answer-improved demo"><span class="answer-label">改进示范${s.scene.lang==='en'?' · English':''}</span><p class="answer-copy">${esc(t.improved||'本轮改进示范尚待模型生成，可单独补全。')}</p></div>${!expanded?'<button class="text-button" data-expand-answer="1" aria-expanded="false">展开完整回答</button>':''}</div>
+ <details class="round-evidence" data-detail="round-evidence-${i}"><summary>查看完整点评与本轮六维依据</summary><p>${esc(t.feedback||'本轮点评尚待模型生成。')}</p>${scoreLines(t.dims)}${t.dims.map(dimension).join('')}</details></div></details>`).join('')}</section>
  <section class="review-section translation-section">${reportHeading('04','读懂对方的问题','原话三层解读')}
  <p class="section-note">以下为本轮模拟解读，不代表现实人物的心理事实。</p>
  ${r.translations.map((t,i)=>`<details class="translation" data-detail="translation-${i}"><summary><span class="translation-number">${String(i+1).padStart(2,'0')}</span><span>${esc(brief(t.quote,92))}</span></summary><div class="translation-body"><blockquote>${esc(t.quote)}</blockquote>${t.source==='conversation'?'<p class="muted">训练时的 AI 解读</p>':''}<dl class="interpretation"><dt>表面问题</dt><dd>${esc(t.surface)}</dd><dt>核心关切</dt><dd>${esc(t.real)}</dd><dt>判断依据</dt><dd>${esc(t.hidden)}</dd></dl></div></details>`).join('')||'<p class="muted">模型没有提供单独的原话解读，完整对话仍可查看。</p>'}</section>
@@ -187,7 +212,7 @@ function selectAPI(id){$('apiKey').required=false;$('clearKey').disabled=false;f
 function renderAPI(){const apis=ws.config.apis||[];$('apiSelect').innerHTML='<option value="">＋ 新配置</option>'+apis.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}${a.id===ws.config.active?' · 当前':''}</option>`).join('');selectAPI(apiEditId||ws.config.active);}
 function download(content,type,name){const u=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 async function exportHTML(){if(!session.review)return;const css=await (await fetch('/web/style.css')).text();const content=renderReview(session,true).replace(/<details(?![^>]*\bopen\b)(?=[\s>])/g,'<details open');download(`<!doctype html><html lang="zh-CN" data-theme="${window.CoachTheme.current.id}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI职场沟通训练师 · 复盘</title><style>${css}</style></head><body><main class="shell"><article class="panel">${content}<footer>AI职场沟通训练师 · 离线复盘报告</footer></article></main></body></html>`,'text/html;charset=utf-8',`沟通复盘_${session.id.slice(0,8)}.html`);}
-document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewDetails)await sessionOperation('review-details');if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.objectQuotes)openQuotes(b.dataset.objectQuotes);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
 function renderThemes(){
  const active=window.CoachTheme.current;
  $('themeName').textContent=active.name;
@@ -197,6 +222,7 @@ function renderThemes(){
 renderThemes();
 window.addEventListener('coach-theme-change',renderThemes);
 $('themeOpen').onclick=()=>{renderThemes();$('themeDialog').showModal();};
+$('quotesSave').onclick=()=>saveQuotes(false);$('quotesAnalyze').onclick=()=>saveQuotes(true);
 $('objectSelect').onchange=renderFocus;$('newObject').onclick=()=>openObject();$('editSelected').onclick=()=>openObject($('objectSelect').value);
 $('objectForm').onsubmit=async e=>{e.preventDefault();if(busy)return;lock(true,'正在保存画像…');try{const o=Object.fromEntries(new FormData(e.target));if(objectEditId)o.id=objectEditId;await action('object',{object:o});await refresh();$('objectDialog').close();toast('画像已保存；已有训练快照保持不变。');}catch(e){$('objectStatus').textContent=e.message;}finally{lock(false);}};
 $('start').onclick=async()=>{if(busy)return;lock(true);showError('globalError','');const rid=crypto.randomUUID();try{applySession(await action('start',{requestId:rid,sceneId,objectId:$('objectSelect').value,goal:$('goal').value,background:$('background').value,intensity:$('intensity').value}));await refresh();$('sessionPanel').scrollIntoView({behavior:'smooth'});}catch(e){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(rid)));}catch{}try{await refresh();}catch{}showError(session?.id===rid?'sessionError':'globalError',e.message);}finally{lock(false);}};

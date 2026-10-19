@@ -470,10 +470,20 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
   .theme-swatch { min-height: 54px; margin-bottom: 12px; padding: 12px; }
 }
 
+.quote-analysis-head { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+.quote-analysis-head h3 { margin-bottom: 6px; font-size: 21px; }
+.quote-analysis-head small, .quote-trait h4 small { color: var(--muted); font-size: 12px; font-weight: 400; }
+.quote-trait { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.quote-trait p, .quote-prediction p { margin: 8px 0; font-size: 14px; }
+.quote-trait details, .quote-prediction details { margin: 12px 0 0; padding: 10px 0 0; }
+.quote-evidence { padding-left: 14px; margin: 12px 0; border-left: 2px solid var(--green); font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.quote-prediction { margin: 14px 0; padding: 16px 19px; border-radius: 6px; background: var(--sage); }
+#quoteAnalysis > h3 { margin-top: 28px; font-size: 21px; }
+
 @media print {
   :root[data-theme="corporate"] .review-verdict { background-image: none; box-shadow: none; }
   body { background: white; color: black; font-size: 12px; }
-  .topbar, .hero, .tabs, footer, #selection, #composer, #sessionActions, .session-head, .session > details, #sessionError, #globalError, .toast, dialog, #chat, .view:not(#practice), [data-expand-answer] { display: none !important; }
+  .topbar, .hero, .tabs, footer, #selection, #composer, #sessionActions, .session-head, .session > details, #sessionError, #globalError, .toast, dialog, #chat, .review-diagnostic, .view:not(#practice), [data-expand-answer] { display: none !important; }
   .shell, .panel, .view { max-width: none; padding: 0; border: 0; }
   .session { display: block !important; box-shadow: none; }
   .review-head, .review-section { box-shadow: none; }

@@ -375,6 +375,50 @@ class Workflow(unittest.TestCase):
                 if mode=='next-text':self.assertEqual(r['next'],['先说结论','给出证据'])
                 if mode=='next-empty':self.assertEqual(r['next'],['测试调整措施']);self.assertEqual(r['nextSource'],'loss-actions')
                 if mode=='optional-missing':self.assertEqual(r['next'],[]);self.assertEqual(r['translations'][0]['source'],'conversation')
+    def test_review_accepts_model_prose_objects_lists_and_long_examples(self):
+        for mode in ('structured-improved','long-improved'):
+            with self.subTest(mode=mode):
+                Provider.mode='ok';s=self.send(self.begin());Provider.mode=mode;s=self.review(s)
+                self.assertEqual(s['status'],'reviewed');self.assertEqual(s['review']['score'],59)
+                improved=s['review']['timeline'][0]['improved']
+                if mode=='long-improved':self.assertTrue(improved.endswith('完整长示范末尾。'));self.assertGreater(len(improved),12000)
+                else:self.assertIn('明确当前判断',improved);self.assertIn('证据还需具体',s['review']['timeline'][0]['feedback'])
+    def test_missing_example_supplemented_by_model_without_regrading(self):
+        s=self.send(self.begin());Provider.mode='empty-improved';s=self.review(s)
+        self.assertEqual(s['review']['score'],59);self.assertEqual(s['review']['detailStatus'],'completed')
+        self.assertIn('模型替身补全示范',s['review']['timeline'][0]['improved'])
+        self.assertEqual(sum('分析完整记录' in c['body']['messages'][0]['content'] for c in Provider.calls),1)
+    def test_missing_example_failure_retains_grades_then_retry_only_details(self):
+        s=self.send(self.begin());Provider.mode='details-fail';s=self.review(s)
+        self.assertEqual(s['status'],'reviewed');self.assertEqual(s['review']['detailStatus'],'partial')
+        self.assertEqual(s['review']['timeline'][0]['improved'],'')
+        before=copy.deepcopy(s);calls=len(Provider.calls);Provider.mode='ok'
+        s=self.call('review-details',sessionId=s['id'],revision=s['revision'])
+        self.assertEqual(s['review']['detailStatus'],'completed');self.assertEqual(s['messages'],before['messages'])
+        self.assertEqual(s['review']['dims'],before['review']['dims']);self.assertEqual(s['review']['score'],before['review']['score'])
+        self.assertEqual(s['review']['timeline'][0]['dims'],before['review']['timeline'][0]['dims'])
+        self.assertEqual(len(Provider.calls),calls+1)
+    def test_quotes_analysis_saved_frozen_referenced_and_stale(self):
+        raw='先把测试条件说清楚。\n需要我做什么决定？'
+        self.call('object-quotes',objectId='builtin-project',quotes=raw)
+        result=self.call('analyze-object',objectId='builtin-project')
+        self.assertEqual(result['sampleCount'],2);self.assertEqual(result['traits'][0]['evidence'],[raw.splitlines()[0]])
+        s=self.begin();self.assertEqual(s['object']['quotes'],raw);self.assertIn('quoteAnalysis',s['object'])
+        prompt=Provider.calls[-1]['body']['messages'][0]['content'];self.assertIn('模拟而非对象说过的原话',prompt)
+        before=copy.deepcopy(s['object'])
+        self.call('object-quotes',objectId='builtin-project',quotes='更新后的语录。')
+        current=next(o for o in w.objects() if o['id']=='builtin-project')
+        self.assertTrue(current['quoteAnalysisStale']);self.assertNotIn('quoteAnalysis',current)
+        self.assertEqual(w.get('session',s['id'])['object'],before)
+        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertEqual(next(o for o in w.objects() if o['id']=='builtin-project')['quotes'],'更新后的语录。')
+    def test_quote_analysis_rejects_invented_evidence_and_empty_input(self):
+        self.call('object-quotes',objectId='builtin-project',quotes='真实记录的语录。');Provider.mode='quote-bad-evidence'
+        with self.assertRaises(urllib.error.HTTPError):self.call('analyze-object',objectId='builtin-project')
+        self.assertIsNone(w.get('object-analysis','builtin-project'))
+        self.assertEqual(w.get('object','builtin-project')['quotes'],'真实记录的语录。')
+        self.call('object-quotes',objectId='builtin-project',quotes='')
+        with self.assertRaises(urllib.error.HTTPError):self.call('analyze-object',objectId='builtin-project')
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')

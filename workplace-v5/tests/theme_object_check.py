@@ -74,7 +74,7 @@ with tempfile.TemporaryDirectory() as data:
             page.click('[data-close=objectDialog]')
             page.click('[data-tab=practice]')
             expect(page.locator('.mark svg')).to_have_count(1)
-            page.screenshot(path=str(ART / 'v5.0.11-corporate-home.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.12-corporate-home.png'), full_page=True)
 
             def choose_theme(ident):
                 page.click('#themeOpen')
@@ -94,13 +94,13 @@ with tempfile.TemporaryDirectory() as data:
                 page.reload()
                 expect(page.locator('#sceneTitle')).to_contain_text('项目进度')
                 expect(page.locator('html')).to_have_attribute('data-theme', ident)
-                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-home-viewport.png')))
+                page.screenshot(path=str(ART / ('v5.0.12-' + ident + '-home-viewport.png')))
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), ident + ' mobile overflow'
                 page.click('#themeOpen')
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 expect(page.locator('#themeChoices [aria-pressed=true]')).to_have_count(1)
-                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-picker-mobile.png')))
+                page.screenshot(path=str(ART / ('v5.0.12-' + ident + '-picker-mobile.png')))
                 page.click('[data-close=themeDialog]')
                 page.set_viewport_size({'width':1440, 'height':1000})
             # Another tab follows the stored selection.
@@ -146,6 +146,33 @@ with tempfile.TemporaryDirectory() as data:
                        'model':'test-model', 'useLLM':True}})
             assert response.ok
             page.reload()
+            # Record quotes, inspect evidence-based inference, refresh and invalidate it.
+            page.click('[data-tab=objects]')
+            page.click('[data-object-quotes=builtin-project]')
+            expect(page.locator('#quotesDialog')).to_be_visible()
+            raw_quotes='先把测试条件说清楚。\n需要我做什么决定？'
+            page.fill('#objectQuotes',raw_quotes)
+            page.click('#quotesAnalyze')
+            expect(page.locator('#quotesStatus')).to_contain_text('语录与 AI 分析已保存')
+            expect(page.locator('#quoteAnalysis')).to_contain_text('倾向明确证据')
+            expect(page.locator('#quoteAnalysis')).to_contain_text('可能的表达 · AI 模拟')
+            assert page.locator('#objectQuotes').input_value()==raw_quotes
+            page.locator('#quoteAnalysis details > summary').first.click()
+            expect(page.locator('#quoteAnalysis .quote-evidence').first).to_have_text(raw_quotes.splitlines()[0])
+            page.screenshot(path=str(ART/'v5.0.12-quote-analysis.png'))
+            page.click('[data-close=quotesDialog]')
+            page.reload();page.click('[data-tab=objects]');page.click('[data-object-quotes=builtin-project]')
+            expect(page.locator('#objectQuotes')).to_have_value(raw_quotes)
+            expect(page.locator('#quoteAnalysis')).to_contain_text('倾向明确证据')
+            page.fill('#objectQuotes',raw_quotes+'\n请明确下一次更新时间。')
+            page.click('#quotesSave');expect(page.locator('#quotesStatus')).to_have_text('语录已保存，供新训练参考。')
+            expect(page.locator('#quoteAnalysis')).to_contain_text('原分析已失效')
+            page.click('#quotesAnalyze');expect(page.locator('#quotesStatus')).to_contain_text('语录与 AI 分析已保存')
+            page.set_viewport_size({'width':390,'height':844})
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+            page.screenshot(path=str(ART/'v5.0.12-quote-analysis-mobile.png'))
+            page.set_viewport_size({'width':1440,'height':1000})
+            page.click('[data-close=quotesDialog]');page.click('[data-tab=practice]')
             page.click('#start')
             expect(page.locator('.bubble')).to_have_count(1)
             page.fill('#reply', '我建议先核实当前结果，并请您确认资源优先级。')
@@ -153,6 +180,8 @@ with tempfile.TemporaryDirectory() as data:
             expect(page.locator('.bubble')).to_have_count(3)
             session_id = page.evaluate("localStorage.getItem('workplace_active_session')")
             original = page.request.get(url + '/api/workplace/session?id=' + session_id).json()
+            assert original['object']['quoteAnalysis']['sampleCount']==3
+            assert original['object']['quotes'].startswith(raw_quotes)
             page.click('[data-tab=objects]')
             page.once('dialog', lambda d:d.accept())
             page.click('[data-delete-object=builtin-project]')
@@ -162,16 +191,27 @@ with tempfile.TemporaryDirectory() as data:
             page.fill('#reply', '我负责明天更新核查结果，未知项会明确标注。')
             page.click('#send')
             expect(page.locator('.bubble')).to_have_count(5)
+            Provider.mode='details-fail'
             page.click('#end')
             expect(page.locator('.bigscore')).to_be_visible()
             expect(page.locator('#back')).to_be_enabled()
+            expect(page.locator('[data-review-details]')).to_be_enabled()
+            expect(page.locator('#sessionError')).not_to_be_visible()
+            expect(page.locator('#review')).to_contain_text('六维评分与原话依据已保存')
+            page.screenshot(path=str(ART/'v5.0.12-partial-review.png'),full_page=True)
+            before=page.request.get(url+'/api/workplace/session?id='+session_id).json()
+            Provider.mode='ok';page.click('[data-review-details]')
+            expect(page.locator('[data-review-details]')).to_have_count(0)
+            expect(page.locator('.demo').first).to_contain_text('模型替身补全示范')
+            after=page.request.get(url+'/api/workplace/session?id='+session_id).json()
+            assert before['review']['dims']==after['review']['dims'] and before['messages']==after['messages']
             count = len(Provider.calls)
             for ident, (_, brand, stage) in PALETTES.items():
                 choose_theme(ident)
                 assert page.locator('.review-verdict').evaluate('(e)=>getComputedStyle(e).backgroundColor') == stage
                 assert page.locator('.radar .shape').evaluate('(e)=>getComputedStyle(e).stroke') == brand
                 page.evaluate('window.scrollTo(0,0)')
-                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-review.png')), full_page=True)
+                page.screenshot(path=str(ART / ('v5.0.12-' + ident + '-review.png')), full_page=True)
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 page.set_viewport_size({'width':1440, 'height':1000})
@@ -179,7 +219,7 @@ with tempfile.TemporaryDirectory() as data:
             choose_theme('ocean')
             with page.expect_download() as dl:
                 page.click('#exportHTML')
-            export = ART / 'v5.0.11-ocean-report.html'
+            export = ART / 'v5.0.12-ocean-report.html'
             dl.value.save_as(export)
             content = export.read_text()
             assert 'data-theme="ocean"' in content
@@ -196,7 +236,7 @@ with tempfile.TemporaryDirectory() as data:
             page.click('#again')
             assert page.locator('#objectSelect').input_value() not in ('', 'builtin-project')
             page.click('[data-tab=objects]')
-            page.screenshot(path=str(ART / 'v5.0.11-object-delete.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.12-object-delete.png'), full_page=True)
             while page.locator('[data-delete-object]').count():
                 previous = page.locator('[data-delete-object]').count()
                 page.once('dialog', lambda d:d.accept())
@@ -209,7 +249,7 @@ with tempfile.TemporaryDirectory() as data:
             expect(page.locator('#objectFocus')).not_to_be_visible()
             page.click('[data-category=technical]')
             expect(page.locator('#start')).to_be_disabled()
-            page.screenshot(path=str(ART / 'v5.0.11-empty-objects.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.12-empty-objects.png'), full_page=True)
             page.click('[data-create-object]')
             create_object('重新创建的对象')
             expect(page.locator('#noObjects')).not_to_be_visible()

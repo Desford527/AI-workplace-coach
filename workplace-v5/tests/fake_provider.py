@@ -23,10 +23,20 @@ class Provider(http.server.BaseHTTPRequestHandler):
         user=body['messages'][-1]['content']
         if '分析完整记录' in prompt:
             user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('['))
-        elif '长期沟通画像' in prompt:
+        elif any(token in prompt for token in ('长期沟通画像','补全复盘说明')):
             user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{'))
         if mode=='json' or (mode=='flaky-json' and len(type(self).calls)==1): content='not-json'
         elif '连接测试' in prompt: content=json.dumps({'ok':True})
+        elif '分析对象语录' in prompt:
+            source=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
+            q=source['quotes'][0]
+            ev='未记录的虚构语录' if mode=='quote-bad-evidence' else q
+            content=json.dumps({'summary':'测试替身：样本有限，仅可推测表达偏好。','traits':[{'title':'倾向明确证据（测试替身）','description':'这是沟通特征推测，不代表确定人格。','evidence':[ev]}],'likelyLines':[{'text':'测试替身模拟表达：请先明确验证条件和下一步。','basis':[ev]}]},ensure_ascii=False)
+        elif '补全复盘说明' in prompt:
+            if mode=='details-fail':
+                self.send_response(503);self.end_headers();return
+            source=json.loads(user)
+            content=json.dumps({'timeline':[{'messageId':ident,'feedback':'模型替身补全点评','improved':'模型替身补全示范：我会核查[待确认]并在[时间]反馈。'} for ident in source['needs']]},ensure_ascii=False)
         elif '长期沟通画像' in prompt:
             if mode=='portrait-fail': content='bad portrait'
             else:
@@ -61,6 +71,14 @@ class Provider(http.server.BaseHTTPRequestHandler):
                     t['feedback']='本轮表达已经回应了推进方向，但证据和请求仍缺少细节。需要先交代已核实的事实、尚未确认的风险以及希望对方做出的决定。' * 3 + '完整逐轮点评末尾保留标记。'
                     t['improved']='建议先验证已发现的阻塞项，再确认是否具备按计划推进的条件。我会补充当前已完成的核查结果、尚待确认的风险及核查负责人，并在下一次对齐时更新。对于暂时未知的信息，我会明确标注待确认。需要您协助确认当前优先级及可投入的人手；如果暂时无法增加资源，我们可以先收缩范围、保留核心交付，再根据核查结果决定下一步。' * 3 + '完整改进示范末尾保留标记。'
                 o['next']=['先给一句明确判断，再补充已核实的事实。','把请求写成对方可以直接回应的具体决定。','约定负责人、下一次更新时间与备选方案。']
+            if mode=='structured-improved':
+                for t in o['timeline']:
+                    t['improved']={'answer':['明确当前判断。','核实[待确认]，再说明下一步。']}
+                    t['feedback']=['已有方向。','证据还需具体。']
+            if mode in ('empty-improved','details-fail'):
+                for t in o['timeline']:t['improved']=None
+            if mode=='long-improved':
+                for t in o['timeline']:t['improved']='长示范内容。'*2200+'完整长示范末尾。'
             if mode=='optional-missing':
                 for k in ('next','language','sampleLimit','overall','translations'):o.pop(k,None)
                 o['loss']=[]
