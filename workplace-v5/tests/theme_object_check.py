@@ -57,6 +57,8 @@ with tempfile.TemporaryDirectory() as data:
             assert '↗' not in page.locator('body').inner_text()
             expect(page.locator('#previewAvatar')).to_have_text('朱')
             expect(page.locator('#previewRole')).to_have_text('朱总：项目负责人')
+            expect(page.locator('#objectSelect option[value=builtin-project]')).to_have_text('朱总：项目负责人')
+            expect(page.locator('#objectSelect option[value=builtin-technical]')).to_have_text('严工：技术评审专家')
             page.click('[data-tab=objects]')
             expect(page.locator('#objectCards .object-card')).to_have_count(4)
             expect(page.locator('#objectCards')).to_contain_text('严工：技术评审专家')
@@ -72,7 +74,7 @@ with tempfile.TemporaryDirectory() as data:
             page.click('[data-close=objectDialog]')
             page.click('[data-tab=practice]')
             expect(page.locator('.mark svg')).to_have_count(1)
-            page.screenshot(path=str(ART / 'v5.0.10-corporate-home.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.11-corporate-home.png'), full_page=True)
 
             def choose_theme(ident):
                 page.click('#themeOpen')
@@ -92,13 +94,13 @@ with tempfile.TemporaryDirectory() as data:
                 page.reload()
                 expect(page.locator('#sceneTitle')).to_contain_text('项目进度')
                 expect(page.locator('html')).to_have_attribute('data-theme', ident)
-                page.screenshot(path=str(ART / ('v5.0.10-' + ident + '-home-viewport.png')))
+                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-home-viewport.png')))
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), ident + ' mobile overflow'
                 page.click('#themeOpen')
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 expect(page.locator('#themeChoices [aria-pressed=true]')).to_have_count(1)
-                page.screenshot(path=str(ART / ('v5.0.10-' + ident + '-picker-mobile.png')))
+                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-picker-mobile.png')))
                 page.click('[data-close=themeDialog]')
                 page.set_viewport_size({'width':1440, 'height':1000})
             # Another tab follows the stored selection.
@@ -169,7 +171,7 @@ with tempfile.TemporaryDirectory() as data:
                 assert page.locator('.review-verdict').evaluate('(e)=>getComputedStyle(e).backgroundColor') == stage
                 assert page.locator('.radar .shape').evaluate('(e)=>getComputedStyle(e).stroke') == brand
                 page.evaluate('window.scrollTo(0,0)')
-                page.screenshot(path=str(ART / ('v5.0.10-' + ident + '-review.png')), full_page=True)
+                page.screenshot(path=str(ART / ('v5.0.11-' + ident + '-review.png')), full_page=True)
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 page.set_viewport_size({'width':1440, 'height':1000})
@@ -177,7 +179,7 @@ with tempfile.TemporaryDirectory() as data:
             choose_theme('ocean')
             with page.expect_download() as dl:
                 page.click('#exportHTML')
-            export = ART / 'v5.0.10-ocean-report.html'
+            export = ART / 'v5.0.11-ocean-report.html'
             dl.value.save_as(export)
             content = export.read_text()
             assert 'data-theme="ocean"' in content
@@ -194,7 +196,7 @@ with tempfile.TemporaryDirectory() as data:
             page.click('#again')
             assert page.locator('#objectSelect').input_value() not in ('', 'builtin-project')
             page.click('[data-tab=objects]')
-            page.screenshot(path=str(ART / 'v5.0.10-object-delete.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.11-object-delete.png'), full_page=True)
             while page.locator('[data-delete-object]').count():
                 previous = page.locator('[data-delete-object]').count()
                 page.once('dialog', lambda d:d.accept())
@@ -207,7 +209,7 @@ with tempfile.TemporaryDirectory() as data:
             expect(page.locator('#objectFocus')).not_to_be_visible()
             page.click('[data-category=technical]')
             expect(page.locator('#start')).to_be_disabled()
-            page.screenshot(path=str(ART / 'v5.0.10-empty-objects.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.11-empty-objects.png'), full_page=True)
             page.click('[data-create-object]')
             create_object('重新创建的对象')
             expect(page.locator('#noObjects')).not_to_be_visible()
