@@ -10,3 +10,5 @@
 新增会议纪要导入（粘贴/TXT/Markdown/DOCX）：带原文依据提取对象观察、语录、项目背景和经验，按需核对保存，新训练可选择项目引用。见 workplace-v5/README.md 的 v5.0.14 章节。
 
 会议纪要已移到自由输入区上方；公司模板成果展示 PPT、PDF 与逐页讲述稿位于 `presentation/`。
+
+项目成果展示已提供「截图增强版」：`presentation/AI-workplace-coach-showcase-v2.pptx`（20页，18页功能截图），另附PDF与逐页讲述稿；应用版本保持 v5.0.15。
