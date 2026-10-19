@@ -1,0 +1,168 @@
+{
+  "summary": "三场演示练习中，逐步用事实与边界支持判断，愿意承担后续行动；决策请求仍可更精炼，证据口径需要继续核对。仅反映本次练习。",
+  "traits": [
+    {
+      "title": "倾向先推动，再补齐判断依据",
+      "description": "开场愿意给建议，追问后开始区分已知、未知和待核查事项。",
+      "action": "",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "8b553d91-daec-43f0-944f-9191e094c978",
+          "quote": "已知是该次工况下触发保护，日志已保留；是否与控制参数有关仍待复核，不能当作确定结论。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "237cfc54-dc21-4f76-a288-3ece9dc36bc8",
+          "quote": "依据是交付验证存在未关闭项；预研没有对外承诺节点。我会先请两个负责人核对这两点。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "fc89aee8-7eba-4234-aea5-db50df215faf",
+          "quote": "常温验证已通过，高温验证还没有闭环。我负责补齐验证计划，请您帮我确认台架优先级，再确定可交付范围。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    },
+    {
+      "title": "能够把交付与验证边界分开",
+      "description": "知道暂不承诺未验证范围，并保留条件变化后的更新空间。",
+      "action": "",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "96eb14c3-3883-4dd8-b609-c0b7758df882",
+          "quote": "明天12点我同步复核结论、剩余风险和复测建议；若证据不足，就保持待确认并更新下一次检查时间。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "51ad8626-fc75-4783-ba32-9b3d437de76f",
+          "quote": "若最终选择方案A，我今天17点同步预研恢复计划；有新增交付约束时，我重新核对排期再承诺。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "afc8dab6-b3ed-4ddf-82bd-d1c8b9ed1e6c",
+          "quote": "请您今天17点前确认明天上午的台架优先级；我18点发核查清单，次日12点同步结果，再确认可交付范围。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    }
+  ],
+  "strengths": [
+    {
+      "title": "主动接住责任，给出反馈时间",
+      "description": "多次明确自己负责什么、谁配合以及下次同步时间。",
+      "action": "",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "96eb14c3-3883-4dd8-b609-c0b7758df882",
+          "quote": "明天12点我同步复核结论、剩余风险和复测建议；若证据不足，就保持待确认并更新下一次检查时间。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "51ad8626-fc75-4783-ba32-9b3d437de76f",
+          "quote": "若最终选择方案A，我今天17点同步预研恢复计划；有新增交付约束时，我重新核对排期再承诺。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "afc8dab6-b3ed-4ddf-82bd-d1c8b9ed1e6c",
+          "quote": "请您今天17点前确认明天上午的台架优先级；我18点发核查清单，次日12点同步结果，再确认可交付范围。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    },
+    {
+      "title": "愿意提供备选，兼顾协作影响",
+      "description": "不仅提出首选方案，也能说明替代路径及其限制。",
+      "action": "",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "23bdfd20-8e2d-49b5-95b2-86814adfb8a1",
+          "quote": "我理解您关心的不只是原因，还有对交付的影响。复测关闭前，只承诺已验证范围。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "6751c796-c55e-473e-bbec-61dac01a949f",
+          "quote": "我先复述您的要求：不能只保一个任务，还要把另一任务的恢复安排讲清楚。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "af325ec9-e65f-4aa8-86df-c07ff1a60589",
+          "quote": "若明天台架无法安排，我们先做软件回放；它不能替代高温实测，完整验收仍需等待验证。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    }
+  ],
+  "directions": [
+    {
+      "title": "让决策请求更短、更明确",
+      "description": "把需要协调的事项单独说，减少背景与请求混在一起。",
+      "action": "开口先说：请您在什么时间前，确认哪个选择。",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "f64ade6d-114b-45b9-8adb-9c6d3c3599c5",
+          "quote": "请您今天确认复测台架的优先级；如需调整其他任务，我先与负责人核对影响。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "75ced7b2-3ef8-4fc6-91fe-618be1b5b395",
+          "quote": "请您今天16点前确认方案A或B，我负责协调两位负责人，17点发布排期。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "17d79722-68d0-490b-a6ef-d470d94645c6",
+          "quote": "我今天18点整理未关闭项，王工明天上午核查高温记录；请您确认台架的使用优先级。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    },
+    {
+      "title": "让依据有记录、有适用口径",
+      "description": "进一步核对验证记录、场景和待确认项，避免把初步判断讲成事实。",
+      "action": "按已知、未知、谁核查、何时反馈四项准备。",
+      "evidence": [
+        {
+          "sessionId": "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+          "messageId": "8b553d91-daec-43f0-944f-9191e094c978",
+          "quote": "已知是该次工况下触发保护，日志已保留；是否与控制参数有关仍待复核，不能当作确定结论。"
+        },
+        {
+          "sessionId": "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+          "messageId": "237cfc54-dc21-4f76-a288-3ece9dc36bc8",
+          "quote": "依据是交付验证存在未关闭项；预研没有对外承诺节点。我会先请两个负责人核对这两点。"
+        },
+        {
+          "sessionId": "6ad0d54f-6754-401e-bfb2-858352a1075e",
+          "messageId": "fc89aee8-7eba-4234-aea5-db50df215faf",
+          "quote": "常温验证已通过，高温验证还没有闭环。我负责补齐验证计划，请您帮我确认台架优先级，再确定可交付范围。"
+        }
+      ],
+      "confidence": "多场训练观察"
+    }
+  ],
+  "sampleCount": 18,
+  "sessionCount": 3,
+  "sourceSessions": [
+    "b920073a-07a3-4c9d-84fa-3300a6e31c80",
+    "2f09145b-60cf-42d7-a9dc-8edfbdaec2fa",
+    "6ad0d54f-6754-401e-bfb2-858352a1075e"
+  ],
+  "updated": "2026-10-19T15:22:16.937269+00:00",
+  "method": "AI 原话证据画像",
+  "history": [
+    {
+      "updated": "2026-10-19T15:22:10.968853+00:00",
+      "summary": "三场演示练习中，逐步用事实与边界支持判断，愿意承担后续行动；决策请求仍可更精炼，证据口径需要继续核对。仅反映本次练习。",
+      "sessionCount": 1
+    },
+    {
+      "updated": "2026-10-19T15:22:13.968655+00:00",
+      "summary": "三场演示练习中，逐步用事实与边界支持判断，愿意承担后续行动；决策请求仍可更精炼，证据口径需要继续核对。仅反映本次练习。",
+      "sessionCount": 2
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "case": "create",
+    "id": "custom-eb64c954bd684b60975ae52c2e53fdae",
+    "name": "王工",
+    "role": "测试负责人"
+  },
+  {
+    "case": "edit",
+    "personalityContains": "更关注验证边界",
+    "quote": "条件没验证，就先别承诺交付。"
+  },
+  {
+    "case": "intensity",
+    "activeIntensity": "深入",
+    "defaultIntensity": "深入",
+    "recorded": [
+      {
+        "from": "标准",
+        "to": "深入",
+        "at": "2026-10-19T15:22:30.647011+00:00",
+        "source": "自由输入"
+      }
+    ]
+  },
+  {
+    "case": "experience",
+    "title": "先分清已知与未知",
+    "source": "自由输入"
+  }
+]
