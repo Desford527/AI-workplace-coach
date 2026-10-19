@@ -311,7 +311,7 @@ function renderMeetingPreview(){
  $('meetingApply').onclick=applyMeeting;
 }
 async function openMeeting(id){
- meetingDraft=await request('/api/workplace/meeting?id='+encodeURIComponent(id));renderMeetingPreview();showTab('meetings');$('meetingPreview').scrollIntoView({behavior:'smooth'});
+ meetingDraft=await request('/api/workplace/meeting?id='+encodeURIComponent(id));renderMeetingPreview();$('meetingPreview').scrollIntoView({behavior:'smooth'});
 }
 $('projectSelect').onchange=()=>{const project=(ws.projects||[]).find(p=>p.id===$('projectSelect').value);if(project)$('background').value=project.background;};
 function clearMeetingPreview(){meetingDraft=null;renderMeetingPreview();}

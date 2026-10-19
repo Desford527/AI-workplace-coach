@@ -155,3 +155,11 @@
 - Python 编译、JavaScript 语法与 `git diff --check` 通过。截图位于本次环境 `/tmp/workplace-browser-artifacts/v5.0.14-*`。
 
 模型协议测试使用明确标注的本机替身，不代表真实 DeepSeek 的纪要提取质量；本次未实测真实模型及计费。Word 读取已用生成的实际 DOCX 文件验证，复杂排版、扫描图片、PDF/OCR 和旧 DOC 不在支持范围；Windows EXE 未构建。源码服务本地启动、导入保存与浏览器流程已实测。
+
+## v5.0.15 布局与展示材料验收 · 2026-10-19
+
+- `python tests/meeting_browser_check.py`：通过。纪要与自由输入为紧邻兄弟区域，独立纪要导航移除，跨分页仍可见；DOCX、预览、分批保存、来源回看、项目背景、去重、刷新恢复、错误保留和四主题手机界面通过。
+- `python tests/browser_check.py`：通过，含训练、复盘、画像、HTML/PDF 导出与手机流程；新增常驻纪要区域在打印复盘时隐藏。
+- `python tests/default_setup_check.py`：全新及旧数据启动配置检查通过，无真实模型调用；默认 API 文件未修改。后端逻辑沿用 v5.0.14 的 68 项验收，本次未重复运行整套后端测试。
+- 展示 PPT 使用用户原模板，保留标识、横幅、4:3 比例与企业色，生成 13 页与 13 份演讲者备注；LibreOffice 成功打开并导出 13 页 PDF，逐页渲染检查并修正字体替换与卡片溢出。
+- PPT/源码中的文字与截图不包含真实 Key；示例对话和纪要为虚构展示，未伪称模型实测或业务改善效果。PPT 未在用户的 Windows PowerPoint 中实机打开；附 PDF 作为版式参照。

@@ -27,7 +27,7 @@ with tempfile.TemporaryDirectory() as data:
         with sync_playwright() as pw:
             browser=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True)
             page=browser.new_page(viewport={'width':1440,'height':1000});errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-            page.goto(url);page.click('[data-tab=meetings]');expect(page.locator('#meetingForm')).to_be_visible()
+            page.goto(url);assert page.evaluate("document.getElementById('meetings').nextElementSibling.id==='freeWorkspace'");assert page.locator('[data-tab=meetings]').count()==0;page.locator('#meetings').scroll_into_view_if_needed();expect(page.locator('#meetingForm')).to_be_visible()
             page.locator('#meetingFile').set_input_files({'name':'A项目周例会.docx','mimeType':'application/vnd.openxmlformats-officedocument.wordprocessingml.document','buffer':docx_bytes()})
             expect(page.locator('#meetingStatus')).to_contain_text('已读取正文');expect(page.locator('#meetingText')).to_have_value(MINUTES)
             page.click('#meetingAnalyze');expect(page.locator('#meetingStatus')).to_contain_text('尚未更新资料');expect(page.locator('#meetingText')).to_have_value(MINUTES)
@@ -35,11 +35,11 @@ with tempfile.TemporaryDirectory() as data:
             page.click('#meetingAnalyze');expect(page.locator('#meetingStatus')).to_contain_text('提取结果已保留');expect(page.locator('[data-meeting-item]')).to_have_count(7)
             expect(page.locator('[data-meeting-target="朱总"]')).to_have_value('builtin-project');expect(page.locator('[data-meeting-target="王工"]')).to_have_value('new')
             page.locator('.meeting-evidence').first.evaluate('(el)=>el.open=true');expect(page.locator('.meeting-evidence').first).to_contain_text('朱总要求先核实')
-            page.locator('#meetingPreview').screenshot(path=str(ART/'v5.0.14-meeting-preview.png'))
+            page.locator('#meetingPreview').screenshot(path=str(ART/'v5.0.15-meeting-preview.png'))
             # Save a subset first, then the rest; creation and repeated save do not duplicate.
             page.locator('[data-meeting-item="4"]').uncheck();page.click('#meetingApply');expect(page.locator('#meetingApplyStatus')).to_contain_text('已保存 6 项')
             expect(page.locator('[data-meeting-item="4"]')).to_be_checked();page.click('#meetingApply');expect(page.locator('#meetingApplyStatus')).to_contain_text('已保存 1 项');expect(page.locator('#meetingApply')).to_be_disabled()
-            page.click('[data-tab=objects]');expect(page.locator('.object-card')).to_have_count(5)
+            page.click('[data-tab=objects]');expect(page.locator('#meetings')).to_be_visible();expect(page.locator('.object-card')).to_have_count(5)
             page.click('[data-tab=experiences]');expect(page.locator('.experience-card')).to_have_count(9)
             page.click('[data-tab=practice]');expect(page.locator('#projectSelect option')).to_have_count(2)
             project_id=page.locator('#projectSelect option').nth(1).get_attribute('value');page.select_option('#projectSelect',project_id)
@@ -48,7 +48,7 @@ with tempfile.TemporaryDirectory() as data:
             session_id=page.evaluate("localStorage.getItem('workplace_active_session')")
             stored=json.load(urllib.request.urlopen(url+'/api/workplace/session?id='+session_id));assert stored['project']['id']==project_id
             assert stored['background']=='仅使用本次编辑后的脱敏背景'
-            page.click('[data-tab=meetings]');page.reload();page.click('[data-tab=meetings]');expect(page.locator('#meetingRecords')).to_contain_text('已保存 7 项')
+            page.locator('#meetings').scroll_into_view_if_needed();page.reload();page.locator('#meetings').scroll_into_view_if_needed();expect(page.locator('#meetingRecords')).to_contain_text('已保存 7 项')
             page.locator('#meetingRecords [data-open-meeting]').click();expect(page.locator('#meetingApply')).to_be_disabled()
             # Same source returns the saved preview without another model call.
             count=len(Provider.calls);page.fill('#meetingText',MINUTES);page.fill('#meetingTitle','同一会议另一文件名');page.click('#meetingAnalyze');expect(page.locator('#meetingStatus')).to_contain_text('提取结果已保留');assert len(Provider.calls)==count
@@ -58,7 +58,7 @@ with tempfile.TemporaryDirectory() as data:
             for theme in ('corporate','forest','ocean','violet'):
                 page.evaluate('(name)=>window.CoachTheme.set(name)',theme);page.set_viewport_size({'width':390,'height':844});page.locator('#meetingPreview').scroll_into_view_if_needed()
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),theme
-                page.screenshot(path=str(ART/f'v5.0.14-{theme}-meeting-mobile.png'))
+                page.screenshot(path=str(ART/f'v5.0.15-{theme}-meeting-mobile.png'))
             assert not errors,errors
             browser.close()
         print('PASS: DOCX reading, no-config/402 input retention, source preview, person mapping, partial save, library/project integration, custom background, deduplication, refresh recovery, four mobile themes. TEST DOUBLE only.')
