@@ -74,6 +74,42 @@ class Workflow(unittest.TestCase):
     def test_snapshot_survives_object_edit(self):
         s=self.begin();o=copy.deepcopy(s['object']);o['goals']='修改后的目标';self.call('object',object=o)
         self.assertNotEqual(w.get('session',s['id'])['object']['goals'],'修改后的目标')
+    def test_delete_builtin_preserves_session_and_portrait(self):
+        s=self.send(self.begin());s=self.review(s)
+        snapshot=copy.deepcopy(s);portrait=copy.deepcopy(w.get('portrait','self'));config=copy.deepcopy(w.config_store())
+        result=self.call('delete-object',objectId='builtin-project')
+        self.assertTrue(result['deleted']);self.assertNotIn('builtin-project',[o['id'] for o in w.objects()])
+        self.assertEqual(w.get('session',s['id']),snapshot)
+        self.assertEqual(w.get('portrait','self'),portrait);self.assertEqual(w.config_store(),config)
+        with self.assertRaises(urllib.error.HTTPError) as cm:self.begin()
+        self.assertEqual(cm.exception.code,400)
+        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        self.assertNotIn('builtin-project',[o['id'] for o in w.objects()])
+    def test_deleted_legacy_and_edited_builtin_do_not_reappear(self):
+        imported=next(o for o in w.objects() if o['id'].startswith('legacy-'))
+        builtin=next(o for o in w.objects() if o['id']=='builtin-technical')
+        builtin['goals']='编辑后的目标';self.call('object',object=builtin)
+        for o in (imported,builtin):self.call('delete-object',objectId=o['id'])
+        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server)
+        ids={o['id'] for o in w.objects()};self.assertNotIn(imported['id'],ids);self.assertNotIn(builtin['id'],ids)
+        with self.assertRaises(urllib.error.HTTPError) as cm:self.call('object',object=builtin)
+        self.assertEqual(cm.exception.code,409)
+    def test_delete_custom_idempotent_and_active_session_continues(self):
+        o=copy.deepcopy(w.objects()[0]);o.pop('id');o=self.call('object',object=o)
+        s=self.call('start',sceneId='progress',objectId=o['id'])
+        rid=str(uuid.uuid4());out=self.call('delete-object',requestId=rid,objectId=o['id'])
+        self.assertEqual(self.call('delete-object',requestId=rid,objectId=o['id']),out)
+        self.assertIsNone(w.get('object',o['id']))
+        s=self.review(self.send(s));self.assertEqual(s['status'],'reviewed');self.assertEqual(s['object'],o)
+        with self.assertRaises(urllib.error.HTTPError) as cm:self.call('delete-object',objectId='missing')
+        self.assertEqual(cm.exception.code,404)
+    def test_delete_all_objects_then_create(self):
+        for o in w.objects():self.call('delete-object',objectId=o['id'])
+        self.assertEqual(w.objects(),[])
+        w.init(server.ROOT,server.DATA_ROOT,server.CONFIG_PATH,server);self.assertEqual(w.objects(),[])
+        o=copy.deepcopy(w.CATALOG['objects'][0]);o.pop('id');o=self.call('object',object=o)
+        self.assertEqual(len(w.objects()),1)
+        self.assertEqual(self.call('start',sceneId='progress',objectId=o['id'])['object'],o)
     def test_config_multi_provider_key_retention(self):
         a={'id':'p1','name':'改名','baseURL':f'http://127.0.0.1:{self.provider.server_port}/v1/chat/completions','model':'new-model','reviewModel':'other-model'}
         out=self.call('config',api=a);self.assertTrue(out['apis'][0]['hasKey']);self.assertNotIn('apiKey',out['apis'][0])

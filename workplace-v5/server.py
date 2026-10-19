@@ -102,7 +102,7 @@ def _probe_existing(port, timeout=1.5):
             if r.status != 200:
                 return False
             data = json.loads(r.read())
-            return data.get("release") == "5.0.7"
+            return data.get("release") == "5.0.8"
     except Exception:
         return False
 
@@ -637,7 +637,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_HEAD(self):
         if not self._local_request(): return
         decoded = urllib.parse.unquote(self.path.split("?")[0])
-        if decoded not in ("/", "/index.html", "/web/app.js", "/web/style.css", "/favicon.ico"):
+        if decoded not in ("/", "/index.html", "/web/app.js", "/web/theme.js", "/web/style.css", "/favicon.ico"):
             self._send_json({"error":"静态文件不存在"},404)
             return
         super().do_HEAD()
@@ -680,7 +680,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if any(part.startswith(".") or part in ("user_data", "skills") for part in decoded.split("/")):
             self._send_json({"error":"隐私文件不能通过静态 URL 读取"},403)
             return
-        if decoded not in ("/", "/index.html", "/web/app.js", "/web/style.css", "/favicon.ico"):
+        if decoded not in ("/", "/index.html", "/web/app.js", "/web/theme.js", "/web/style.css", "/favicon.ico"):
             self._send_json({"error":"静态文件不存在"},404)
             return
         return super().do_GET()
@@ -801,7 +801,7 @@ if __name__ == "__main__":
     http.server.ThreadingHTTPServer.allow_reuse_address = True
     workplace.init(ROOT, DATA_ROOT, CONFIG_PATH, sys.modules[__name__])
     with http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
-        print(f"AI职场沟通训练师 v5.0.7 已启动： {url}")
+        print(f"AI职场沟通训练师 v5.0.8 已启动： {url}")
         print("在浏览器打开上面的地址即可。按 Ctrl+C 停止。")
         if (getattr(sys, "frozen", False) or os.environ.get("AHC_AUTO_OPEN") == "1") and os.environ.get("AHC_NO_OPEN") != "1":
             # exe 启动时自动打开浏览器，稍等服务器就绪；设 AHC_NO_OPEN=1 可禁止

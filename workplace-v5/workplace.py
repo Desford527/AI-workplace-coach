@@ -58,7 +58,7 @@ def init(resource_root, data_root, config_path, legacy):
     # Import original skills as objects, preserving all raw assets and config separately.
     for coach in legacy.load_manifest().get('coaches', []):
         cid = 'legacy-' + coach['id']
-        if get('object', cid) is None:
+        if get('object', cid) is None and get('deleted-object', cid) is None:
             detail = legacy.assemble_coach(coach)
             save('object', cid, {'id':cid, 'name':'严工' if coach['id']=='yanlaoshi' else coach.get('name', cid),
                  'role':'技术评审专家' if coach['id']=='yanlaoshi' else ('项目负责人' if coach['id']=='zhangzong' else coach.get('role','项目协作对象')),
@@ -113,7 +113,8 @@ def recover_interrupted_reviews():
 def objects():
     result = {p['id']: copy.deepcopy(p) for p in CATALOG['objects']}
     result.update({p['id']:p for p in all_docs('object')})
-    return list(result.values())
+    deleted={p['id'] for p in all_docs('deleted-object')}
+    return [p for ident,p in result.items() if ident not in deleted]
 
 
 def config_store():
@@ -487,7 +488,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.7','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.8','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,
@@ -569,8 +570,18 @@ def edit_config(b):
 
 def action(b):
     op=b.get('operation')
+    if op=='delete-object':
+        ident=text(b.get('objectId'),'对象 ID',200)
+        if not any(p['id']==ident for p in objects()): raise Problem('对象已删除或不存在',404)
+        # Tombstones suppress catalog defaults and legacy re-import on later starts.
+        # Session snapshots and their portrait evidence remain independent and intact.
+        with db() as c:
+            c.execute('INSERT OR REPLACE INTO docs VALUES (?,?,?)',('deleted-object',ident,json.dumps({'id':ident,'at':now()})))
+            c.execute('DELETE FROM docs WHERE kind=? AND id=?',('object',ident))
+        return {'deleted':True,'id':ident}
     if op=='object':
         o=b.get('object',{}); ident=o.get('id') or 'custom-'+uuid.uuid4().hex
+        if get('deleted-object',ident): raise Problem('此对象已删除，请新建对象',409)
         old=next((p for p in objects() if p['id']==ident),{})
         item={**old,'id':ident,**{k:text(o.get(k),k,12000) for k in ('name','role','goals','standards','style','facts','inferences','boundaries')}}
         for k in ('quotes','difficulty'): item[k]=o.get(k,'')
