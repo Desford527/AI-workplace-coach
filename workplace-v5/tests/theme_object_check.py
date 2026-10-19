@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ART = Path(os.environ.get('COACH_TEST_ARTIFACTS', '/tmp/workplace-browser-artifacts'))
 ART.mkdir(parents=True, exist_ok=True)
 PALETTES = {
-    'corporate': ('企业红', 'rgb(199, 0, 25)', 'rgb(76, 73, 72)'),
+    'corporate': ('企业红', 'rgb(199, 0, 25)', 'rgb(255, 248, 246)'),
     'forest': ('纸色深绿', 'rgb(23, 79, 64)', 'rgb(23, 79, 64)'),
     'ocean': ('晴空蓝', 'rgb(22, 76, 114)', 'rgb(22, 76, 114)'),
     'violet': ('雾紫', 'rgb(87, 65, 111)', 'rgb(87, 65, 111)'),
@@ -54,7 +54,10 @@ with tempfile.TemporaryDirectory() as data:
             page.goto(url)
             expect(page.locator('#sceneTitle')).to_contain_text('项目进度')
             expect(page.locator('html')).to_have_attribute('data-theme', 'corporate')
-            page.screenshot(path=str(ART / 'v5.0.8-corporate-home.png'), full_page=True)
+            assert '↗' not in page.locator('body').inner_text()
+            expect(page.locator('#previewAvatar')).to_have_text('项')
+            expect(page.locator('.mark svg')).to_have_count(1)
+            page.screenshot(path=str(ART / 'v5.0.9-corporate-home.png'), full_page=True)
 
             def choose_theme(ident):
                 page.click('#themeOpen')
@@ -74,13 +77,13 @@ with tempfile.TemporaryDirectory() as data:
                 page.reload()
                 expect(page.locator('#sceneTitle')).to_contain_text('项目进度')
                 expect(page.locator('html')).to_have_attribute('data-theme', ident)
-                page.screenshot(path=str(ART / ('v5.0.8-' + ident + '-home-viewport.png')))
+                page.screenshot(path=str(ART / ('v5.0.9-' + ident + '-home-viewport.png')))
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), ident + ' mobile overflow'
                 page.click('#themeOpen')
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 expect(page.locator('#themeChoices [aria-pressed=true]')).to_have_count(1)
-                page.screenshot(path=str(ART / ('v5.0.8-' + ident + '-picker-mobile.png')))
+                page.screenshot(path=str(ART / ('v5.0.9-' + ident + '-picker-mobile.png')))
                 page.click('[data-close=themeDialog]')
                 page.set_viewport_size({'width':1440, 'height':1000})
             # Another tab follows the stored selection.
@@ -151,7 +154,7 @@ with tempfile.TemporaryDirectory() as data:
                 assert page.locator('.review-verdict').evaluate('(e)=>getComputedStyle(e).backgroundColor') == stage
                 assert page.locator('.radar .shape').evaluate('(e)=>getComputedStyle(e).stroke') == brand
                 page.evaluate('window.scrollTo(0,0)')
-                page.screenshot(path=str(ART / ('v5.0.8-' + ident + '-review.png')), full_page=True)
+                page.screenshot(path=str(ART / ('v5.0.9-' + ident + '-review.png')), full_page=True)
                 page.set_viewport_size({'width':390, 'height':844})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 page.set_viewport_size({'width':1440, 'height':1000})
@@ -159,7 +162,7 @@ with tempfile.TemporaryDirectory() as data:
             choose_theme('ocean')
             with page.expect_download() as dl:
                 page.click('#exportHTML')
-            export = ART / 'v5.0.8-ocean-report.html'
+            export = ART / 'v5.0.9-ocean-report.html'
             dl.value.save_as(export)
             content = export.read_text()
             assert 'data-theme="ocean"' in content
@@ -176,7 +179,7 @@ with tempfile.TemporaryDirectory() as data:
             page.click('#again')
             assert page.locator('#objectSelect').input_value() not in ('', 'builtin-project')
             page.click('[data-tab=objects]')
-            page.screenshot(path=str(ART / 'v5.0.8-object-delete.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.9-object-delete.png'), full_page=True)
             while page.locator('[data-delete-object]').count():
                 previous = page.locator('[data-delete-object]').count()
                 page.once('dialog', lambda d:d.accept())
@@ -189,7 +192,7 @@ with tempfile.TemporaryDirectory() as data:
             expect(page.locator('#objectFocus')).not_to_be_visible()
             page.click('[data-category=technical]')
             expect(page.locator('#start')).to_be_disabled()
-            page.screenshot(path=str(ART / 'v5.0.8-empty-objects.png'), full_page=True)
+            page.screenshot(path=str(ART / 'v5.0.9-empty-objects.png'), full_page=True)
             page.click('[data-create-object]')
             create_object('重新创建的对象')
             expect(page.locator('#noObjects')).not_to_be_visible()
