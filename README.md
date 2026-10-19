@@ -1,6 +1,6 @@
-# AI职场沟通训练师 v5.0.17
+# AI职场沟通训练师 v5.0.18
 
-v5.0.17 统一所有工作区分页宽度，与下方会议纪要、自由输入白框左右对齐。
+v5.0.18 修复 Windows 启动脚本的编码/换行兼容性，显示打开进度和实际访问地址；保留全部分页对齐。
 
 - `workplace-v5/`：可本地启动的 v4.18 改造副本；先读其中的 README.md 和 ACCEPTANCE.md。
 - `handoff-source/`：上传交接包的原样文件，包含 original-v4.18、site-reference、visual-reference 及四份交接说明，源码摘要全部核对一致。
