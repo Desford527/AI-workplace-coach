@@ -251,6 +251,33 @@ class Workflow(unittest.TestCase):
     def test_control_characters_and_ambiguous_json(self):
         self.assertEqual(w.parse_model_json('{"line":"first\nsecond"}')['line'],'first\nsecond')
         with self.assertRaises(w.Problem):w.parse_model_json('{"a":1} {"b":2}')
+    def test_review_failure_ends_training_and_retry_preserves_messages(self):
+        s=self.send(self.begin());before=copy.deepcopy(s['messages']);Provider.mode='missing-dim'
+        with self.assertRaises(urllib.error.HTTPError):self.review(s)
+        ended=w.get('session',s['id']);self.assertEqual(ended['status'],'review_failed');self.assertEqual(ended['reviewStatus'],'failed');self.assertEqual(ended['messages'],before)
+        with self.assertRaises(urllib.error.HTTPError):self.send(ended,'结束后不能继续发送')
+        Provider.mode='ok';done=self.review(ended);self.assertEqual(done['status'],'reviewed');self.assertEqual(done['messages'],before)
+    def test_review_without_responses_finishes_without_fake_score(self):
+        s=self.begin();calls=len(Provider.calls);ended=self.review(s)
+        self.assertEqual(ended['status'],'ended');self.assertEqual(ended['reviewStatus'],'empty');self.assertNotIn('review',ended);self.assertEqual(len(Provider.calls),calls)
+    def test_review_pending_is_saved_before_model_finishes(self):
+        from unittest.mock import patch
+        s=self.send(self.begin());original=w.model_review
+        def inspect_pending(snapshot):
+            current=w.get('session',s['id']);self.assertEqual(current['status'],'review_pending');self.assertTrue(current['endedAt']);return original(snapshot)
+        with patch.object(w,'model_review',side_effect=inspect_pending):done=self.review(s)
+        self.assertEqual(done['reviewStatus'],'completed')
+    def test_restart_recovers_interrupted_review(self):
+        s=self.send(self.begin());s['status']='review_pending';s['reviewStatus']='pending';w.save('session',s['id'],s)
+        w.recover_interrupted_reviews();ended=w.get('session',s['id']);self.assertEqual(ended['status'],'review_failed');self.assertEqual(ended['messages'],s['messages'])
+    def test_plan_count_and_optional_fields_do_not_discard_valid_grades(self):
+        for mode in ('next-long','next-text','next-empty','optional-missing'):
+            with self.subTest(mode=mode):
+                Provider.mode='ok';s=self.send(self.begin());Provider.mode=mode;done=self.review(s);r=done['review'];self.assertEqual(r['score'],59)
+                if mode=='next-long':self.assertEqual(len(r['next']),4);self.assertEqual(len(r['additionalNext']),2)
+                if mode=='next-text':self.assertEqual(r['next'],['先说结论','给出证据'])
+                if mode=='next-empty':self.assertEqual(r['next'],['测试调整措施']);self.assertEqual(r['nextSource'],'loss-actions')
+                if mode=='optional-missing':self.assertEqual(r['next'],[]);self.assertEqual(r['translations'][0]['source'],'conversation')
     def test_no_empty_config_overwrites_existing(self):
         self.assertFalse(self.call('import-config',config={'apis':[]})['imported'])
         self.assertEqual(w.config_store()['active'],'p1')

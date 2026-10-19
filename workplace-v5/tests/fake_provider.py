@@ -35,6 +35,7 @@ class Provider(http.server.BaseHTTPRequestHandler):
                 item={'title':'初步表达观察（替身）','description':'此为测试替身的协议数据，不代表模型评价。','evidence':[ev]}
                 content=json.dumps({'summary':'仅用于自动化验收的画像替身','traits':[item],'strengths':[item],'directions':[{**item,'action':'练习先结论再证据'}]})
         elif '分析完整记录' in prompt:
+            if mode=='review-delay':threading.Event().wait(2)
             messages=json.loads(user);users=[m for m in messages if m['role']=='user'];bots=[m for m in messages if m['role']=='assistant']
             def dims(m): return [{'name':n,'score':41+i*7,'basis':'测试替身评分依据','evidence':[{'messageId':m['id'],'quote':m['text']}]} for i,n in enumerate(DIMS)]
             o={'overall':'测试替身复盘，非真实模型验证','sampleLimit':'样本有限，仅用于协议测试','dims':dims(users[0]),
@@ -49,6 +50,12 @@ class Provider(http.server.BaseHTTPRequestHandler):
             if mode=='missing-turn': o['timeline'].pop()
             if mode=='bad-quote': o['dims'][0]['evidence'][0]['quote']='模型杜撰的原话'
             if mode=='bad-round':o['timeline'][0]['dims'][0]['score']=None
+            if mode=='next-long':o['next']=['实际模型计划 '+str(i) for i in range(6)]
+            if mode=='next-text':o['next']='1. 先说结论\n2. 给出证据'
+            if mode=='next-empty':o['next']=[]
+            if mode=='optional-missing':
+                for k in ('next','language','sampleLimit','overall','translations'):o.pop(k,None)
+                o['loss']=[]
             content=json.dumps(o,ensure_ascii=False)
         else:
             context=json.loads(prompt.split('当前冻结资料：')[1].split('\n模拟对象')[0]);en=context['scene']['lang']=='en'

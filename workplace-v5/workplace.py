@@ -52,6 +52,7 @@ def init(resource_root, data_root, config_path, legacy):
         c.execute('CREATE TABLE IF NOT EXISTS docs (kind TEXT, id TEXT, data TEXT NOT NULL, PRIMARY KEY(kind,id))')
         c.execute('CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, digest TEXT NOT NULL, result TEXT)')
         c.execute('CREATE TABLE IF NOT EXISTS meta (id TEXT PRIMARY KEY, data TEXT NOT NULL)')
+    recover_interrupted_reviews()
     if os.environ.get('COACH_DISABLE_BUNDLED_DEFAULTS') != '1':
         apply_bundled_defaults()
     # Import original skills as objects, preserving all raw assets and config separately.
@@ -95,6 +96,18 @@ def all_docs(kind):
 def save(kind, ident, data):
     with db() as c:
         c.execute('INSERT OR REPLACE INTO docs VALUES (?,?,?)', (kind, ident, json.dumps(data, ensure_ascii=False)))
+
+
+
+def recover_interrupted_reviews():
+    for s in all_docs('session'):
+        if s.get('status')=='review_pending' and not s.get('review'):
+            s['status']='review_failed';s['reviewStatus']='failed'
+            s['reviewError']='上次复盘生成中断，原话已保留，可以重新生成'
+            s['revision']=s.get('revision',0)+1
+            save('session',s['id'],s)
+        elif s.get('review') and s.get('portraitStatus')=='pending':
+            s['portraitStatus']='failed';save('session',s['id'],s)
 
 
 def objects():
@@ -319,10 +332,22 @@ def validate_dims(items, messages):
              'evidence':evidence(d.get('evidence'),messages)} for name in DIMS for d in items if d['name']==name]
 
 
-def string_list(items, label, max_items=8):
-    if not isinstance(items,list) or not 1<=len(items)<=max_items:
-        raise Problem(label+'需要 1–'+str(max_items)+' 项',502)
-    return [text(v,label,5000) for v in items]
+def plan_items(value):
+    """Keep actual model suggestions; formatting/count differences aren't grading failures."""
+    if isinstance(value,str):
+        value=re.split(r'\n+',value)
+    if isinstance(value,dict):
+        if any(k in value for k in ('action','text','plan','description')): value=[value]
+        else: value=list(value.values())
+    if not isinstance(value,list): return []
+    result=[]
+    for item in value[:128]:
+        if isinstance(item,dict):
+            item=next((item.get(k) for k in ('action','text','plan','description') if isinstance(item.get(k),str) and item[k].strip()),'')
+        if not isinstance(item,str): continue
+        item=re.sub(r'^\s*(?:[-*•]|\d+[.、)])\s*','',item).strip()
+        if item and item not in result: result.append(item[:5000])
+    return result
 
 
 def validate_review(o,s):
@@ -343,20 +368,36 @@ def validate_review(o,s):
     translations=o.get('translations')
     bots=[m for m in messages if m['role']=='assistant']
     if not isinstance(translations,list) or not translations:
-        raise Problem('复盘缺少原话三层解读',502)
+        translations=[{'messageId':m['id'],**m['interpretation'],'source':'conversation'} for m in bots if isinstance(m.get('interpretation'),dict)]
     trans=[]
     for t in translations:
         m=next((m for m in bots if m['id']==t.get('messageId')),None)
         if not m: raise Problem('解读引用不存在的对方原话',502)
-        trans.append({'messageId':m['id'], 'quote':m['text'], **interpretation(t)})
-    loss=o.get('loss')
-    if not isinstance(loss,list) or not 1<=len(loss)<=5: raise Problem('复盘缺少关键问题与调整建议',502)
-    loss=[{'title':text(l.get('title'),'问题标题'), 'desc':text(l.get('desc'),'问题说明'),
-           'action':text(l.get('action'),'调整建议')} for l in loss]
+        trans.append({'messageId':m['id'], 'quote':m['text'],'source':t.get('source','review'), **interpretation(t)})
+    raw_loss=o.get('loss',[])
+    if isinstance(raw_loss,dict): raw_loss=[raw_loss] if 'title' in raw_loss or 'desc' in raw_loss else list(raw_loss.values())
+    if isinstance(raw_loss,str): raw_loss=[{'desc':raw_loss}]
+    loss=[]
+    if isinstance(raw_loss,list):
+        for item in raw_loss[:128]:
+            if isinstance(item,str): item={'desc':item}
+            if not isinstance(item,dict): continue
+            desc=item.get('desc') or item.get('description') or ''
+            action=item.get('action') or item.get('suggestion') or ''
+            if not isinstance(desc,str) or not isinstance(action,str): continue
+            if not desc.strip() and not action.strip(): continue
+            title=item.get('title') or '本轮观察'
+            loss.append({'title':title[:500] if isinstance(title,str) else '本轮观察','desc':desc[:5000],'action':action[:5000]})
+    plans=plan_items(o.get('next'))
+    plan_source='next'
+    if not plans:
+        plans=plan_items([item['action'] for item in loss])
+        plan_source='loss-actions'
     return {'version':2,'method':'AI 六维复盘','score':average(dims),'dims':dims,
-            'overall':text(o.get('overall'),'总评'),'sampleLimit':text(o.get('sampleLimit'),'样本限制'),
-            'timeline':rounds,'translations':trans,'loss':loss,'next':string_list(o.get('next'),'下轮计划',4),
-            'language':text(o.get('language'),'语言建议'),'at':now()}
+            'overall':o.get('overall') if isinstance(o.get('overall'),str) and o['overall'].strip() else '本轮六维评分已生成，请结合逐轮原话与依据查看。',
+            'sampleLimit':o.get('sampleLimit') if isinstance(o.get('sampleLimit'),str) and o['sampleLimit'].strip() else '本次依据 '+str(len(users))+' 条回应分析，结论仅适用于本轮训练。',
+            'timeline':rounds,'translations':trans,'loss':loss[:5],'additionalLoss':loss[5:],'next':plans[:4],'additionalNext':plans[4:],'nextSource':plan_source,
+            'language':o.get('language') if isinstance(o.get('language'),str) else '', 'at':now()}
 
 
 def base_prompt(s):
@@ -445,7 +486,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.5','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.6','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,
@@ -611,7 +652,7 @@ def action(b):
         if not s: raise Problem('训练记录不存在',404)
         if b.get('revision')!=s['revision']: raise Problem('记录已更新，请刷新后继续',409)
         if op=='use-current-api':
-            if s['status']!='active': raise Problem('已结束的训练不修改 API 绑定',409)
+            if s['status'] not in ('active','review_failed'): raise Problem('正在生成或已经完成的复盘不修改 API 绑定',409)
             cfg=selected_config()
             if s.get('apiId')!=cfg['id']:
                 s.setdefault('apiChanges',[]).append({'from':s.get('apiId'),'to':cfg['id'],'at':now()})
@@ -625,18 +666,28 @@ def action(b):
         if op=='review':
             if s.get('review'): return s
             if s['status']=='archived': raise Problem('已中断记录只读，可再练',409)
-            if not any(m['role']=='user' for m in s['messages']): raise Problem('至少回应一次再复盘')
+            s['endedAt']=s.get('endedAt') or now()
+            s.pop('error',None);s.pop('reviewError',None)
+            if not any(m['role']=='user' for m in s['messages']):
+                s['status']='ended';s['reviewStatus']='empty';s['revision']+=1
+                save('session',s['id'],s);return s
+            s['status']='review_pending';s['reviewStatus']='pending';s['revision']+=1
+            save('session',s['id'],s)
             try:
-                s['review']=model_review(s); s['status']='reviewed'; s.pop('error',None); s['revision']+=1
-                save('session',s['id'],s)  # Persist review BEFORE independent portrait call.
-            except Problem as e:
-                s['error']=str(e); s['revision']+=1; save('session',s['id'],s); raise
+                s['review']=model_review(s);s['status']='reviewed';s['reviewStatus']='completed';s['portraitStatus']='pending';s['revision']+=1
+                save('session',s['id'],s)  # Persist successful review BEFORE independent portrait.
+            except Exception as e:
+                reason=str(e) if isinstance(e,Problem) else '本轮复盘尚未完成，可重试生成'
+                s['reviewError']=reason;s['status']='review_failed';s['reviewStatus']='failed';s['revision']+=1
+                save('session',s['id'],s)
+                if isinstance(e,Problem): raise
+                raise Problem(reason,502) from None
             try:
-                update_portrait(s['apiId']); s['portraitStatus']='updated'
+                update_portrait(s['apiId']);s['portraitStatus']='updated'
             except Exception as e:
                 s['portraitStatus']='failed'
                 with db() as c: c.execute('INSERT OR REPLACE INTO meta VALUES (?,?)',('portraitError',json.dumps(str(e))))
-            save('session',s['id'],s); return s
+            save('session',s['id'],s);return s
         if s['status']!='active': raise Problem('此训练已结束，请开始新一轮',409)
         if op=='send':
             if s['messages'] and s['messages'][-1]['role']=='user': raise Problem('上次回应等待重试，不能重复发送',409)
