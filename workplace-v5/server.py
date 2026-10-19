@@ -801,7 +801,7 @@ if __name__ == "__main__":
     http.server.ThreadingHTTPServer.allow_reuse_address = True
     workplace.init(ROOT, DATA_ROOT, CONFIG_PATH, sys.modules[__name__])
     with http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
-        print(f"AI职场沟通训练师 v5.0.15 已启动： {url}")
+        print(f"AI职场沟通训练师 v5.0.16 已启动： {url}")
         print("在浏览器打开上面的地址即可。按 Ctrl+C 停止。")
         if (getattr(sys, "frozen", False) or os.environ.get("AHC_AUTO_OPEN") == "1") and os.environ.get("AHC_NO_OPEN") != "1":
             # exe 启动时自动打开浏览器，稍等服务器就绪；设 AHC_NO_OPEN=1 可禁止
