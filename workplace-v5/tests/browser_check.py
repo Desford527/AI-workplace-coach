@@ -84,6 +84,45 @@ with tempfile.TemporaryDirectory() as data:
             page.route('**/api/workplace/action',fail_review);page.click('#end');expect(page.locator('[data-review-retry]')).to_be_enabled();expect(page.locator('#chat')).not_to_be_visible();assert page.locator('#practice .error:visible').count()==0;page.reload();expect(page.locator('#review')).to_contain_text('网络故障时这条原话也要保留。');expect(page.locator('[data-review-retry]')).to_be_enabled();page.unroute('**/api/workplace/action',fail_review);page.click('[data-review-retry]');expect(page.locator('.bigscore')).to_be_visible();expect(page.locator('#back')).to_be_enabled()
             # Even zero responses finish on review, without making up a score.
             Provider.mode='ok';page.click('#back');page.click('#start');expect(page.locator('.bubble')).to_have_count(1);page.click('#end');expect(page.locator('#review')).to_contain_text('本轮还没有你的回应');expect(page.locator('#composer')).not_to_be_visible();assert page.locator('.bigscore').count()==0;assert page.locator('#practice .error:visible').count()==0
+            # Long real-shaped model output: a brief header, full details and unclipped exports.
+            page.set_viewport_size({'width':1440,'height':1000})
+            Provider.mode='ok';page.click('#back');page.click('[data-category=report]');page.click('#start');expect(page.locator('.bubble')).to_have_count(1)
+            long_reply='我建议先验证，说明已核实的事实和待确认的风险，再与您对齐负责人、下一次更新时间以及需要协调的资源。' * 5 + '完整用户原话末尾保留标记。'
+            page.fill('#reply',long_reply);page.click('#send');expect(page.locator('.bubble')).to_have_count(3)
+            page.screenshot(path=str(ART/'v5.0.7-training-desktop.png'),full_page=True)
+            assistant_color=page.locator('.bubble:not(.user) > p').first.evaluate('(e)=>getComputedStyle(e).backgroundColor')
+            user_color=page.locator('.bubble.user > p').first.evaluate('(e)=>getComputedStyle(e).backgroundColor')
+            assert assistant_color!=user_color
+            Provider.mode='long-review';page.click('#end');expect(page.locator('.bigscore')).to_be_visible();expect(page.locator('#back')).to_be_enabled()
+            lead=page.locator('.review-lead').inner_text();assert len(lead)<=64 and '结构完整' in lead
+            assert '完整总评末尾保留标记' not in page.locator('.review-verdict').inner_text()
+            assert page.locator('.overall-details').get_attribute('open') is None
+            assert page.locator('.review-verdict').bounding_box()['height']<290
+            expect(page.locator('.issue-grid').first.locator('.issue-card')).to_have_count(2)
+            assert page.locator('.more-issues').get_attribute('open') is None
+            page.locator('.overall-details > summary').click();expect(page.locator('.overall-full')).to_contain_text('完整总评末尾保留标记')
+            page.locator('.overall-details > summary').click()
+            sample=page.locator('.answer-improved .answer-copy').first
+            assert sample.evaluate('(e)=>e.scrollHeight>e.clientHeight')
+            page.locator('[data-expand-answer]').first.click();expect(page.locator('[data-expand-answer]').first).to_have_attribute('aria-expanded','true')
+            assert sample.evaluate('(e)=>e.scrollHeight<=e.clientHeight+1')
+            page.locator('[data-expand-answer]').first.click()
+            page.screenshot(path=str(ART/'v5.0.7-review-desktop.png'),full_page=True)
+            page.set_viewport_size({'width':390,'height':844})
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'long review mobile overflow'
+            page.screenshot(path=str(ART/'v5.0.7-review-mobile.png'),full_page=True)
+            with page.expect_download() as dl:page.click('#exportHTML')
+            full_export=ART/'v5.0.7-full-report.html';dl.value.save_as(full_export);full_content=full_export.read_text()
+            for marker in ['完整总评末尾保留标记','完整逐轮点评末尾保留标记','完整改进示范末尾保留标记','完整用户原话末尾保留标记','第三项完整观察保留标记']:
+                assert marker in full_content
+            report=context.new_page();report.route('**/*',lambda route:route.abort());report.set_content(full_content)
+            assert report.locator('details:not([open])').count()==0
+            assert report.locator('.answer-copy').first.evaluate('(e)=>e.scrollHeight<=e.clientHeight+1')
+            report.close()
+            page.emulate_media(media='print');page.pdf(path=str(ART/'v5.0.7-full-report.pdf'),format='A4',print_background=True);page.emulate_media(media='screen')
+            pdf_text=subprocess.check_output(['pdftotext',str(ART/'v5.0.7-full-report.pdf'),'-'],text=True)
+            for marker in ['完整总评末尾保留标记','完整逐轮点评末尾保留标记','完整改进示范末尾保留标记','完整用户原话末尾保留标记','第三项完整观察保留标记']:
+                assert marker in pdf_text.replace('\n',''), 'PDF missing '+marker
             assert not errors, errors
             browser.close()
         print('PASS: desktop/mobile, no-config error, API CRUD/switch/test, object CRUD, two-turn training, refresh recovery, failed-send retry, portrait failure/retry, English review, HTML/PDF export; no page errors. TEST DOUBLE only.')

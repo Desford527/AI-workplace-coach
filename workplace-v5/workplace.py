@@ -394,6 +394,7 @@ def validate_review(o,s):
         plans=plan_items([item['action'] for item in loss])
         plan_source='loss-actions'
     return {'version':2,'method':'AI 六维复盘','score':average(dims),'dims':dims,
+            'summary':o.get('summary','') if isinstance(o.get('summary',''),str) else '',
             'overall':o.get('overall') if isinstance(o.get('overall'),str) and o['overall'].strip() else '本轮六维评分已生成，请结合逐轮原话与依据查看。',
             'sampleLimit':o.get('sampleLimit') if isinstance(o.get('sampleLimit'),str) and o['sampleLimit'].strip() else '本次依据 '+str(len(users))+' 条回应分析，结论仅适用于本轮训练。',
             'timeline':rounds,'translations':trans,'loss':loss[:5],'additionalLoss':loss[5:],'next':plans[:4],'additionalNext':plans[4:],'nextSource':plan_source,
@@ -427,7 +428,7 @@ def model_reply(s):
 
 def model_review(s):
     dim_example=[{'name':n,'score':0,'basis':'结合语境的依据','evidence':[{'messageId':'用户消息 ID','quote':'原话片段'}]} for n in DIMS]
-    shape={'overall':'中文总评','sampleLimit':'样本量和局限，短回答慎重判断', 'dims':dim_example,
+    shape={'summary':'一句话核心结论，中文不超过50字，不重复场景名；详述放overall','overall':'完整中文总评','sampleLimit':'样本量和局限，短回答慎重判断', 'dims':dim_example,
            'timeline':[{'messageId':'每一条用户消息 ID','dims':dim_example,'feedback':'中文点评','improved':'改进回应'}],
            'translations':[{'messageId':'对方消息 ID','surface':'表面问题','real':'核心关切（模拟）','hidden':'判断依据（模拟）'}],
            'loss':[{'title':'关键问题','desc':'基于本轮的具体说明','action':'调整建议'}], 'next':['具体训练计划'],'language':'语言建议（中文）'}
@@ -486,7 +487,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.6','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.7','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,

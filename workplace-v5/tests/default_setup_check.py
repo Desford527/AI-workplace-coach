@@ -28,7 +28,7 @@ for case in ('fresh','legacy'):
                     break
                 except Exception:time.sleep(.1)
             else:raise RuntimeError('Could not start bundled release')
-            assert ws.get('release')=='5.0.6'
+            assert ws.get('release')=='5.0.7'
             cfg=json.loads((data/'apiconfig.json').read_text());assert len(cfg['apis'])==1
             assert {k:v for k,v in cfg['apis'][0].items() if k!='id'}==seed['api'],'Saved default differs from authorized bundle'
             if case=='legacy':assert cfg['active']=='old-cbx'
