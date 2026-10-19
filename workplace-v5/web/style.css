@@ -135,8 +135,8 @@ h1 em { color: var(--green); font-style: normal; background: linear-gradient(tra
 .tabs { display: flex; gap: 28px; margin-bottom: 44px; border-bottom: 1px solid var(--line); }
 .tabs button { padding: 20px 5px; border: 0; background: transparent; color: var(--muted); white-space: nowrap; }
 .tabs button.active { border-bottom: 3px solid var(--green); color: var(--green); font-weight: 700; }
-.view { max-width: 1000px; margin: 0 auto; }
-#practice { max-width: none; }
+/* All workspace tabs share the same edges as the meeting and free-input panels. */
+.view { width: 100%; margin: 0 auto; }
 .section-heading { margin-bottom: 30px; }
 .muted { color: var(--muted); font-size: 14px; }
 .categories { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 30px 0; }
