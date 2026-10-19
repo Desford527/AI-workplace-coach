@@ -1,6 +1,26 @@
 # AI职场沟通训练师｜成果展示材料
 
-优先使用第二版「截图增强版」：
+优先使用第三版「案例讲述版」：
+
+- `AI-workplace-coach-story-v3.pptx`：23 页，其中 21 页主讲，2 页备用且默认隐藏；逐页含重点、指图位置、讲稿、转场和建议时长。
+- `AI-workplace-coach-story-v3.pdf`：固定版式预览，包含全部 23 页（含备用页）。
+- `项目展示内容与讲述稿-第三版.md`：完整讲述稿和放映路线，主讲约 9–10 分钟，另留现场操作及提问时间。
+- `assets-v3/`：35 张真实界面截图与采集说明。全景保留真实标签栏，细节放大页配对应分页的真实导航截图及选中状态，未重绘目录。
+- `STORY_V3_ACCEPTANCE.md`：本版验收结果与未实测项。
+
+第三版先用背景、问题、总体方案引入，简介只在最后一页出现产品截图；后续沿“向朱总汇报交付”同一案例展开：定目标 → 连续对话 → 理解追问 → 复盘改法 → 再练 → 纪要与画像、背景、经验积累 → 当前成果与下一步。对象管理与四主题移到备用页，避免打断主线。默认放映顺序为 1–20 页，然后自动跳到第 23 页结束。
+
+本版截图仍使用隔离的本机演示数据；评分和分析不代表真实模型或业务效果。只更新展示材料，应用保持 v5.0.15，API 配置及用户数据不变。第一、二版及公司原模板均保留。
+
+## 第三版重建
+
+`python presentation/capture_story_screenshots.py` 在临时数据目录中运行真实 UI，使用只在制作进程中生效的演示替身，经应用原有校验完成按钮流程；不加载默认 Key、不请求外部模型。截图工具需要 Playwright/Chromium。
+
+`python presentation/build_story_presentation.py` 使用 python-pptx/Pillow 生成 PPT、内容 JSON 与讲述稿。可用 LibreOffice 导出 PDF；需启用 `ExportHiddenSlides` 才会将备用页纳入 PDF。PPT 正文采用 Noto Sans CJK SC，PDF 嵌入字体；用户本机 Windows PowerPoint 尚未实测，可参照 PDF 核对版式。
+
+## 第二版说明
+
+第二版「截图增强版」继续保留：
 
 - `AI-workplace-coach-showcase-v2.pptx`：20 页，其中 18 页展示实际产品截图；26 张截图入稿，保留公司模板与逐页演讲备注。
 - `AI-workplace-coach-showcase-v2.pdf`：固定版式预览。

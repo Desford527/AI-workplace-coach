@@ -11,4 +11,4 @@
 
 会议纪要已移到自由输入区上方；公司模板成果展示 PPT、PDF 与逐页讲述稿位于 `presentation/`。
 
-项目成果展示已提供「截图增强版」：`presentation/AI-workplace-coach-showcase-v2.pptx`（20页，18页功能截图），另附PDF与逐页讲述稿；应用版本保持 v5.0.15。
+项目成果展示优先使用第三版「案例讲述版」：`presentation/AI-workplace-coach-story-v3.pptx`（23 页，21 页主讲、2 页隐藏备用页），简介先讲背景和总体方案，后续以朱总交付汇报案例串联真实界面截图，截图保留实际标签导航。另附 PDF 与逐页讲述稿，详见 [展示材料说明](presentation/README.md)；旧版保留，应用版本保持 v5.0.15。
