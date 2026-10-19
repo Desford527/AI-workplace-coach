@@ -27,6 +27,28 @@ class Provider(http.server.BaseHTTPRequestHandler):
             user=next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{'))
         if mode=='json' or (mode=='flaky-json' and len(type(self).calls)==1): content='not-json'
         elif '连接测试' in prompt: content=json.dumps({'ok':True})
+        elif '工作区自由输入助手' in prompt:
+            data=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
+            value=data['input'];target='builtin-project'
+            ops=[];clarification=''
+            if '新增一个对象' in value:
+                ops=[{'type':'create_object','fields':{'name':'王工','role':'测试负责人','style':'测试替身：重视验证过程和异常闭环'}}]
+            elif '模糊对象' in value and '补充：' not in value:
+                clarification='请问要修改哪位对象？请提供完整称呼。'
+            elif '非法计划' in value:
+                ops=[{'type':'intensity','value':'深入'},{'type':'update_object','objectId':'nonexistent','fields':{'style':'非法目标'}}]
+            elif '伪造语录' in value:
+                ops=[{'type':'intensity','value':'深入'},{'type':'add_quotes','objectId':target,'quotes':['不存在于用户输入的句子']}]
+            elif '禁止操作' in value:
+                ops=[{'type':'delete_object','objectId':target}]
+            else:
+                if '朱总' in value:
+                    ops.append({'type':'update_object','objectId':target,'fields':{'personality':'用户观察（测试替身）：更重视验证证据和风险边界，尚需结合互动核实'}})
+                    if '先把没验证的条件讲清楚，再谈交付。' in value:
+                        ops.append({'type':'add_quotes','objectId':target,'quotes':['先把没验证的条件讲清楚，再谈交付。']})
+                if '追问强度' in value: ops.append({'type':'intensity','value':'increase'})
+                if '收录' in value: ops.append({'type':'add_experience','title':'汇报延期（测试替身）','category':'项目汇报','content':'先说明对交付的影响，再给恢复计划和需要对方决定的事项。'})
+            content=json.dumps({'clarification':clarification,'operations':ops},ensure_ascii=False)
         elif '分析对象语录' in prompt:
             source=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
             q=source['quotes'][0]

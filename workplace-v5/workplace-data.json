@@ -252,5 +252,63 @@
   "examples": {
     "zh": "我的判断是可以继续准备交付，但暂不承诺最终验收日期。我理解您最关注交付节点和稳定性。当前测试记录显示，在600V输入、额定负载条件下，已完成8项验证，还有2项高温测试尚未覆盖，存在延期风险。如果高温验证不通过，备选方案是先分批交付已验证部分。我负责明天17点前提交完整测试记录和验证计划，并同步剩余风险。需要您协调测试资源，请确认是否优先保障稳定性，再由双方共同确认最终交付节点。",
     "en": "I recommend continuing delivery preparation, but we cannot commit to final acceptance yet. I understand your concern about delivery and stability. The test record covers 8 items at 600V input and rated load; 2 high-temperature conditions are not yet verified. If validation fails, our fallback is phased delivery. I will send the test record and update the validation plan by Friday. Please confirm your acceptance requirement and priority so both teams can align on the next checkpoint. Thank you."
-  }
+  },
+  "experiences": [
+    {
+      "id": "builtin-experience-1",
+      "title": "先给判断，再讲依据",
+      "category": "项目汇报",
+      "content": "开场用一句话说明当前判断，再给已核实的事实。把“已完成”“待验证”和“个人判断”分开，未知数据标注待确认，不用加班或态度替代交付证据。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-2",
+      "title": "让请求可以被直接决定",
+      "category": "通用沟通",
+      "content": "说明希望对方决定什么、需要的资源或支持、最晚决定时间，以及暂时无法决定时的备选安排。避免只说“请协调一下”。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-3",
+      "title": "技术结论要带适用边界",
+      "category": "技术评审",
+      "content": "同时说明测试条件、判据、覆盖范围和未验证项。器件参数不直接等于整机结论，单次通过也不代表所有工况均通过；缺少数据时约定验证方式与责任人。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-4",
+      "title": "先确认关切，再回应异议",
+      "category": "客户沟通",
+      "content": "先复述并确认对方关心的影响、优先级和验收预期，再给可兑现的处理路径。区分已确认承诺与仍需内部核实的事项，不以模糊承诺换取暂时认可。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-5",
+      "title": "被追问时，先回答当前问题",
+      "category": "通用沟通",
+      "content": "先回应对方刚提出的具体问题。暂时没有答案时直接说明未知项、核查人和反馈时间，再补充必要背景，避免重复长篇背景或防御性解释。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-6",
+      "title": "闭环需要负责人和时间点",
+      "category": "通用沟通",
+      "content": "每次沟通结束确认下一步由谁做、交付什么、何时同步、按什么标准确认完成。风险有变化时说明触发条件和升级路径。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-7",
+      "title": "跨语言协作明确术语与确认",
+      "category": "国际协作",
+      "content": "使用简短句子和明确时间、单位与时区。关键术语先对齐含义，复述决定并请对方确认；跨文化差异只作为待核实背景，不据国籍推断个体性格。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-8",
+      "title": "观察行为，谨慎推断动机",
+      "category": "通用沟通",
+      "content": "记录具体场景、原话和行为，再提出可验证的沟通偏好假设。把“他说过”与“我觉得”分开；用后续互动修正判断，不给对方贴固定人格标签。",
+      "source": "内置经验"
+    }
+  ]
 }

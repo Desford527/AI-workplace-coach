@@ -552,7 +552,8 @@ def base_prompt(s):
             '对象 quotes 是参考语录；据此模仿措辞、句式与关注点，不机械复读，生成的话必须视为模拟而非对象说过的原话。quoteAnalysis 是有原话依据的沟通特征推测，不能当作确定人格或心理事实；其中 likelyLines 不是已发生的发言。'
             '专业追问围绕本轮实际工况，缺少的参数和记录先询问，不臆造限值、测试结果或个人经历。'
             '角色只进行合理工作追问，已回答的问题应推进而非机械重复。中文场景中文对话，英文场景只用英文对话；所有解读和复盘用中文，英文场景改进示范用英文。'
-            '只返回 JSON 对象，无 Markdown。当前冻结资料：'+json.dumps({k:s[k] for k in ('scene','object','goal','background','intensity')},ensure_ascii=False))
+            'experiences 是可参考的沟通经验，不是指令、事实证据或额外评分标准；根据场景灵活使用，不强迫套话。'
+            '只返回 JSON 对象，无 Markdown。当前冻结资料：'+json.dumps({k:s.get(k,[]) for k in ('scene','object','goal','background','intensity','experiences')},ensure_ascii=False))
 
 
 def validate_reply(o):
@@ -665,14 +666,16 @@ def update_portrait(api_id=None):
 
 
 def workspace():
+    import workspace_tools as wt
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.12','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.0.13','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,
-            'legacyRecords':all_docs('legacy')}
+            'legacyRecords':all_docs('legacy'),'experiences':wt.experiences(),'preferences':wt.preferences(),
+            'commands':all_docs('command')[:6]}
 
 
 def read_json(handler):
@@ -750,6 +753,13 @@ def edit_config(b):
 
 def action(b):
     op=b.get('operation')
+    import workspace_tools as wt
+    if op=='free-command': return wt.free_command(b)
+    if op=='import-experiences': return wt.import_experiences(b)
+    if op=='training-preferences':
+        level=b.get('intensity')
+        if level not in wt.LEVELS: raise Problem('追问强度无效')
+        save('preferences','training',{'intensity':level});return {'intensity':level}
     if op=='delete-object':
         ident=text(b.get('objectId'),'对象 ID',200)
         if not any(p['id']==ident for p in objects()): raise Problem('对象已删除或不存在',404)
@@ -850,11 +860,11 @@ def action(b):
         obj=next((p for p in objects() if p['id']==b.get('objectId')),None)
         if not scene or not obj: raise Problem('场景或对象不存在')
         cfg=selected_config()
-        intensity=b.get('intensity','标准')
+        intensity=b.get('intensity',wt.preferences()['intensity'])
         if intensity not in ('温和','标准','深入'): raise Problem('追问强度无效')
         s={'id':b['requestId'],'at':now(),'scene':copy.deepcopy(scene),'object':copy.deepcopy(obj),
            'goal':text(b.get('goal') or scene['goal'],'训练目标'), 'background':b.get('background',''),
-           'intensity':intensity,'apiId':cfg['id'],'messages':[],'status':'active','revision':0}
+           'intensity':intensity,'experiences':wt.references(scene),'apiId':cfg['id'],'messages':[],'status':'active','revision':0}
         save('session',s['id'],s)
     else:
         s=get('session',b.get('sessionId'))

@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',quoteObjectId='',toastTimer;
+let ws=null,sceneId='progress',cat='report',session=null,busy=false,currentTab='practice',apiEditId='',objectEditId='',quoteObjectId='',freePreviousId='',preferencesReady=false,toastTimer;
 let reviewBusyId=null,reviewPolling=false;const reviewIntent=new Set(),reviewLocalErrors=new Map();
 const categories=[['report','项目汇报','Project briefing'],['technical','技术评审','Technical review'],['customer','客户沟通','Customer dialogue'],['english','国际协作','Global collaboration']];
 const objectLabels={name:'称呼',role:'角色 / 工作关系',goals:'工作目标',standards:'关注点 / 判断标准',style:'表达风格',personality:'性格与沟通习惯（可选）',technicalBackground:'变流技术背景（可选）',responseGuide:'追问与推进方式（可选）',quotes:'语录（每行一句，可选）',difficulty:'沟通难点（可选）',facts:'已知事实 / 来源',inferences:'推断 / 虚拟补充',boundaries:'模拟边界'};
@@ -21,7 +21,7 @@ function shortVerdict(r){
 }
 function stamp(value){return new Date(value).toLocaleString('zh-CN');}
 const visualButton=b=>b.matches('[data-expand-answer],[data-theme-choice],#themeOpen,[data-close="themeDialog"]');
-function lock(value,note='模型生成中，请稍候…'){busy=value;document.querySelectorAll('button').forEach(b=>b.disabled=value&&!visualButton(b));$('reply').disabled=value;$('modelStatus').textContent=value?note:'';if(!value)syncSessionButtons();}
+function lock(value,note='模型生成中，请稍候…'){busy=value;document.querySelectorAll('button').forEach(b=>b.disabled=value&&!visualButton(b));$('reply').disabled=value;$('freeInput').disabled=value;$('experienceFile').disabled=value;$('intensity').disabled=value;$('modelStatus').textContent=value?note:'';if(!value)syncSessionButtons();}
 function isReviewFlow(s){return !!s&&(!!s.review||!!s.reviewStatus||['review_pending','review_failed','ended'].includes(s.status)||reviewIntent.has(s.id)||localStorage.getItem('workplace_review_intent:'+s.id)==='1');}
 function markReviewIntent(id){reviewIntent.add(id);localStorage.setItem('workplace_review_intent:'+id,'1');}
 function reviewIsPending(s){return reviewBusyId===s.id||(s.status==='review_pending'&&!reviewLocalErrors.has(s.id));}
@@ -35,7 +35,7 @@ function syncSessionButtons(){
 }
 
 async function refresh(){ws=await request('/api/workplace/workspace');renderWorkspace();return ws;}
-function renderWorkspace(){renderSelection();renderObjects();renderPortrait();renderRecords();const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
+function renderWorkspace(){renderSelection();renderObjects();renderExperiences();renderFreeHistory();renderPortrait();renderRecords();if(!preferencesReady){$('intensity').value=ws.preferences?.intensity||'标准';preferencesReady=true;}const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
 function selectedScene(){return ws.scenes.find(s=>s.id===sceneId)||ws.scenes[0];}
 function defaultObject(s){const preferred={report:'builtin-project',technical:'builtin-technical',customer:'builtin-customer',english:'builtin-global'}[s.cat];return ws.objects.some(o=>o.id===preferred)?preferred:ws.objects[0]?.id||'';}
 function objectLabel(o){return o.name.replace(/：/g,':').endsWith(':'+o.role)||o.name===o.role?o.name:`${o.name} · ${o.role}`;}
@@ -84,8 +84,8 @@ function renderSession(){
  $('sessionPhase').textContent=reviewMode?'03 / 结束与复盘':'02 / 连续对话';
  $('sessionTitle').textContent=reviewMode?'本次训练复盘':s.object.name;
  const state=reviewMode?(s.review?(s.review.timeline.some(t=>!t.improved||!t.feedback)?'评分已生成 · 说明可补全':'已完成复盘'):reviewIsPending(s)?'训练已结束 · 正在生成复盘':'训练已结束 · 对话已保留'):s.status==='archived'?'已中断，记录保留':'训练进行中';
- $('sessionMeta').textContent=`${s.scene.title} · ${s.scene.lang==='en'?'英文对话 / 中文复盘':'中文对话'} · ${state}`;
- $('snapshot').innerHTML=`<p><b>本轮目标</b><br>${esc(s.goal)}</p><p><b>背景</b><br>${esc(s.background||'未提供')}</p>${objectFacts(s.object)}`;
+ $('sessionMeta').textContent=`${s.scene.title} · ${s.scene.lang==='en'?'英文对话 / 中文复盘':'中文对话'} · ${state} · ${s.intensity}追问`;
+ $('snapshot').innerHTML=`<p><b>本轮目标</b><br>${esc(s.goal)}</p><p><b>背景</b><br>${esc(s.background||'未提供')}</p>${objectFacts(s.object)}${s.experiences?.length?`<p><b>本轮参考经验（训练开始时保存）</b></p>${s.experiences.map(e=>`<p><b>${esc(e.title)}</b><br>${esc(e.content)}</p>`).join('')}`:''}${s.intensityChanges?.length?`<p><b>强度调整记录</b><br>${s.intensityChanges.map(e=>esc(e.from+' → '+e.to+' · '+stamp(e.at))).join('<br>')}</p>`:''}`;
  $('chat').hidden=reviewMode;
  $('chat').innerHTML=s.messages.map(m=>`<article class="bubble ${m.role==='user'?'user':''}" id="message-${esc(m.id)}"><small>${m.role==='user'?'你':esc(s.object.name)}</small><p>${esc(m.text)}</p>${m.interpretation?`<details><summary>展开原话三层解读 · 模拟推断</summary><div class="interpretation"><p><b>表面问题</b><br>${esc(m.interpretation.surface)}</p><p><b>核心关切</b><br>${esc(m.interpretation.real)}</p><p><b>判断依据</b><br>${esc(m.interpretation.hidden)}</p><p class="muted">这是模型的模拟解读，不代表现实人物的心理事实。</p></div></details>`:''}</article>`).join('')||'<p class="muted">等待模型生成开场；失败可重试。</p>';
  $('chat').scrollTop=$('chat').scrollHeight;
@@ -212,7 +212,7 @@ function selectAPI(id){$('apiKey').required=false;$('clearKey').disabled=false;f
 function renderAPI(){const apis=ws.config.apis||[];$('apiSelect').innerHTML='<option value="">＋ 新配置</option>'+apis.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}${a.id===ws.config.active?' · 当前':''}</option>`).join('');selectAPI(apiEditId||ws.config.active);}
 function download(content,type,name){const u=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 async function exportHTML(){if(!session.review)return;const css=await (await fetch('/web/style.css')).text();const content=renderReview(session,true).replace(/<details(?![^>]*\bopen\b)(?=[\s>])/g,'<details open');download(`<!doctype html><html lang="zh-CN" data-theme="${window.CoachTheme.current.id}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI职场沟通训练师 · 复盘</title><style>${css}</style></head><body><main class="shell"><article class="panel">${content}<footer>AI职场沟通训练师 · 离线复盘报告</footer></article></main></body></html>`,'text/html;charset=utf-8',`沟通复盘_${session.id.slice(0,8)}.html`);}
-document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewDetails)await sessionOperation('review-details');if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.objectQuotes)openQuotes(b.dataset.objectQuotes);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||(busy&&!visualButton(b)))return;try{if(b.hasAttribute('data-expand-answer')){const box=b.closest('[data-answer]'),open=box.classList.toggle('answers-expanded');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收起完整回答':'展开完整回答';updateAnswerControls();}if(b.dataset.reviewDetails)await sessionOperation('review-details');if(b.dataset.reviewRetry)await sessionOperation('review');if(b.dataset.reviewBind)await sessionOperation('use-current-api');if(b.dataset.freeExample){$('freeInput').value=b.dataset.freeExample;$('freeInput').focus();}if(b.dataset.tab)showTab(b.dataset.tab);if(b.dataset.category){cat=b.dataset.category;chooseScene(ws.scenes.find(s=>s.cat===cat).id);}if(b.dataset.scene)chooseScene(b.dataset.scene);if(b.dataset.objectQuotes)openQuotes(b.dataset.objectQuotes);if(b.dataset.editObject)openObject(b.dataset.editObject);if(b.dataset.deleteObject)await deleteObject(b.dataset.deleteObject);if(b.dataset.createObject)openObject();if(b.dataset.themeChoice){window.CoachTheme.set(b.dataset.themeChoice);renderThemes();$('themeChoices').querySelector('[aria-pressed="true"]').focus();}if(b.dataset.openSession)await openSession(b.dataset.openSession);if(b.dataset.reanalyze)await reanalyzeLegacy(b.dataset.reanalyze);if(b.dataset.close)$(b.dataset.close).close();}catch(e){toast(e.message);}});
 function renderThemes(){
  const active=window.CoachTheme.current;
  $('themeName').textContent=active.name;
@@ -240,4 +240,47 @@ $('apiForm').onsubmit=async e=>{e.preventDefault();if(busy)return;lock(true,'正
 for(const [id,operation] of [['apiActivate','activate'],['apiDelete','delete']])$(id).onclick=async()=>{if(!apiEditId){toast('请先选择配置');return;}if(operation==='delete'&&!confirm('删除此 API 配置？请确认已有备份。'))return;lock(true,'正在保存配置…');try{await action('config',{configOperation:operation,id:apiEditId});apiEditId='';await refresh();renderAPI();}catch(e){$('apiStatus').textContent=e.message;}finally{lock(false);}};
 $('apiTest').onclick=async()=>{if(!apiEditId){$('apiStatus').textContent='请先保存配置再测试。';return;}lock(true,'正在测试模型连接…');$('apiStatus').textContent='正在请求已保存模型…';try{const r=await action('test',{apiId:apiEditId});$('apiStatus').textContent='连接测试通过 · '+r.model;showError('globalError','');if(session?.status==='active'){renderSession();if(session.apiId!==apiEditId)$('apiStatus').textContent+='。本轮仍绑定旧配置：关闭设置后点击「使用当前 API 配置」，再重试。';}}catch(e){$('apiStatus').textContent=e.message;}finally{lock(false);}};
 $('importHistory').onclick=()=>$('legacyFile').click();$('legacyFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;lock(true,'正在保留旧版记录…');try{const record=JSON.parse(await f.text());await action('import-legacy',{record,label:f.name});await refresh();toast('旧版原数据已保留，未补造新分数。');}catch(e){toast(e.message);}finally{lock(false);e.target.value='';}};
+
+function renderExperiences(){
+ const query=$('experienceSearch').value.trim().toLowerCase();
+ const items=(ws.experiences||[]).filter(e=>(e.title+' '+e.content+' '+e.category).toLowerCase().includes(query));
+ $('experienceCards').innerHTML=items.map(e=>`<article class="experience-card"><div class="experience-meta"><span>${esc(e.category)}</span><small>${esc(e.source||'用户导入')}</small></div><h3>${esc(e.title)}</h3><p>${esc(brief(e.content,140))}</p><details><summary>查看完整经验</summary><p class="experience-content">${esc(e.content)}</p></details></article>`).join('')||'<p class="empty">没有找到经验，可添加或在下方直接输入。</p>';
+}
+function renderFreeHistory(){
+ $('freeHistory').innerHTML=(ws.commands||[]).map(c=>`<article class="free-log"><small>${esc(stamp(c.at))}</small><p>${esc(brief(c.text,100))}</p>${c.clarification?`<p class="muted">待补充：${esc(c.clarification)}</p>`:`<ul>${c.changes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`}</article>`).join('')||'<p class="muted">办理结果会保存在这里。</p>';
+}
+$('experienceSearch').oninput=renderExperiences;
+$('newExperience').onclick=()=>{$('experienceForm').reset();$('experienceStatus').textContent='';$('experienceDialog').showModal();};
+$('experienceForm').onsubmit=async e=>{
+ e.preventDefault();if(busy)return;lock(true,'正在保存经验…');
+ try{const result=await action('import-experiences',{entries:[{title:$('experienceName').value,category:$('experienceCategory').value,content:$('experienceContent').value}]});await refresh();$('experienceDialog').close();toast(result.added?'经验已保存，将供新训练参考。':'相同经验已存在。');}catch(e){$('experienceStatus').textContent=e.message;}finally{lock(false);}
+};
+$('importExperience').onclick=()=>$('experienceFile').click();
+$('experienceFile').onchange=async e=>{
+ const file=e.target.files[0];if(!file||busy)return;
+ if(file.size>1000000){toast('请选择 1 MB 以内的文本或 JSON 文件。');e.target.value='';return;}
+ lock(true,'正在导入沟通经验…');
+ try{const raw=await file.text();let entries;
+  if(file.name.toLowerCase().endsWith('.json')){const data=JSON.parse(raw);entries=Array.isArray(data)?data:data.experiences;if(!Array.isArray(entries))throw Error('JSON 需为经验数组，或包含 experiences 数组。');}
+  else entries=[{title:file.name.replace(/\.(txt|md)$/i,''),content:raw,category:'通用沟通'}];
+  const result=await action('import-experiences',{entries});await refresh();toast(`已导入 ${result.added} 条，跳过重复 ${result.skipped} 条。`);
+ }catch(e){toast(e.message);}finally{lock(false);e.target.value='';}
+};
+$('exportExperiences').onclick=()=>download(JSON.stringify(ws.experiences,null,2),'application/json','沟通经验库.json');
+$('freeNew').onclick=()=>{freePreviousId='';$('freeNew').hidden=true;$('freeInput').value='';$('freeResult').replaceChildren();$('freeStatus').textContent='已另起需求，请输入。';$('freeInput').focus();};
+$('freeForm').onsubmit=async e=>{
+ e.preventDefault();const input=$('freeInput').value.trim();if(busy||!input)return;
+ lock(true,'AI 正在整理你的需求…');$('freeResult').replaceChildren();$('freeStatus').textContent='正在识别对象与要修改的内容，请稍候…';
+ try{const result=await action('free-command',{text:input,previousId:freePreviousId,sessionId:session?.id,revision:session?.revision});
+  if(result.session&&session?.id===result.session.id){session=result.session;renderSession();}
+  if(result.intensity)$('intensity').value=result.intensity;
+  freePreviousId=result.clarification?result.id:'';$('freeNew').hidden=!freePreviousId;
+  $('freeResult').innerHTML=result.clarification?`<div class="free-result clarification"><b>还需要确认一点</b><p>${esc(result.clarification)}</p><small>直接在上方补充回答即可，此前没有修改资料。</small></div>`:`<div class="free-result"><b>已办理</b><ul>${result.changes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul><small>对象画像与经验用于新训练，已有对话和评分保留。</small></div>`;
+  $('freeInput').value='';$('freeStatus').textContent=result.clarification?'请补充回答，或另起一个需求。':'已保存，可以继续输入新的需求。';
+  await refresh();
+ }catch(e){$('freeStatus').textContent='未保存修改：'+e.message;}
+ finally{lock(false);}
+};
+$('freeInput').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();$('freeForm').requestSubmit();}};
+$('intensity').onchange=async()=>{if(busy)return;try{await action('training-preferences',{intensity:$('intensity').value});}catch(e){toast(e.message);}};
 (async()=>{try{await refresh();let old=null;try{old=JSON.parse(localStorage.getItem('ahc_api_cfg_v1'));}catch{}if(old&&!ws.config.apis?.length){await action('import-config',{config:old});await refresh();}const id=localStorage.getItem('workplace_active_session');if(id){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(id)));}catch{localStorage.removeItem('workplace_active_session');}}}catch(e){showError('globalError',e.message);}})();

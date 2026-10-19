@@ -131,3 +131,15 @@
 - Chromium 真实操作通过「语录与分析」保存/分析/查看引用、刷新恢复、修改后失效、手机布局及新训练冻结；查看了桌面与手机截图。模拟表达明确标注为 AI 生成，不写回语录。
 - Chromium 复现空示范且补全服务失败：评分已显示、页面无红色阻挡、可单独补全；补全后分数和全部消息完全一致。原有中文/英文连续对话、结束即进入复盘、API 多配置、画像重试、四主题、HTML/PDF 和对象删除回归均通过。
 - 默认安装检查通过，随版本授权 Key 与默认 API 未变。模型调用均为本机替身，未在用户电脑或真实 DeepSeek 实测本次生成质量；旧截图记录需要用户在更新后重试。
+
+## v5.0.13 自由输入与经验库验收 · 2026-10-19
+
+- `python tests/test_workflow.py`：50 项原后端测试通过，包含连续对话、六维与原话校验、复盘失败恢复、语录分析、对象 CRUD、旧记录及配置迁移。
+- `python tests/test_workspace_tools.py`：8 项新增行为测试通过。验证 AI 建对象与原表单并用，多意图更新、语录原文验证、强度审计、保留对象/消息快照、非法目标/操作整批无修改、澄清后续输入、导入去重和整批校验、服务失败无副作用、结束记录不改写、旧 revision 拒绝、请求幂等及重启持久化。
+- `python tests/workspace_browser_check.py`：真实 Chromium 桌面及四主题手机界面通过；覆盖无配置保留输入、AI 新建/追加画像/语录/强度/经验、页面内澄清、手工录入、Markdown/JSON 文件导入、搜索与 JSON 导出、刷新恢复及 HTTP 402 输入保留。无页面脚本异常或手机横向溢出。
+- `python tests/browser_check.py`：原 Chromium 全流程通过，含多服务商配置、双轮训练、失败重试、画像、英文训练和 HTML/PDF 导出。
+- `python tests/theme_object_check.py`：四主题、切换持久化、对象与语录操作、删除确认/取消、历史快照与空对象恢复、主题导出通过。
+- `python tests/default_setup_check.py`：全新及旧数据启动时既有默认配置机制通过，无模型调用；默认 API 文件与 v5.0.12 按字节比较未改变。
+- `python -m py_compile workplace.py workspace_tools.py server.py`、`node --check web/app.js` 与 `git diff --check` 通过。
+
+浏览器图保存在本次环境 `/tmp/workplace-browser-artifacts/v5.0.13-*`。模型协议与操作均使用明确标注的本机测试替身，没有生产规则回复或假评分降级；真实 DeepSeek 的自然语言理解、实际回复质量和计费未实测。Windows EXE 未构建；源码本地服务与浏览器流程已实测。原交接源目录未修改，新增功能不重置 API 或历史记录。

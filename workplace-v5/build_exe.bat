@@ -14,7 +14,7 @@ python -m PyInstaller --noconfirm --clean --onefile --name "AI职场沟通训练
  --add-data "workplace-data.json;." ^
  --add-data "default-api.json;." ^
  --add-data "skills;skills" ^
- --hidden-import workplace server.py
+ --hidden-import workplace --hidden-import workspace_tools server.py
 if %errorlevel% neq 0 (
   echo 构建失败，未生成可交付 exe。
   pause
