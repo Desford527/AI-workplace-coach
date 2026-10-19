@@ -13,4 +13,4 @@ v5.0.17 统一所有工作区分页宽度，与下方会议纪要、自由输入
 
 会议纪要已移到自由输入区上方；公司模板成果展示 PPT、PDF 与逐页讲述稿位于 `presentation/`。
 
-项目成果展示优先使用第三版「案例讲述版」：`presentation/AI-workplace-coach-story-v3.pptx`（23 页，21 页主讲、2 页隐藏备用页），简介先讲背景和总体方案，后续以朱总交付汇报案例串联真实界面截图，截图保留实际标签导航。另附 PDF 与逐页讲述稿，详见 [展示材料说明](presentation/README.md)；旧版保留。
+项目成果展示优先使用第四版：`presentation/AI-workplace-coach-story-v4.pptx`（26 页，24 页主讲、2 页隐藏备用页），保留背景与案例主线，补充清晰的总分、六维数值及三场训练共 18 次回应后的个人画像截图。另附 PDF 与逐页讲述稿，详见 [展示材料说明](presentation/README.md)；旧版保留。
