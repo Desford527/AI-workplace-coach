@@ -1,0 +1,112 @@
+[
+  {
+    "page": 6,
+    "navigation": "removed",
+    "context": "右上角「API 设置」 · 配置服务地址与对话、复盘模型"
+  },
+  {
+    "page": 7,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 8,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 9,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 10,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 11,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 12,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 13,
+    "navigation": "below_title",
+    "tab": "practice"
+  },
+  {
+    "page": 14,
+    "navigation": "below_title",
+    "tab": "portrait"
+  },
+  {
+    "page": 15,
+    "navigation": "below_title",
+    "tab": "portrait"
+  },
+  {
+    "page": 16,
+    "navigation": "below_title",
+    "tab": "portrait"
+  },
+  {
+    "page": 17,
+    "navigation": "removed",
+    "context": "页面底部「导入会议纪要」 · 文件导入与正文粘贴"
+  },
+  {
+    "page": 18,
+    "navigation": "removed",
+    "context": "「导入会议纪要」中的提取预览 · 核对人物、项目与经验"
+  },
+  {
+    "page": 19,
+    "navigation": "below_title",
+    "tab": "objects"
+  },
+  {
+    "page": 20,
+    "navigation": "removed",
+    "context": "已保存的项目背景 · 在训练页选择并引用"
+  },
+  {
+    "page": 21,
+    "navigation": "below_title",
+    "tab": "experiences"
+  },
+  {
+    "page": 22,
+    "navigation": "removed",
+    "context": "页面底部「想改什么，直接说」 · 新增对象"
+  },
+  {
+    "page": 23,
+    "navigation": "removed",
+    "context": "页面底部「想改什么，直接说」 · 补充画像与语录"
+  },
+  {
+    "page": 24,
+    "navigation": "removed",
+    "context": "页面底部「想改什么，直接说」 · 调整追问强度"
+  },
+  {
+    "page": 25,
+    "navigation": "removed",
+    "context": "页面底部「想改什么，直接说」 · 收录沟通经验"
+  },
+  {
+    "page": 26,
+    "navigation": "below_title",
+    "tab": "history"
+  },
+  {
+    "page": 27,
+    "navigation": "below_title",
+    "tab": "objects"
+  }
+]

@@ -13,4 +13,4 @@ v5.0.18 修复 Windows 启动脚本的编码/换行兼容性，显示打开进�
 
 会议纪要已移到自由输入区上方；公司模板成果展示 PPT、PDF 与逐页讲述稿位于 `presentation/`。
 
-项目成果展示优先使用第五版：`presentation/AI-workplace-coach-story-v5.pptx`（30 页，全部正常放映），第 6 页前置 API 接入，第 22–25 页用四组“左边输入、右边实际效果”展示直接说功能；保留评分与多轮画像，并扩大重点截图范围。另附 PDF、逐页讲稿和功能页码表，详见 [展示材料说明](presentation/README.md)；旧版保留。
+项目成果展示优先使用第六版：`presentation/AI-workplace-coach-story-v6.pptx`（30 页），移除 API 等全局入口不对应的标签目录，主标题放在对应目录及截图上方。保留第 6 页 API 接入、第 22–25 页直接说输入/效果对照及全部功能。另附 PDF 与讲稿，详见 [展示材料说明](presentation/README.md)；旧版保留。
