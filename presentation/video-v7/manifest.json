@@ -1,0 +1,91 @@
+{
+  "duration": 38.5,
+  "width": 1280,
+  "height": 816,
+  "codec": "H.264",
+  "audio": false,
+  "subtitles": "burned-in Chinese and standalone SRT",
+  "source": "Actual v5.0.18 local browser recording, not a screenshot slideshow",
+  "realModelTested": false,
+  "defaultKeyLoaded": false,
+  "completedSessions": 3,
+  "portraitReplies": 18,
+  "validatedFixtureCalls": 31,
+  "pageErrors": [],
+  "externalRequests": [],
+  "timezone": "Asia/Shanghai",
+  "timeline": [
+    {
+      "scene": "home",
+      "start": 0,
+      "end": 3.5,
+      "caption": "AI职场沟通训练师：把下一次高压沟通，提前练一遍。"
+    },
+    {
+      "scene": "setup",
+      "start": 3.5,
+      "end": 7.0,
+      "caption": "选场景、选对象、定目标，让练习贴近实际任务。"
+    },
+    {
+      "scene": "chat",
+      "start": 7.0,
+      "end": 11.0,
+      "caption": "在连续追问中，练习把判断、依据和请求说清楚。"
+    },
+    {
+      "scene": "score",
+      "start": 11.0,
+      "end": 13.5,
+      "caption": "结束训练，先看总分与本轮反馈。"
+    },
+    {
+      "scene": "radar",
+      "start": 13.5,
+      "end": 16.0,
+      "caption": "再看六维表现，找到下一轮最值得改的一点。"
+    },
+    {
+      "scene": "objects",
+      "start": 16.0,
+      "end": 19.0,
+      "caption": "对象画像：维护关注点、沟通习惯和语录。"
+    },
+    {
+      "scene": "portrait",
+      "start": 19.0,
+      "end": 22.5,
+      "caption": "我的沟通画像：从多轮原话中积累观察与练习方向。"
+    },
+    {
+      "scene": "experience",
+      "start": 22.5,
+      "end": 26.0,
+      "caption": "沟通经验库：导入、检索，让好方法继续复用。"
+    },
+    {
+      "scene": "meeting",
+      "start": 26.0,
+      "end": 29.5,
+      "caption": "导入会议纪要，为对象、项目和经验补充真实资料。"
+    },
+    {
+      "scene": "direct",
+      "start": 29.5,
+      "end": 33.5,
+      "caption": "想改什么，直接说：一句话新增一个沟通对象。"
+    },
+    {
+      "scene": "result",
+      "start": 33.5,
+      "end": 35.5,
+      "caption": "王工已进入对象画像，保存效果可以直接看到。"
+    },
+    {
+      "scene": "ending",
+      "start": 35.5,
+      "end": 38.5,
+      "caption": "接下来，从一次常见的交付汇报说起。"
+    }
+  ]
+}

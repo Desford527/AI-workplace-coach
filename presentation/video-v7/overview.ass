@@ -1,0 +1,24 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 816
+WrapStyle: 2
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Main,Noto Sans CJK SC,27,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,32,32,0,1
+Style: Small,Noto Sans CJK SC,15,&H00F5D6DB,&H00F5D6DB,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,32,32,0,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.50,Main,,0,0,0,,{\pos(32,735)}AI职场沟通训练师：把下一次高压沟通，提前练一遍。
+Dialogue: 0,0:00:03.50,0:00:07.00,Main,,0,0,0,,{\pos(32,735)}选场景、选对象、定目标，让练习贴近实际任务。
+Dialogue: 0,0:00:07.00,0:00:11.00,Main,,0,0,0,,{\pos(32,735)}在连续追问中，练习把判断、依据和请求说清楚。
+Dialogue: 0,0:00:11.00,0:00:13.50,Main,,0,0,0,,{\pos(32,735)}结束训练，先看总分与本轮反馈。
+Dialogue: 0,0:00:13.50,0:00:16.00,Main,,0,0,0,,{\pos(32,735)}再看六维表现，找到下一轮最值得改的一点。
+Dialogue: 0,0:00:16.00,0:00:19.00,Main,,0,0,0,,{\pos(32,735)}对象画像：维护关注点、沟通习惯和语录。
+Dialogue: 0,0:00:19.00,0:00:22.50,Main,,0,0,0,,{\pos(32,735)}我的沟通画像：从多轮原话中积累观察与练习方向。
+Dialogue: 0,0:00:22.50,0:00:26.00,Main,,0,0,0,,{\pos(32,735)}沟通经验库：导入、检索，让好方法继续复用。
+Dialogue: 0,0:00:26.00,0:00:29.50,Main,,0,0,0,,{\pos(32,735)}导入会议纪要，为对象、项目和经验补充真实资料。
+Dialogue: 0,0:00:29.50,0:00:33.50,Main,,0,0,0,,{\pos(32,735)}想改什么，直接说：一句话新增一个沟通对象。
+Dialogue: 0,0:00:33.50,0:00:35.50,Main,,0,0,0,,{\pos(32,735)}王工已进入对象画像，保存效果可以直接看到。
+Dialogue: 0,0:00:35.50,0:00:38.50,Main,,0,0,0,,{\pos(32,735)}接下来，从一次常见的交付汇报说起。
+Dialogue: 1,0:00:00.00,0:00:38.50,Small,,0,0,0,,{\pos(34,784)}真实页面录屏 · 本机虚构演示数据 · 未展示真实密钥
