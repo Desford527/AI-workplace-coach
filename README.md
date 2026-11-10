@@ -1,3 +1,7 @@
+## 最新：PPT第十四版与可迁移Skill
+
+[PPT](presentation/AI-workplace-coach-story-v14.pptx) · [PDF](presentation/AI-workplace-coach-story-v14.pdf) · [Skill下载](downloads/AI-workplace-coach-portable-skill-v1.0.zip) · [语音演示脚本](portable-skill/VOICE_DEMO.md)
+
 ## 最新：v5.1.2 / PPT第十三版
 
 表达优化保留关键人物指代；第16页可选字段留空，并用大字展示优化结果。

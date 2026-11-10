@@ -1,3 +1,9 @@
+# 最新：第十四版
+
+[PPT](AI-workplace-coach-story-v14.pptx) · [PDF](AI-workplace-coach-story-v14.pdf)
+
+34页：第33页Skill复用与口头交流，第34页GitHub获取。公开权限由用户自行切换，公开前请处理历史密钥。
+
 # 最新：第十三版
 
 [下载PPT](AI-workplace-coach-story-v13.pptx) · [PDF](AI-workplace-coach-story-v13.pdf)
