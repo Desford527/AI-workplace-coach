@@ -1,3 +1,9 @@
+# 最新：第十一版 · 海外客户与英语表达提升
+
+[下载PPT](AI-workplace-coach-story-v11.pptx) · [PDF预览](AI-workplace-coach-story-v11.pdf) · [讲述稿](项目展示内容与讲述稿-第十一版.md)
+
+32页，第13–15页展示海外客户英语示例、英文连续追问及语言专项改进。项目版本v5.1.0。
+
 # 最新：第十版
 
 [下载PPT](AI-workplace-coach-story-v10.pptx) · [PDF预览](AI-workplace-coach-story-v10.pdf) · [讲述稿](项目展示内容与讲述稿-第十版.md)

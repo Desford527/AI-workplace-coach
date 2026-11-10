@@ -493,6 +493,28 @@ def complete_review_details(s):
     return r
 
 
+def language_review(value, session):
+    """Optional enrichment: reject invented citations without losing a valid six-axis review."""
+    if session['scene'].get('lang') != 'en' or not isinstance(value,dict):
+        return None
+    try:
+        corrections=[]
+        for c in value.get('corrections',[])[:8]:
+            if not isinstance(c,dict): continue
+            refs=evidence([{'messageId':c.get('messageId'),'quote':c.get('quote')}],session['messages'])
+            corrections.append({**refs[0],'improved':text(c.get('improved'),'英文改写',3000),
+                                'reason':text(c.get('reason'),'语言点评',3000),
+                                'focus':text(c.get('focus'),'语言关注点',100)})
+        if not corrections: return None
+        terms=[]
+        for t in value.get('terms',[])[:8]:
+            if isinstance(t,dict):terms.append({'term':text(t.get('term'),'术语',200),'meaning':text(t.get('meaning'),'含义',500)})
+        return {'summary':text(value.get('summary'),'语言小结',2000),'corrections':corrections,
+                'terms':terms,'practice':text(value.get('practice'),'语言练习',2000)}
+    except (Problem,TypeError,KeyError,AttributeError):
+        return None
+
+
 def validate_review(o,s):
     if not isinstance(o,dict): raise Problem('复盘格式错误',502)
     messages=s['messages']; users=[m for m in messages if m['role']=='user']
@@ -541,7 +563,8 @@ def validate_review(o,s):
             'overall':o.get('overall') if isinstance(o.get('overall'),str) and o['overall'].strip() else '本轮六维评分已生成，请结合逐轮原话与依据查看。',
             'sampleLimit':o.get('sampleLimit') if isinstance(o.get('sampleLimit'),str) and o['sampleLimit'].strip() else '本次依据 '+str(len(users))+' 条回应分析，结论仅适用于本轮训练。',
             'timeline':rounds,'translations':trans,'loss':loss[:5],'additionalLoss':loss[5:],'next':plans[:4],'additionalNext':plans[4:],'nextSource':plan_source,
-            'language':o.get('language') if isinstance(o.get('language'),str) else '', 'at':now()}
+            'language':o.get('language') if isinstance(o.get('language'),str) else '',
+            'languageReview':language_review(o.get('languageReview'),s), 'at':now()}
 
 
 def base_prompt(s):
@@ -579,7 +602,16 @@ def model_review(s):
            'timeline':[{'messageId':'每一条用户消息 ID','dims':dim_example,'feedback':'中文点评','improved':'必填字符串：可直接说出的改进回应，1–4句，不得为空；不能用对象或数组替代'}],
            'translations':[{'messageId':'对方消息 ID','surface':'表面问题','real':'核心关切（模拟）','hidden':'判断依据（模拟）'}],
            'loss':[{'title':'关键问题','desc':'基于本轮的具体说明','action':'调整建议'}], 'next':['具体训练计划'],'language':'语言建议（中文）'}
+    if s['scene'].get('lang') == 'en':
+        shape['languageReview']={'summary':'中文语言表达小结，不给英语等级或发音结论',
+            'corrections':[{'messageId':'实际用户消息ID','quote':'该条英文原话中的逐字片段',
+                'focus':'语法准确 / 自然表达 / 商务得体 / 术语准确 / 澄清确认',
+                'improved':'保留事实与意图的英文改写','reason':'中文解释问题及改法'}],
+            'terms':[{'term':'本轮相关英文术语','meaning':'中文含义'}],
+            'practice':'针对本轮表达的一项可执行英语练习'}
     prompt=base_prompt(s)+'\n分析完整记录。固定六维为 '+ '、'.join(DIMS)+'. 每维和每轮都要评分并引用真实用户原话。'
+    if s['scene'].get('lang') == 'en':
+        prompt+='英文训练另提供 languageReview，覆盖语法、自然表达、商务礼貌、技术术语及澄清确认；只引用真实用户原句，不为正确表达强行找错。区分语言问题与事实/业务问题；每条改写保持原意、事实和承诺边界，未知信息用[待确认]。中文解释，英文改写。不得根据文字推断口音、发音、听力或CEFR等级。语言点评独立于原六维总分，不以语法错误替代业务判断。'
     prompt+='评分标准：0–20 几乎未体现；21–40 表达零散；41–60 基本体现但不具体；61–80 清晰且基本可执行；81–100 证据、边界、行动充分且适合语境。'
     prompt+='没有体现的维度引用真实但不足的原话并说明缺口。不能靠关键词给高分，不编造数据，不因语气流利替代证据。所有 score 是 0–100 整数，总分由程序取六维平均四舍五入。'
     prompt+='timeline 恰好覆盖每条用户消息，各轮六维只引用该轮消息；维度名完全一致。translations 引用对方消息 ID；改进示范中缺失事实使用[待确认]占位，不能编造。结构：'+json.dumps(shape,ensure_ascii=False)
@@ -671,7 +703,7 @@ def workspace():
     with db() as c:
         row=c.execute('SELECT data FROM meta WHERE id="portraitError"').fetchone()
     sessions=all_docs('session')
-    return {'version':5,'release':'5.0.15','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'config':public_config(),
+    return {'version':5,'release':'5.1.0','scenes':CATALOG['scenes'],'objects':objects(),'examples':CATALOG['examples'],'overseasDemo':CATALOG.get('overseasDemo'),'config':public_config(),
             'sessions':[{'id':s['id'],'scene':s['scene']['title'],'objectName':s['object']['name'],'status':s['status'],'at':s['at'],
                          'turns':len([m for m in s['messages'] if m['role']=='user']), 'score':s.get('review',{}).get('score'), 'error':s.get('error')} for s in sessions],
             'portrait':get('portrait','self'),'portraitError':json.loads(row[0]) if row else None,

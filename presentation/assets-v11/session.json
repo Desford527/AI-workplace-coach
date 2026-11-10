@@ -1,0 +1,547 @@
+{
+  "id": "f520b793-77b0-4b43-af05-86e1b7bc90a3",
+  "at": "2026-11-10T08:37:47.869867+00:00",
+  "scene": {
+    "id": "en-delay",
+    "cat": "english",
+    "title": "英文交付协调会议",
+    "short": "Explain · Options · Follow-up",
+    "role": "Customer project manager",
+    "position": "海外客户项目经理",
+    "avatar": "EN",
+    "lang": "en",
+    "description": "你需要向海外客户说明验证进展对交期的影响，并讨论可行的交付安排。 同时训练语法准确、商务措辞、技术术语与跨文化澄清；复盘提供原句改写和中文解释。",
+    "goal": "直接说明现状，表达对客户影响的理解，提供选择与明确更新节点。",
+    "focus": "清晰承诺，建立协作节奏",
+    "focusDesc": "比起笼统保证，事实、可选方案和下一次更新更有价值。",
+    "criteria": [
+      "conclusion",
+      "need",
+      "boundary",
+      "evidence",
+      "action"
+    ],
+    "opening": "Our installation schedule depends on your delivery. What has changed, and what options can you offer to protect our timeline?",
+    "demo": "The remaining validation may affect the original delivery date. I understand this could impact your installation schedule. We can discuss [option A] and [option B], with the limitations clearly stated. I cannot confirm the final date until [validation] is complete. I will provide an update by [date]. Could we agree on the preferred option and the next checkpoint?"
+  },
+  "object": {
+    "id": "builtin-global",
+    "name": "海外客户代表",
+    "role": "国际项目与技术沟通对象",
+    "relationship": "跨语言客户协作",
+    "goals": "准确理解技术信息、交付安排和下一步行动",
+    "standards": "简洁英文、术语准确、理解得到确认、已验证和待验证区分清楚",
+    "style": "英文交流，重视确认理解与会议行动项",
+    "quotes": "Could you clarify the test conditions?\nWhat are the next steps?",
+    "difficulty": "专业表达与跨语言理解需要同时清晰",
+    "facts": "虚拟训练对象，不对应现实人物",
+    "inferences": "场景推断：语言流利不替代技术证据与工作闭环",
+    "boundaries": "不基于国籍或文化刻板印象塑造角色",
+    "quotesSource": "preset-fictional"
+  },
+  "goal": "用准确、自然、得体的英文说明验证边界，澄清验收条件，并约定下一次更新。",
+  "background": "虚构练习：设备常温测试已完成，高温验证未闭环。海外客户需要安排安装。不得承诺尚未确认的交期；请先确认工况与验收标准。",
+  "project": null,
+  "intensity": "标准",
+  "experiences": [
+    {
+      "id": "builtin-experience-7",
+      "title": "跨语言协作明确术语与确认",
+      "category": "国际协作",
+      "content": "使用简短句子和明确时间、单位与时区。关键术语先对齐含义，复述决定并请对方确认；跨文化差异只作为待核实背景，不据国籍推断个体性格。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-2",
+      "title": "让请求可以被直接决定",
+      "category": "通用沟通",
+      "content": "说明希望对方决定什么、需要的资源或支持、最晚决定时间，以及暂时无法决定时的备选安排。避免只说“请协调一下”。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-5",
+      "title": "被追问时，先回答当前问题",
+      "category": "通用沟通",
+      "content": "先回应对方刚提出的具体问题。暂时没有答案时直接说明未知项、核查人和反馈时间，再补充必要背景，避免重复长篇背景或防御性解释。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-6",
+      "title": "闭环需要负责人和时间点",
+      "category": "通用沟通",
+      "content": "每次沟通结束确认下一步由谁做、交付什么、何时同步、按什么标准确认完成。风险有变化时说明触发条件和升级路径。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-8",
+      "title": "观察行为，谨慎推断动机",
+      "category": "通用沟通",
+      "content": "记录具体场景、原话和行为，再提出可验证的沟通偏好假设。把“他说过”与“我觉得”分开；用后续互动修正判断，不给对方贴固定人格标签。",
+      "source": "内置经验"
+    },
+    {
+      "id": "builtin-experience-1",
+      "title": "先给判断，再讲依据",
+      "category": "项目汇报",
+      "content": "开场用一句话说明当前判断，再给已核实的事实。把“已完成”“待验证”和“个人判断”分开，未知数据标注待确认，不用加班或态度替代交付证据。",
+      "source": "内置经验"
+    }
+  ],
+  "apiId": "overseas-demo",
+  "messages": [
+    {
+      "id": "40984368f7014579ba486b18dd57610b",
+      "role": "assistant",
+      "text": "Can you guarantee delivery by Friday? Our installation team needs a firm date.",
+      "interpretation": {
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      "at": "2026-11-10T08:37:47.870568+00:00"
+    },
+    {
+      "id": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+      "role": "user",
+      "text": "Yes, no problem. We will try our best.",
+      "at": "2026-11-10T08:37:48.826962+00:00"
+    },
+    {
+      "id": "598dfe87d2c947df8eb6264018fe9f56",
+      "role": "assistant",
+      "text": "What exactly is still open, and what do you need from us?",
+      "interpretation": {
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      "at": "2026-11-10T08:37:48.827533+00:00"
+    },
+    {
+      "id": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+      "role": "user",
+      "text": "The test is not finish. You must give us the data quickly.",
+      "at": "2026-11-10T08:37:50.275514+00:00"
+    },
+    {
+      "id": "00cc9aa40edd4b6cb528cbee06f308d8",
+      "role": "assistant",
+      "text": "How will you keep us informed if the schedule changes?",
+      "interpretation": {
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      "at": "2026-11-10T08:37:50.275841+00:00"
+    },
+    {
+      "id": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+      "role": "user",
+      "text": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?",
+      "at": "2026-11-10T08:37:51.209856+00:00"
+    },
+    {
+      "id": "b08134e981ff4dcfb91475b81019b4ac",
+      "role": "assistant",
+      "text": "Thank you. Please include the remaining validation risks in your next update.",
+      "interpretation": {
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      "at": "2026-11-10T08:37:51.210151+00:00"
+    }
+  ],
+  "status": "reviewed",
+  "revision": 9,
+  "endedAt": "2026-11-10T08:37:52.278933+00:00",
+  "reviewStatus": "completed",
+  "review": {
+    "version": 2,
+    "method": "AI 六维复盘",
+    "score": 72,
+    "dims": [
+      {
+        "name": "结论清晰",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      },
+      {
+        "name": "证据具体",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      },
+      {
+        "name": "诉求对齐",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      },
+      {
+        "name": "边界与风险",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      },
+      {
+        "name": "下一步行动",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      },
+      {
+        "name": "理解与协作",
+        "score": 72,
+        "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+        "evidence": [
+          {
+            "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+            "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+          }
+        ]
+      }
+    ],
+    "summary": "承诺需保留验证边界，英语请求应更具体得体。",
+    "overall": "虚构演示：对照原句练习英语准确性与客户协作表达。",
+    "sampleLimit": "3条用户回应；演示替身生成，不能作为模型效果或英语等级证据。",
+    "timeline": [
+      {
+        "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+        "dims": [
+          {
+            "name": "结论清晰",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          },
+          {
+            "name": "证据具体",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          },
+          {
+            "name": "诉求对齐",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          },
+          {
+            "name": "边界与风险",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          },
+          {
+            "name": "下一步行动",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          },
+          {
+            "name": "理解与协作",
+            "score": 42,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+                "quote": "Yes, no problem. We will try our best."
+              }
+            ]
+          }
+        ],
+        "score": 42,
+        "feedback": "try our best 无法替代交付承诺；先回应客户影响，再说明验证边界。",
+        "improved": "I understand that your installation team needs a firm date. Room-temperature testing is complete, but high-temperature validation is still pending. I cannot confirm Friday delivery yet. Could we agree on an update time while we review the remaining work?"
+      },
+      {
+        "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+        "dims": [
+          {
+            "name": "结论清晰",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          },
+          {
+            "name": "证据具体",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          },
+          {
+            "name": "诉求对齐",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          },
+          {
+            "name": "边界与风险",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          },
+          {
+            "name": "下一步行动",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          },
+          {
+            "name": "理解与协作",
+            "score": 54,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+                "quote": "The test is not finish. You must give us the data quickly."
+              }
+            ]
+          }
+        ],
+        "score": 54,
+        "feedback": "not finish 改为 is not yet complete；用 Could you please 说明具体请求，避免生硬命令。",
+        "improved": "High-temperature validation is not yet complete. Could you please confirm the operating temperature range and acceptance criteria? This will help us align the remaining tests with your application."
+      },
+      {
+        "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+        "dims": [
+          {
+            "name": "结论清晰",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          },
+          {
+            "name": "证据具体",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          },
+          {
+            "name": "诉求对齐",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          },
+          {
+            "name": "边界与风险",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          },
+          {
+            "name": "下一步行动",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          },
+          {
+            "name": "理解与协作",
+            "score": 78,
+            "basis": "虚构演示：根据表达完整度给出协议样例分数，非真实模型评价。",
+            "evidence": [
+              {
+                "messageId": "dadd5bbb-14ea-4f4c-91e9-1ec3420d3479",
+                "quote": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+              }
+            ]
+          }
+        ],
+        "score": 78,
+        "feedback": "feedback 通常用作名词；用 send you an update，并明确时间、内容和接收人。",
+        "improved": "I will send you an update by [agreed time], including the validation status, delivery options and any remaining risks. Could you confirm who should receive the update?"
+      }
+    ],
+    "translations": [
+      {
+        "messageId": "40984368f7014579ba486b18dd57610b",
+        "quote": "Can you guarantee delivery by Friday? Our installation team needs a firm date.",
+        "source": "review",
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      {
+        "messageId": "598dfe87d2c947df8eb6264018fe9f56",
+        "quote": "What exactly is still open, and what do you need from us?",
+        "source": "review",
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      {
+        "messageId": "00cc9aa40edd4b6cb528cbee06f308d8",
+        "quote": "How will you keep us informed if the schedule changes?",
+        "source": "review",
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      },
+      {
+        "messageId": "b08134e981ff4dcfb91475b81019b4ac",
+        "quote": "Thank you. Please include the remaining validation risks in your next update.",
+        "source": "review",
+        "surface": "确认交期、验收条件或后续更新安排。",
+        "real": "客户需要据此安排安装与资源。",
+        "hidden": "模拟判断依据：信息是否具体，承诺是否有证据与边界。"
+      }
+    ],
+    "loss": [
+      {
+        "title": "承诺边界与商务措辞",
+        "desc": "no problem 没有验证边界，命令式请求容易造成误解。",
+        "action": "先说明未验证条件，再明确澄清请求。"
+      }
+    ],
+    "additionalLoss": [],
+    "next": [
+      "用英文完成一次“现状—边界—请求—更新节点”的交付说明。"
+    ],
+    "additionalNext": [],
+    "nextSource": "next",
+    "language": "结合原句改写语法与商务措辞。",
+    "languageReview": {
+      "summary": "英语练习聚焦语法、术语和得体请求，同时保留业务事实边界。",
+      "corrections": [
+        {
+          "messageId": "6ce36cc3-b35c-46f3-9f07-f8c0e5f47338",
+          "quote": "Yes, no problem. We will try our best.",
+          "improved": "I understand that your installation team needs a firm date. Room-temperature testing is complete, but high-temperature validation is still pending. I cannot confirm Friday delivery yet. Could we agree on an update time while we review the remaining work?",
+          "reason": "try our best 无法替代交付承诺；先回应客户影响，再说明验证边界。",
+          "focus": "承诺边界 / 自然表达"
+        },
+        {
+          "messageId": "75ef474e-48fd-48af-bd56-a667bfa7eeda",
+          "quote": "The test is not finish. You must give us the data quickly.",
+          "improved": "High-temperature validation is not yet complete. Could you please confirm the operating temperature range and acceptance criteria? This will help us align the remaining tests with your application.",
+          "reason": "not finish 改为 is not yet complete；用 Could you please 说明具体请求，避免生硬命令。",
+          "focus": "语法准确 / 商务得体"
+        }
+      ],
+      "terms": [
+        {
+          "term": "acceptance criteria",
+          "meaning": "验收标准"
+        },
+        {
+          "term": "operating temperature range",
+          "meaning": "工作温度范围"
+        },
+        {
+          "term": "validation is still pending",
+          "meaning": "验证尚未完成"
+        },
+        {
+          "term": "delivery options",
+          "meaning": "可选交付安排"
+        }
+      ],
+      "practice": "用 Could you please…? 重写两条澄清请求；再用 I will send you an update by… 明确下一次更新。"
+    },
+    "at": "2026-11-10T08:37:52.279621+00:00"
+  },
+  "portraitStatus": "updated"
+}

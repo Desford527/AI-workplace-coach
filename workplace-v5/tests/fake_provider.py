@@ -92,6 +92,8 @@ class Provider(http.server.BaseHTTPRequestHandler):
                'timeline':[{'messageId':m['id'],'dims':dims(m),'feedback':'测试替身逐轮反馈','improved':'I will confirm [pending information] by [date].'} for m in users],
                'translations':[{'messageId':m['id'],'surface':'测试表面问题','real':'模拟关切','hidden':'模拟判断依据'} for m in bots],
                'loss':[{'title':'测试问题','desc':'测试依据','action':'测试调整措施'}], 'next':['练习下一步行动'],'language':'中文复盘，英文示范'}
+            if mode=='english-language':
+                o['languageReview']={'summary':'测试替身：区分商务语气和语法问题','corrections':[{'messageId':users[0]['id'],'quote':users[0]['text'],'focus':'语法准确 / 商务得体','improved':'High-temperature validation is not yet complete. Could you confirm the acceptance criteria?','reason':'not finish 需改为 is not yet complete；请求应清晰得体。'}],'terms':[{'term':'acceptance criteria','meaning':'验收标准'}],'practice':'用英文重写一次澄清验收条件的请求。'}
             review_calls=sum('分析完整记录' in r['body']['messages'][0]['content'] for r in type(self).calls)
             if mode=='flaky-schema' and review_calls==1:o['dims'].pop()
             if mode=='bad-score': o['dims'][0]['score']=101

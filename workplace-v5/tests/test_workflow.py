@@ -54,6 +54,26 @@ class Workflow(unittest.TestCase):
         self.assertEqual(Provider.calls[-2]['body']['model'],'review-model')
         self.assertEqual(Provider.calls[1]['body']['model'],'dialog-model')
         self.assertIn(s['messages'][0]['text'],str(Provider.calls[2]['body']))
+    def test_english_language_review_and_evidence(self):
+        Provider.mode='english-language'
+        s=self.call('start',sceneId='en-delay',objectId='builtin-global',goal='Clarify delivery conditions',background='虚构背景',intensity='标准')
+        s=self.send(s,'The test is not finish. You must give us the data quickly.')
+        s=self.review(s)
+        language=s['review']['languageReview']
+        self.assertEqual(language['corrections'][0]['quote'],s['messages'][1]['text'])
+        self.assertEqual(language['corrections'][0]['messageId'],s['messages'][1]['id'])
+        self.assertEqual(s['review']['score'],59)
+        import copy
+        bad=copy.deepcopy(language);bad['corrections'][0]['quote']='invented quote'
+        self.assertIsNone(w.language_review(bad,s))
+        bad=copy.deepcopy(language);bad['corrections'][0]['messageId']=s['messages'][0]['id']
+        self.assertIsNone(w.language_review(bad,s))
+        self.assertIsNone(w.language_review(None,s))
+        bad=copy.deepcopy(language);bad['corrections']=None
+        self.assertIsNone(w.language_review(bad,s))
+        self.assertEqual(w.get('session',s['id'])['review']['languageReview'],language)
+        self.assertIn('languageReview',Provider.calls[-2]['body']['messages'][0]['content'])
+
     def test_failed_send_preserves_and_retries(self):
         s=self.begin();Provider.mode='http'
         with self.assertRaises(urllib.error.HTTPError):self.send(s,'保留这句用户原话')

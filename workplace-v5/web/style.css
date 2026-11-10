@@ -567,3 +567,10 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .meeting-workspace { margin-top: 64px; }
 @media(max-width: 700px) { .meeting-workspace { margin-top: 36px; } }
 @media print { #meetings { display: none !important; } }
+
+/* Overseas language coaching uses existing theme tokens. */
+.overseas-demo { margin: 24px 0; }
+.language-example, .language-correction { padding: 20px 0; border-bottom: 1px solid var(--input-line); }
+.language-example blockquote { margin: 16px 0; padding-left: 16px; border-left: 3px solid var(--red); }
+.language-example p, .language-correction p { line-height: 1.8; }
+.language-term { display: inline-block; margin: 5px 8px 5px 0; padding: 7px 12px; border: 1px solid var(--input-line); border-radius: 5px; font-size: 13px; }

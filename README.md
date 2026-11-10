@@ -1,3 +1,9 @@
+## 最新更新：v5.1.0 海外客户与英语表达提升
+
+项目启动与使用见 [workplace-v5/README.md](workplace-v5/README.md)，英文演示脚本见 [OVERSEAS_DEMO.md](workplace-v5/OVERSEAS_DEMO.md)。
+
+[PPT第十一版](presentation/AI-workplace-coach-story-v11.pptx) · [PDF](presentation/AI-workplace-coach-story-v11.pdf)，第13–15页介绍海外英语沟通与语言提升。
+
 # AI职场沟通训练师 v5.0.18
 
 v5.0.18 修复 Windows 启动脚本的编码/换行兼容性，显示打开进度和实际访问地址；保留全部分页对齐。

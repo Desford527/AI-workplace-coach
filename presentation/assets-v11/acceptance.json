@@ -1,0 +1,12 @@
+{
+  "pageErrors": [],
+  "validatedModelCalls": 6,
+  "realModelCalls": 0,
+  "userReplies": 3,
+  "languageCorrections": 2,
+  "mobile390NoOverflow": true,
+  "htmlExportIncludesLanguage": true,
+  "sixAxisScore": 72,
+  "foreignDemoHiddenForChinese": true,
+  "loadGoalAndBackground": true
+}
