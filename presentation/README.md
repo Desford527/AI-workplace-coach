@@ -1,3 +1,9 @@
+# 最新：第二十二版
+
+[下载PPT](AI-workplace-coach-story-v22.pptx)
+
+38页，正文页码统一，保留微软雅黑、无备注、无动画。
+
 # 最新：第二十一版
 
 [下载PPT](AI-workplace-coach-story-v21.pptx)

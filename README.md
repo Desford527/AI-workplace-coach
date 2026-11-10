@@ -1,3 +1,9 @@
+## 最新：PPT第二十二版 · 页码对齐
+
+[PPT下载](presentation/AI-workplace-coach-story-v22.pptx)
+
+清除模板括号与重复页码，正文数字统一位置、字号和对齐。
+
 ## 最新：PPT第二十一版 · 微软雅黑
 
 [PPT下载](presentation/AI-workplace-coach-story-v21.pptx)

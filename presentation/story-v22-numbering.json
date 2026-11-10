@@ -1,0 +1,449 @@
+{
+  "ornamentsRemoved": [
+    {
+      "part": "ppt/slideMasters/slideMaster1.xml",
+      "names": [
+        "组合 9",
+        "左中括号 10",
+        "左中括号 11"
+      ]
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout2.xml",
+      "names": [
+        "组合 24",
+        "左中括号 25",
+        "左中括号 26"
+      ]
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout3.xml",
+      "names": [
+        "组合 21",
+        "左中括号 22",
+        "左中括号 23"
+      ]
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout4.xml",
+      "names": [
+        "组合 8",
+        "左中括号 9",
+        "左中括号 10"
+      ]
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout5.xml",
+      "names": [
+        "组合 7",
+        "左中括号 8",
+        "左中括号 9"
+      ]
+    }
+  ],
+  "inheritedNumbersRemoved": [
+    "ppt/slideMasters/slideMaster1.xml",
+    "ppt/slideLayouts/slideLayout2.xml",
+    "ppt/slideLayouts/slideLayout3.xml",
+    "ppt/slideLayouts/slideLayout4.xml",
+    "ppt/slideLayouts/slideLayout5.xml"
+  ],
+  "pageNumbers": [
+    {
+      "page": 2,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 3,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 4,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 5,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 6,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 7,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 8,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 9,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 10,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 11,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 12,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 13,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 14,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 15,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 16,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 17,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 18,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 19,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 20,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 21,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 22,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 23,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 24,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 25,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 26,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 27,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 28,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 29,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 30,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 31,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 32,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 33,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 34,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 35,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 36,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    },
+    {
+      "page": 37,
+      "x": 502920,
+      "y": 6547104,
+      "width": 411480,
+      "height": 219456,
+      "font": "微软雅黑",
+      "size": 10,
+      "rotation": 0,
+      "alignment": "center"
+    }
+  ]
+}
