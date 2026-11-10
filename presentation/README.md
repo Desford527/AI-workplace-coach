@@ -1,3 +1,9 @@
+# 最新：第十七版
+
+[PPT](AI-workplace-coach-story-v17.pptx) · [PDF](AI-workplace-coach-story-v17.pdf) · [视频审阅与修改指令](简介视频审阅与WorkBuddy修改提示词-v2.md)
+
+36页；第02页视频位置，重复小字清理。未嵌入视频。
+
 # 最新：第十六版
 
 [PPT下载](AI-workplace-coach-story-v16.pptx) · [PDF预览](AI-workplace-coach-story-v16.pdf) · [讲述稿](项目展示内容与讲述稿-第十六版.md)
