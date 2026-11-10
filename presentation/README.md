@@ -1,3 +1,9 @@
+# 最新：第十九版
+
+[PPT下载](AI-workplace-coach-story-v19.pptx) · [PDF预览](AI-workplace-coach-story-v19.pdf)
+
+38页；演讲备注、模板使用说明和所有动画/切换效果已删除。
+
 # 最新：第十八版
 
 [PPT下载](AI-workplace-coach-story-v18.pptx) · [PDF预览](AI-workplace-coach-story-v18.pdf) · [讲述稿](项目展示内容与讲述稿-第十八版.md)

@@ -1,0 +1,86 @@
+{
+  "source": "AI-workplace-coach-story-v18.pptx",
+  "output": "AI-workplace-coach-story-v19.pptx",
+  "offCanvasObjects": [
+    {
+      "part": "ppt/slideLayouts/slideLayout1.xml",
+      "text": "更改替换图片直接在本页，选择顶部【插入】菜单——【图片】单击选中本占位符框，拷贝图片以上方法可以将图片直接自动填充到此预设的图片形状中图片在形状中位置的修改插入图片后，选中本占位符框在顶部【图片工具-格式】菜单中，选择【裁剪】下拉菜单中的填充功能，对形状中的图片进行大小，位置等调整。（本功能适用于PowerPoint2010及以上版本）"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout1.xml",
+      "text": "版式使用说明"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout3.xml",
+      "text": "开启参考线，请在参考线规定的区域范围内进行编辑参考线开启的快捷键：【ALT】+F9"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout3.xml",
+      "text": "版式使用说明"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout6.xml",
+      "text": "更改替换图片直接在本页，选择顶部【插入】菜单——【图片】单击选中本占位符框，拷贝图片以上方法可以将图片直接自动填充到此预设的图片形状中图片在形状中位置的修改插入图片后，选中本占位符框在顶部【图片工具-格式】菜单中，选择【裁剪】下拉菜单中的填充功能，对形状中的图片进行大小，位置等调整。（本功能适用于PowerPoint2010及以上版本）"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout6.xml",
+      "text": "版式使用说明"
+    }
+  ],
+  "effectsRemoved": [
+    {
+      "part": "ppt/slideMasters/slideMaster1.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout1.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout1.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout1.xml",
+      "element": "timing"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout2.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout3.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout4.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout5.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout6.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slideLayouts/slideLayout6.xml",
+      "element": "timing"
+    },
+    {
+      "part": "ppt/slides/slide1.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slides/slide1.xml",
+      "element": "transition"
+    },
+    {
+      "part": "ppt/slides/slide36.xml",
+      "element": "transition"
+    }
+  ],
+  "notePartsRemoved": 78,
+  "noteRelationsRemoved": 39
+}
