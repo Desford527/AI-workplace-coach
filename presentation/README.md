@@ -1,3 +1,9 @@
+# 最新：第十六版
+
+[PPT下载](AI-workplace-coach-story-v16.pptx) · [PDF预览](AI-workplace-coach-story-v16.pdf) · [讲述稿](项目展示内容与讲述稿-第十六版.md)
+
+仅更新第35页发布页，保留第36页感谢页。
+
 # 最新：第十五版最终版
 
 [PPT](AI-workplace-coach-story-v15.pptx) · [PDF](AI-workplace-coach-story-v15.pdf) · [讲述稿](项目展示内容与讲述稿-第十五版.md)

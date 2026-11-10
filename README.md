@@ -1,3 +1,9 @@
+## 最新：PPT第十六版
+
+[PPT](presentation/AI-workplace-coach-story-v16.pptx) · [PDF](presentation/AI-workplace-coach-story-v16.pdf)
+
+发布页增加用户提供的项目说明原图，与仓库截图左右展示。
+
 ## 最新：PPT第十五版
 
 [PPT下载](presentation/AI-workplace-coach-story-v15.pptx) · [PDF预览](presentation/AI-workplace-coach-story-v15.pdf)
