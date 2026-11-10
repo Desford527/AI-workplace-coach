@@ -1,3 +1,9 @@
+## 最新：PPT第二十三版 · 页码在框内居中
+
+[PPT下载](presentation/AI-workplace-coach-story-v23.pptx)
+
+恢复原模板页码框，数字放入框内居中。
+
 ## 最新：PPT第二十二版 · 页码对齐
 
 [PPT下载](presentation/AI-workplace-coach-story-v22.pptx)

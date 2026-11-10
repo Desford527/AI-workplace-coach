@@ -1,3 +1,9 @@
+# 最新：第二十三版
+
+[下载PPT](AI-workplace-coach-story-v23.pptx)
+
+保留原括号页码框并校正数字居中，正文和图片保留。
+
 # 最新：第二十二版
 
 [下载PPT](AI-workplace-coach-story-v22.pptx)
