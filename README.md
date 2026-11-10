@@ -1,3 +1,9 @@
+## 最新：PPT第二十版
+
+[PPT](presentation/AI-workplace-coach-story-v20.pptx) · [PDF](presentation/AI-workplace-coach-story-v20.pdf)
+
+第05页右侧替换为编辑对象画像实际截图，保留无备注、无动画状态。
+
 ## 最新：PPT第十九版 · 无备注、无动画
 
 [PPT](presentation/AI-workplace-coach-story-v19.pptx) · [PDF](presentation/AI-workplace-coach-story-v19.pdf)

@@ -1,3 +1,9 @@
+# 最新：第二十版
+
+[PPT下载](AI-workplace-coach-story-v20.pptx) · [PDF预览](AI-workplace-coach-story-v20.pdf)
+
+第05页：对象列表＋编辑画像弹窗截图。其他页面保留。
+
 # 最新：第十九版
 
 [PPT下载](AI-workplace-coach-story-v19.pptx) · [PDF预览](AI-workplace-coach-story-v19.pdf)
