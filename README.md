@@ -1,3 +1,9 @@
+## 最新：PPT第十五版
+
+[PPT下载](presentation/AI-workplace-coach-story-v15.pptx) · [PDF预览](presentation/AI-workplace-coach-story-v15.pdf)
+
+36页：Skill视频按钮、实际GPT报告截图、倒数第二页GitHub、原感谢页结尾。
+
 ## 最新：PPT第十四版与可迁移Skill
 
 [PPT](presentation/AI-workplace-coach-story-v14.pptx) · [PDF](presentation/AI-workplace-coach-story-v14.pdf) · [Skill下载](downloads/AI-workplace-coach-portable-skill-v1.0.zip) · [语音演示脚本](portable-skill/VOICE_DEMO.md)

@@ -52,7 +52,7 @@ sl=page('项目已公开发布，欢迎下载体验。')
 url='https://github.com/Desford527/AI-workplace-coach'
 box(sl,.7,1.9,8.6,4.2,'待嵌入 GitHub 仓库首页截图',A/'github-styled.png')
 text(sl,.8,6.28,8.4,.42,'github.com/Desford527/AI-workplace-coach',19,'C70019',True,url)
-text(sl,.8,6.87,8.4,.22,'项目源码 · 本地应用 · 可迁移 Skill · 演示资料',12)
+text(sl,.8,6.87,8.4,.22,'项目源码 · 本地应用 · Skill · 演示资料｜仓库实际内容简洁视图',11)
 gitrow=dict(title='项目已公开发布，欢迎下载体验。',body='倒数第二页用GitHub仓库实拍和链接邀请观众下载。',point='仓库首页截图与可点击链接。',seconds=20,speech='本项目已经在GitHub公开，源码、本地应用、Skill和演示资料都可以获取，欢迎大家下载体验。',transition='谢谢大家。',appendix=False)
 # Keep the original thank-you slide as the absolute last slide.
 closing=prs.slides._sldIdLst[32];prs.slides._sldIdLst.remove(closing);prs.slides._sldIdLst.append(closing)

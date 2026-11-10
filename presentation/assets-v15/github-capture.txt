@@ -1,0 +1,3 @@
+Source: https://github.com/Desford527/AI-workplace-coach
+HTTP status: 200
+Actual public HTML; repository title, Public badge and file table retained. Local reader stylesheet; CDN inaccessible. Not original GitHub CSS.

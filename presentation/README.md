@@ -1,3 +1,9 @@
+# 最新：第十五版最终版
+
+[PPT](AI-workplace-coach-story-v15.pptx) · [PDF](AI-workplace-coach-story-v15.pdf) · [讲述稿](项目展示内容与讲述稿-第十五版.md)
+
+36页，报告原图已嵌入，GitHub页为实际仓库内容简洁视图。原感谢页保持。
+
 # 最新：第十四版
 
 [PPT](AI-workplace-coach-story-v14.pptx) · [PDF](AI-workplace-coach-story-v14.pdf)
