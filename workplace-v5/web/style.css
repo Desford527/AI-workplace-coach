@@ -574,3 +574,7 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .language-example blockquote { margin: 16px 0; padding-left: 16px; border-left: 3px solid var(--red); }
 .language-example p, .language-correction p { line-height: 1.8; }
 .language-term { display: inline-block; margin: 5px 8px 5px 0; padding: 7px 12px; border: 1px solid var(--input-line); border-radius: 5px; font-size: 13px; }
+
+.expression-output { margin-top: 30px; }
+.expression-output p { white-space: pre-wrap; line-height: 1.85; }
+.expression-output h3 { margin-top: 24px; }

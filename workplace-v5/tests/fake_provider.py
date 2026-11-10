@@ -45,6 +45,14 @@ class Provider(http.server.BaseHTTPRequestHandler):
             if mode=='meeting-bad-kind':items[-1]['kind']='delete_object'
             if mode=='meeting-empty':items=[]
             content=json.dumps({'summary':'测试替身会议摘要：核实验证条件后再承诺交付。','items':items},ensure_ascii=False)
+        elif '职场表达优化助手' in prompt:
+            source=json.loads(user)
+            content=json.dumps({'professional':'我目前在协作中有些困扰，希望先把具体分歧梳理清楚，再请您协助确认分工和沟通方式。','concise':'我想请您协助梳理目前的协作分歧，明确后续沟通方式。','intent':'希望解决协作问题，而非评价同事人格。','reason':'去除人身评价，保留困扰与协调请求，不补造事实。','questions':['具体分歧发生在哪个事项？','希望对方协助做什么决定？']},ensure_ascii=False)
+            if '朱彦霖' in source['original']:
+                result=json.loads(content);result['professional']='我目前对与朱彦霖的协作有些困扰，希望先把具体分歧梳理清楚，再请您协助确认分工和沟通方式。';content=json.dumps(result,ensure_ascii=False)
+            if 'professional和concise使用英文' in prompt:
+                result=json.loads(content);result['professional']='I am concerned about our collaboration. Could we clarify the specific points of disagreement and agree on responsibilities and communication?';result['concise']='Could we clarify our responsibilities and agree on how to communicate?';content=json.dumps(result)
+            if mode=='expression-invalid':content='{}'
         elif '工作区自由输入助手' in prompt:
             data=json.loads(next(m['content'] for m in body['messages'] if m['role']=='user' and m['content'].startswith('{')))
             value=data['input'];target='builtin-project'

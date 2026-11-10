@@ -1,3 +1,9 @@
+## 最新更新：v5.1.1 表达优化
+
+新增「表达优化」标签，选择现有/通用对象，支持中文和英文输出；从情绪化原话整理合理工作诉求。
+
+[新版应用ZIP](downloads/AI-workplace-coach-v5.1.1.zip) · [PPT第十二版](presentation/AI-workplace-coach-story-v12.pptx) · [PDF](presentation/AI-workplace-coach-story-v12.pdf)
+
 ## 最新更新：v5.1.0 海外客户与英语表达提升
 
 项目启动与使用见 [workplace-v5/README.md](workplace-v5/README.md)，英文演示脚本见 [OVERSEAS_DEMO.md](workplace-v5/OVERSEAS_DEMO.md)。

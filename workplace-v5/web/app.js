@@ -36,7 +36,7 @@ function syncSessionButtons(){
 }
 
 async function refresh(){ws=await request('/api/workplace/workspace');renderWorkspace();return ws;}
-function renderWorkspace(){renderSelection();renderObjects();renderMeetings();renderExperiences();renderFreeHistory();renderPortrait();renderRecords();if(!preferencesReady){$('intensity').value=ws.preferences?.intensity||'标准';preferencesReady=true;}const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
+function renderWorkspace(){renderExpressionObjects();renderSelection();renderObjects();renderMeetings();renderExperiences();renderFreeHistory();renderPortrait();renderRecords();if(!preferencesReady){$('intensity').value=ws.preferences?.intensity||'标准';preferencesReady=true;}const c=ws.config.apis?.find(a=>a.id===ws.config.active);$('apiBadge').textContent=c?c.name:'未配置';}
 function selectedScene(){return ws.scenes.find(s=>s.id===sceneId)||ws.scenes[0];}
 function defaultObject(s){const preferred={report:'builtin-project',technical:'builtin-technical',customer:'builtin-customer',english:'builtin-global'}[s.cat];return ws.objects.some(o=>o.id===preferred)?preferred:ws.objects[0]?.id||'';}
 function objectLabel(o){return o.name.replace(/：/g,':').endsWith(':'+o.role)||o.name===o.role?o.name:`${o.name} · ${o.role}`;}
@@ -352,3 +352,22 @@ async function applyMeeting(){
  catch(e){$('meetingApplyStatus').textContent='未保存本次修改：'+e.message;}finally{lock(false);$('meetingApply').disabled=meetingDraft.items.every(i=>meetingDraft.appliedItems.includes(i.id));}
 }
 (async()=>{try{await refresh();let old=null;try{old=JSON.parse(localStorage.getItem('ahc_api_cfg_v1'));}catch{}if(old&&!ws.config.apis?.length){await action('import-config',{config:old});await refresh();}const id=localStorage.getItem('workplace_active_session');if(id){try{applySession(await request('/api/workplace/session?id='+encodeURIComponent(id)));}catch{localStorage.removeItem('workplace_active_session');}}}catch(e){showError('globalError',e.message);}})();
+
+function renderExpressionObjects(){
+ const selected=$('expressionObject').value;
+ $('expressionObject').innerHTML='<option value="general">通用对象</option>'+ws.objects.map(o=>`<option value="${esc(o.id)}">${esc(o.name)} · ${esc(o.role)}</option>`).join('');
+ $('expressionObject').value=ws.objects.some(o=>o.id===selected)?selected:'general';
+}
+let expressionOutput=null;
+function renderExpressionResult(r){
+ $('expressionResult').innerHTML=`<section class="review-section expression-output"><p class="eyebrow">说给 ${esc(r.object.name)} · ${r.language==='en'?'English':'中文'}</p><h3>可以这样说</h3><div class="answer-box answer-improved"><p>${esc(r.professional)}</p><button type="button" class="outline" data-copy-expression="professional">复制完整表达</button></div><h3>简短一点</h3><div class="answer-box"><p>${esc(r.concise)}</p><button type="button" class="outline" data-copy-expression="concise">复制简短表达</button></div><div class="two"><div><h3>你真正想解决的</h3><p>${esc(r.intent)}</p></div><div><h3>为什么这样改</h3><p>${esc(r.reason)}</p></div></div>${r.questions.length?`<details open><summary>说之前，建议补充这些信息</summary><ul>${r.questions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></details>`:''}<details><summary>查看本次原话</summary><p>${esc(r.original)}</p></details></section>`;
+}
+$('expressionForm').onsubmit=async e=>{
+ e.preventDefault();if(busy)return;
+ const payload={text:$('expressionText').value,objectId:$('expressionObject').value,language:$('expressionLanguage').value,context:$('expressionContext').value,goal:$('expressionGoal').value};
+ lock(true,'正在优化表达…');$('expressionStatus').textContent='正在整理表达，请稍候…';$('expressionResult').setAttribute('aria-busy','true');
+ try{const r=await action('optimize-expression',payload);expressionOutput=r;renderExpressionResult(r);$('expressionStatus').textContent='已生成。请核对事实和待补充项，再选择适合的表达。';}
+ catch(err){$('expressionStatus').textContent=err.message+'。原话已保留，可以重试。'+(expressionOutput?'下方仍为上次成功结果。':'');}
+ finally{$('expressionResult').setAttribute('aria-busy','false');lock(false);}
+};
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy-expression]');if(!b||!expressionOutput||busy)return;try{await navigator.clipboard.writeText(expressionOutput[b.dataset.copyExpression]);toast('已复制，可自行编辑后使用。');}catch{toast('浏览器未允许复制，请选中文字复制。');}});

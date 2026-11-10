@@ -1,3 +1,9 @@
+# 最新：第十二版 · 表达优化
+
+[下载PPT](AI-workplace-coach-story-v12.pptx) · [PDF预览](AI-workplace-coach-story-v12.pdf) · [讲述稿](项目展示内容与讲述稿-第十二版.md)
+
+33页，第16页以指定情绪化原话展示“输入→优化结果”，项目v5.1.1。
+
 # 最新：第十一版 · 海外客户与英语表达提升
 
 [下载PPT](AI-workplace-coach-story-v11.pptx) · [PDF预览](AI-workplace-coach-story-v11.pdf) · [讲述稿](项目展示内容与讲述稿-第十一版.md)
