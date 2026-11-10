@@ -1,3 +1,9 @@
+# 最新：第十版
+
+[下载PPT](AI-workplace-coach-story-v10.pptx) · [PDF预览](AI-workplace-coach-story-v10.pdf) · [讲述稿](项目展示内容与讲述稿-第十版.md)
+
+29页。第8页新增完整复盘大截图，先看报告全貌，再讲评分与分析细节。
+
 # 最新：第九版
 
 [下载PPT](AI-workplace-coach-story-v9.pptx) · [PDF预览](AI-workplace-coach-story-v9.pdf) · [讲述稿](项目展示内容与讲述稿-第九版.md)
