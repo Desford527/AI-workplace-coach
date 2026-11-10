@@ -1,3 +1,9 @@
+# 最新：第九版
+
+[下载PPT](AI-workplace-coach-story-v9.pptx) · [PDF预览](AI-workplace-coach-story-v9.pdf) · [讲述稿](项目展示内容与讲述稿-第九版.md)
+
+背景介绍合并为1页，第3页首页全貌，第4页API入口截图与配置。共28页。
+
 # 最新：第八版静态首页总览
 
 [下载PPT](AI-workplace-coach-story-v8.pptx) · [PDF预览](AI-workplace-coach-story-v8.pdf) · [讲述稿](项目展示内容与讲述稿-第八版.md)
