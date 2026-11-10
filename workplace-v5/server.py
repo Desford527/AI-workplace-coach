@@ -102,7 +102,7 @@ def _probe_existing(port, timeout=1.5):
             if r.status != 200:
                 return False
             data = json.loads(r.read())
-            return data.get("release") == "5.1.1"
+            return data.get("release") == "5.1.2"
     except Exception:
         return False
 
@@ -804,7 +804,7 @@ if __name__ == "__main__":
     http.server.ThreadingHTTPServer.allow_reuse_address = True
     workplace.init(ROOT, DATA_ROOT, CONFIG_PATH, sys.modules[__name__])
     with http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler) as httpd:
-        print(f"AI职场沟通训练师 v5.1.1 启动完成： {url}", flush=True)
+        print(f"AI职场沟通训练师 v5.1.2 启动完成： {url}", flush=True)
         print("正在打开浏览器；若未自动打开，请访问上面的地址。" if auto_open else "请在浏览器打开上面的地址。", flush=True)
         print("使用期间请保持此窗口开启，按 Ctrl+C 停止服务。", flush=True)
         if auto_open:

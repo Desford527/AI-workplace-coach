@@ -1,0 +1,11 @@
+{
+  "pageErrors": [],
+  "copy": true,
+  "http402PreservesInputAndPreviousResult": true,
+  "genericAndEnglish": true,
+  "mobile390": true,
+  "noProfileOrSessionChanges": true,
+  "optionalFieldsEmpty": true,
+  "concisePreservesPerson": true,
+  "realModelCalls": 0
+}

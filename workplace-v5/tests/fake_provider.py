@@ -49,7 +49,7 @@ class Provider(http.server.BaseHTTPRequestHandler):
             source=json.loads(user)
             content=json.dumps({'professional':'我目前在协作中有些困扰，希望先把具体分歧梳理清楚，再请您协助确认分工和沟通方式。','concise':'我想请您协助梳理目前的协作分歧，明确后续沟通方式。','intent':'希望解决协作问题，而非评价同事人格。','reason':'去除人身评价，保留困扰与协调请求，不补造事实。','questions':['具体分歧发生在哪个事项？','希望对方协助做什么决定？']},ensure_ascii=False)
             if '朱彦霖' in source['original']:
-                result=json.loads(content);result['professional']='我目前对与朱彦霖的协作有些困扰，希望先把具体分歧梳理清楚，再请您协助确认分工和沟通方式。';content=json.dumps(result,ensure_ascii=False)
+                result=json.loads(content);result['professional']='我目前对与朱彦霖的协作有些困扰，希望先把具体分歧梳理清楚，再请您协助确认分工和沟通方式。';result['concise']='我和朱彦霖的协作有些困扰，想请您帮忙梳理分歧、明确分工。';content=json.dumps(result,ensure_ascii=False)
             if 'professional和concise使用英文' in prompt:
                 result=json.loads(content);result['professional']='I am concerned about our collaboration. Could we clarify the specific points of disagreement and agree on responsibilities and communication?';result['concise']='Could we clarify our responsibilities and agree on how to communicate?';content=json.dumps(result)
             if mode=='expression-invalid':content='{}'

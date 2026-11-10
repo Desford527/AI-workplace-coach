@@ -1,3 +1,9 @@
+# 最新：第十三版
+
+[下载PPT](AI-workplace-coach-story-v13.pptx) · [PDF](AI-workplace-coach-story-v13.pdf)
+
+第16页：简短表达保留姓名，两个可选字段留空，大字展示与截图一致。
+
 # 最新：第十二版 · 表达优化
 
 [下载PPT](AI-workplace-coach-story-v12.pptx) · [PDF预览](AI-workplace-coach-story-v12.pdf) · [讲述稿](项目展示内容与讲述稿-第十二版.md)

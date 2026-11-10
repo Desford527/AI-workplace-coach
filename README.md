@@ -1,3 +1,9 @@
+## 最新：v5.1.2 / PPT第十三版
+
+表达优化保留关键人物指代；第16页可选字段留空，并用大字展示优化结果。
+
+[项目ZIP](downloads/AI-workplace-coach-v5.1.2.zip) · [PPT](presentation/AI-workplace-coach-story-v13.pptx) · [PDF](presentation/AI-workplace-coach-story-v13.pdf)
+
 ## 最新更新：v5.1.1 表达优化
 
 新增「表达优化」标签，选择现有/通用对象，支持中文和英文输出；从情绪化原话整理合理工作诉求。

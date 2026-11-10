@@ -17,6 +17,13 @@ class Expression(unittest.TestCase):
         payload=json.loads(Provider.calls[-1]['body']['messages'][-1]['content'])
         self.assertEqual(payload['original'],'我觉得我同事脑子有问题');self.assertEqual(payload['audience']['name'],r['object']['name'])
         self.assertNotIn('apiKey',payload)
+    def test_concise_keeps_person_without_optional_context(self):
+        r=self.call('optimize-expression',text='我觉得朱彦霖脑子有问题',objectId='builtin-project')
+        self.assertIn('朱彦霖',r['concise'])
+        payload=json.loads(Provider.calls[-1]['body']['messages'][-1]['content'])
+        self.assertEqual(payload['context'],'');self.assertEqual(payload['goal'],'')
+        self.assertIn('不得为缩短而删掉人物',Provider.calls[-1]['body']['messages'][0]['content'])
+
     def test_general_object_with_empty_roster(self):
         for o in w.objects():self.call('delete-object',objectId=o['id'])
         r=self.call('optimize-expression',text='这个需求不合理',objectId='general',language='en')
