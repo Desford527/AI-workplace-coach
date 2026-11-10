@@ -1,3 +1,9 @@
+## 最新：PPT第二十一版 · 微软雅黑
+
+[PPT下载](presentation/AI-workplace-coach-story-v21.pptx)
+
+38页，可编辑文字、母版及主题字体统一微软雅黑。截图保持原图，无备注、无动画。
+
 ## 最新：PPT第二十版
 
 [PPT](presentation/AI-workplace-coach-story-v20.pptx) · [PDF](presentation/AI-workplace-coach-story-v20.pdf)

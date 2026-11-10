@@ -1,3 +1,9 @@
+# 最新：第二十一版
+
+[下载PPT](AI-workplace-coach-story-v21.pptx)
+
+全局可编辑字体统一微软雅黑。环境未安装该字体，本版不另行提供使用替代字体的PDF。
+
 # 最新：第二十版
 
 [PPT下载](AI-workplace-coach-story-v20.pptx) · [PDF预览](AI-workplace-coach-story-v20.pdf)
