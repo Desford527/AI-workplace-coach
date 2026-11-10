@@ -1,3 +1,9 @@
+## 最新：PPT第十八版
+
+[PPT](presentation/AI-workplace-coach-story-v18.pptx) · [PDF](presentation/AI-workplace-coach-story-v18.pdf)
+
+38页。第05–06页新增对象画像和语录分析介绍，放在API之后、训练之前。
+
 ## 最新：PPT第十七版与简介视频修改建议
 
 [PPT](presentation/AI-workplace-coach-story-v17.pptx) · [PDF](presentation/AI-workplace-coach-story-v17.pdf) · [视频修改意见](presentation/简介视频审阅与WorkBuddy修改提示词-v2.md)
